@@ -1,26 +1,264 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --color-ocean-50:  #F1F9FF;
+  --color-ocean-100: #EAF3FA;
+  --color-ocean-200: #D7EAF7;
+  --color-ocean-300: #B8DAF2;
+  --color-ocean-400: #86C3E9;
+  --color-ocean-500: #0EA5E9;
+  --color-ocean-600: #0284C7;
+  --color-ocean-700: #0369A1;
+  --color-ocean-800: #075985;
+  --color-ocean-900: #0C4A6E;
+
+  --color-emerald-50:  #ECFDF5;
+  --color-emerald-100: #D1FAE5;
+  --color-emerald-200: #A7F3D0;
+  --color-emerald-500: #10B981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-900: #064E3B;
+
+  --color-stone-0:   #FFFFFF;
+  --color-stone-25:  #F9F8F6;
+  --color-stone-50:  #F5F5F4;
+  --color-stone-100: #E7E5E4;
+  --color-stone-200: #D6D3D1;
+  --color-stone-300: #A8A29E;
+  --color-stone-400: #78716C;
+  --color-stone-500: #6C6760;
+  --color-stone-900: #1C1917;
+
+  --color-amber-50:  #FFFBEB;
+  --color-amber-100: #FEF3C7;
+  --color-amber-200: #FDE68A;
+  --color-amber-500: #F59E0B;
+  --color-amber-600: #D97706;
+  --color-amber-700: #B45309;
+
+  --color-red-50:  #FEF2F2;
+  --color-red-200: #FECACA;
+  --color-red-500: #EF4444;
+  --color-red-600: #DC2626;
+  --color-red-700: #B91C1C;
+
+  --color-orange-50:  #FFF7ED;
+  --color-orange-100: #FFEDD5;
+  --color-orange-400: #FB923C;
+  --color-orange-500: #F97316;
+  --color-orange-600: #EA580C;
+  --color-orange-700: #C2410C;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Cloud flight animations (applied via inline style per cloud) ─────────── */
+@keyframes cloudDriftFast {
+  0%   { transform: translateX(0px); }
+  100% { transform: translateX(-60px); }
+}
+@keyframes cloudDriftMed {
+  0%   { transform: translateX(0px); }
+  100% { transform: translateX(-35px); }
+}
+@keyframes cloudDriftSlow {
+  0%   { transform: translateX(0px); }
+  100% { transform: translateX(-18px); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Cloud horizontal flight (right → left, different speeds per layer) ──── */
+@keyframes cloudFast {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-120px); }
+}
+@keyframes cloudMedium {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-80px); }
+}
+@keyframes cloudSlow {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-40px); }
+}
+/* ── Cloud vertical drift (inner wrapper) ────────────────────────────────── */
+@keyframes cloudDrift {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+.cloud-fast   { animation: cloudFast   18s ease-in-out infinite alternate; will-change: transform; }
+.cloud-medium { animation: cloudMedium 28s ease-in-out infinite alternate; will-change: transform; }
+.cloud-slow   { animation: cloudSlow   40s ease-in-out infinite alternate; will-change: transform; }
+
+/* ── Journey card float (scroll-reveal version) ──────────────────────────── */
+@keyframes floatCardLeft {
+  0%, 100% { transform: rotate(-3.73deg) translateY(0px); }
+  50%       { transform: rotate(-3.73deg) translateY(-12px); }
+}
+@keyframes floatCardRight {
+  0%, 100% { transform: rotate(5.27deg) translateY(-6px); }
+  50%       { transform: rotate(5.27deg) translateY(6px); }
+}
+.float-left  { animation: floatCardLeft  6s ease-in-out infinite; will-change: transform; }
+.float-right { animation: floatCardRight 7s ease-in-out infinite; will-change: transform; }
+
+/* ── Journey card float (post-reveal continuous) ─────────────────────────── */
+@keyframes floatL {
+  0%, 100% { transform: rotate(-3.73deg) translateY(0px); }
+  50%       { transform: rotate(-3.73deg) translateY(-10px); }
+}
+@keyframes floatR {
+  0%, 100% { transform: rotate(5.27deg) translateY(-5px); }
+  50%       { transform: rotate(5.27deg) translateY(5px); }
+}
+.card-float-l { animation: floatL 6s ease-in-out infinite; will-change: transform; }
+.card-float-r { animation: floatR 7s ease-in-out infinite; will-change: transform; }
+
+/* ── Journey card float ──────────────────────────────────────────────────── */
+@keyframes floatLeft {
+  from { transform: rotate(-3.73deg) translateY(0px); }
+  to   { transform: rotate(-3.73deg) translateY(-12px); }
+}
+@keyframes floatRight {
+  from { transform: rotate(5.27deg) translateY(-6px); }
+  to   { transform: rotate(5.27deg) translateY(6px); }
+}
+.float-left-card  { animation: floatLeft  6s ease-in-out infinite alternate; will-change: transform; }
+.float-right-card { animation: floatRight 7s ease-in-out infinite alternate; will-change: transform; }
+
+/* ── Badge pulse ─────────────────────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ── Boarding dot pulse ring ─────────────────────────────────────────────── */
+@keyframes pulse-ring {
+  0%   { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 0;   transform: scale(2.5); }
+}
+.boarding-dot {
+  position: relative;
+}
+.boarding-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid #10b981;
+  animation: pulse-ring 2s ease-out infinite;
+  pointer-events: none;
+}
+
+/* ── Marquee ─────────────────────────────────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 55s linear infinite;
+  will-change: transform;
+}
+.marquee-track:hover { animation-play-state: paused; }
+.marquee-track > div:hover {
+  transform: scale(1.15);
+  transition: transform 200ms ease;
+}
+
+/* ── Airline logo hover scale ────────────────────────────────────────────── */
+[data-name="Airline emblem"] {
+  transition: transform 200ms ease;
+  cursor: default;
+}
+[data-name="Airline emblem"]:hover {
+  transform: scale(1.15);
+}
+
+/* ── CTA shimmer ─────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { left: -100%; }
+  50%  { left: 150%; }
+  100% { left: 150%; }
+}
+.cta-btn {
+  position: relative;
+  overflow: hidden;
+}
+.cta-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  animation: shimmer 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── Scroll reveal ───────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-width: 100%;
+  overflow-x: hidden;
+  background-color: #F9F8F6;
+  color: #1C1917;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── FAQ divider fade ────────────────────────────────────────────────────── */
+.faq-divider {
+  transition: border-color 200ms ease;
+}
+
+/* ── Nav active underline (scoped to text width via ::after) ─────────────── */
+.nav-link-active {
+  position: relative;
+}
+.nav-link-active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #1c1917;
+  border-radius: 1px;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .cloud-fast, .cloud-medium, .cloud-slow,
+  .float-left-card, .float-right-card {
+    animation: none !important;
+    transition: none !important;
+  }
 }

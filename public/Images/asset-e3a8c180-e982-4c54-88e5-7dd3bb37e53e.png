@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Paths">
+<g id="path">
+<path d="M40 29.0405L20 0V20.4039L40 29.0405Z" fill="#981A32"/>
+<path d="M20 23.0935V32H39.9438L20 23.0935Z" fill="#981A32"/>
+</g>
+<g id="path_2">
+<path d="M0 29.0405L20 0V20.4039L0 29.0405Z" fill="#E61C39"/>
+<path d="M20 23.0935V32H0.056185L20 23.0935Z" fill="#E61C39"/>
+</g>
+</g>
+</svg>

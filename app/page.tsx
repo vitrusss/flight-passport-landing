@@ -183,30 +183,52 @@ function useCounter(target: number, duration = 1200) {
 
 // ── Nav (Figma node 7300:47109) ───────────────────────────────────────────────
 const NAV_LINKS = [
-  { label: "Features",     href: "#features",     section: "features"     },
-  { label: "How it works", href: "#how-it-works",  section: "how-it-works" },
-  { label: "Passport",     href: "#passport",      section: "passport"     },
-  { label: "FAQ",          href: "#faq",           section: "faq"          },
+  { label: "Features",        href: "#features",        section: "features"        },
+  { label: "How it works",   href: "#how-it-works",    section: "how-it-works"    },
+  { label: "Live Activities", href: "#live-activities", section: "live-activities" },
+  { label: "Passport",        href: "#passport",        section: "passport"        },
+  { label: "FAQ",             href: "#faq",             section: "faq"             },
 ];
 
 function Nav() {
-  const [scrolled,       setScrolled]       = useState(false);
-  const [activeSection,  setActiveSection]  = useState("");
+  const [scrolled,      setScrolled]      = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+  const [indicator,     setIndicator]     = useState({ left: 0, width: 0, opacity: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const linkRefs     = useRef<(HTMLAnchorElement | null)[]>([]);
+  const clickLock    = useRef(false);
+  const clickLockRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // Slide indicator to the active link's span
+  useEffect(() => {
+    if (!activeSection) { setIndicator(p => ({ ...p, opacity: 0 })); return; }
+    const idx = NAV_LINKS.findIndex(l => l.section === activeSection);
+    if (idx === -1) return;
+    const linkEl   = linkRefs.current[idx];
+    const containerEl = containerRef.current;
+    if (!linkEl || !containerEl) return;
+    const spanEl = linkEl.querySelector("span");
+    if (!spanEl) return;
+    const spanRect      = spanEl.getBoundingClientRect();
+    const containerRect = containerEl.getBoundingClientRect();
+    setIndicator({ left: spanRect.left - containerRect.left, width: spanRect.width, opacity: 1 });
+  }, [activeSection]);
 
   useEffect(() => {
-    // Scroll effect
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
-    // Active section via IntersectionObserver
+    // Active section tracking — lower threshold (0.2) for faster response
     const observers: IntersectionObserver[] = [];
     NAV_LINKS.forEach(({ section }) => {
       const el = document.getElementById(section);
       if (!el) return;
       const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(section); },
-        { threshold: 0.4 }
+        ([entry]) => {
+          if (entry.isIntersecting && !clickLock.current) setActiveSection(section);
+        },
+        { threshold: 0.2 }
       );
       obs.observe(el);
       observers.push(obs);
@@ -215,12 +237,22 @@ function Nav() {
     return () => {
       window.removeEventListener("scroll", onScroll);
       observers.forEach((o) => o.disconnect());
+      clearTimeout(clickLockRef.current);
     };
   }, []);
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, section: string) => {
     e.preventDefault();
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+    const target = document.querySelector(href);
+    if (!target) return;
+    // Immediately highlight — no waiting for IntersectionObserver
+    setActiveSection(section);
+    // Lock observer for 1.1s while smooth scroll plays out
+    clickLock.current = true;
+    clearTimeout(clickLockRef.current);
+    clickLockRef.current = setTimeout(() => { clickLock.current = false; }, 1100);
+    const top = target.getBoundingClientRect().top + window.scrollY - 64;
+    window.scrollTo({ top, behavior: "smooth" });
   };
 
   return (
@@ -230,6 +262,44 @@ function Nav() {
         @media (max-width: 767px) {
           .nav-links-container { display: none !important; }
           .nav-header { padding: 0 20px !important; }
+        }
+
+        /* Reserve bold width so layout never shifts on weight change */
+        .nav-label {
+          display: inline-grid;
+          font-size: 15px;
+          white-space: nowrap;
+          transition: color 200ms ease;
+        }
+        .nav-label::before {
+          content: attr(data-label);
+          font-weight: 600;
+          visibility: hidden;
+          height: 0;
+          overflow: hidden;
+          pointer-events: none;
+          user-select: none;
+        }
+        /* Active label styling */
+        .nav-label-active {
+          color: #1c1917 !important;
+          font-weight: 600;
+        }
+        /* Sliding indicator bar */
+        .nav-indicator {
+          position: absolute;
+          bottom: 8px;
+          height: 2px;
+          background: #1c1917;
+          border-radius: 1px;
+          pointer-events: none;
+          transition: left 320ms cubic-bezier(0.4, 0, 0.2, 1),
+                      width 320ms cubic-bezier(0.4, 0, 0.2, 1),
+                      opacity 200ms ease;
+        }
+        /* Hover */
+        .nav-link:hover .nav-label:not(.nav-label-active) {
+          color: #1c1917;
         }
       `}</style>
 
@@ -322,6 +392,7 @@ function Nav() {
 
         {/* Center — Nav links (absolute, centered) */}
         <div
+          ref={containerRef}
           className="nav-links-container"
           style={{
             position: "absolute",
@@ -333,50 +404,44 @@ function Nav() {
             alignItems: "center",
           }}
         >
-          {NAV_LINKS.map(({ label, href, section }) => {
+          {NAV_LINKS.map(({ label, href, section }, i) => {
             const isActive = activeSection === section;
             return (
-              <div
+              <a
                 key={section}
-                style={{ display: "flex", height: "100%", alignItems: "center", flexShrink: 0 }}
+                ref={el => { linkRefs.current[i] = el; }}
+                href={href}
+                className="nav-link"
+                onClick={(e) => handleClick(e, href, section)}
+                style={{
+                  display: "flex",
+                  height: "100%",
+                  alignItems: "center",
+                  padding: "0 12px",
+                  textDecoration: "none",
+                  cursor: "pointer",
+                  flexShrink: 0,
+                }}
               >
-                <a
-                  href={href}
-                  onClick={(e) => handleClick(e, href)}
+                <span
+                  className={isActive ? "nav-label nav-label-active" : "nav-label"}
+                  data-label={label}
                   style={{
-                    display: "flex",
-                    height: "100%",
-                    alignItems: "center",
-                    padding: "0 12px",
-                    textDecoration: "none",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    const span = e.currentTarget.querySelector("span") as HTMLSpanElement;
-                    if (span && !isActive) span.style.color = "#1c1917";
-                  }}
-                  onMouseLeave={(e) => {
-                    const span = e.currentTarget.querySelector("span") as HTMLSpanElement;
-                    if (span && !isActive) span.style.color = "#6c6760";
+                    position: "relative",
+                    color: isActive ? "#1c1917" : "#6c6760",
+                    fontWeight: isActive ? 600 : 400,
                   }}
                 >
-                  <span
-                    className={isActive ? "nav-link-active" : ""}
-                    style={{
-                      position: "relative",
-                      fontSize: 15,
-                      fontWeight: isActive ? 600 : 400,
-                      color: isActive ? "#1c1917" : "#6c6760",
-                      whiteSpace: "nowrap",
-                      transition: "color 200ms ease",
-                    }}
-                  >
-                    {label}
-                  </span>
-                </a>
-              </div>
+                  {label}
+                </span>
+              </a>
             );
           })}
+          {/* Sliding active indicator — slides smoothly between links */}
+          <div
+            className="nav-indicator"
+            style={{ left: indicator.left, width: indicator.width, opacity: indicator.opacity }}
+          />
         </div>
       </div>
     </>
@@ -405,11 +470,13 @@ function FigmaHeroSection() {
   const pillRealRef     = useRef<HTMLDivElement>(null);
   const pillHistRef     = useRef<HTMLDivElement>(null);
   const pillDelayRef    = useRef<HTMLDivElement>(null);
+  const textGroupRef    = useRef<HTMLDivElement>(null);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
 
   // Reveal text and phone on mount
   useEffect(() => {
     const t1 = setTimeout(() => setTextVisible(true), 60);
-    const t2 = setTimeout(() => setPhoneVisible(true), 100);
+    const t2 = setTimeout(() => setPhoneVisible(true), 120);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
@@ -437,13 +504,13 @@ function FigmaHeroSection() {
     let triggered = false;
 
     const onScroll = () => {
-      if (triggered || window.scrollY < 200) return;
+      if (triggered || window.scrollY < 50) return;
       triggered = true;
       window.removeEventListener('scroll', onScroll);
 
       // Sync with next frame to avoid mid-frame style conflicts
       requestAnimationFrame(() => {
-        // Enable float immediately — no gap between entrance and float
+        // Enable card float and slide cards out from behind phone
         setCardsRevealed(true);
 
         if (leftCardRef.current) {
@@ -522,11 +589,11 @@ function FigmaHeroSection() {
   }, []);
 
   return (
-    <section className="relative w-full bg-[#f9f8f6] min-h-[1579px] overflow-x-hidden" ref={heroRef}>
-      {/* SKY GRADIENT — full width, 840px height */}
+    <section className="hero-section relative w-full bg-[#f9f8f6] min-h-[calc(100vh_+_800px)] overflow-x-hidden" ref={heroRef}>
+      {/* SKY GRADIENT — full width, fills 100vh (min-h-screen) */}
       <div
-        className="relative w-full h-[840px] overflow-hidden"
-        style={{ background: 'linear-gradient(264.84deg, #41BCFF 6.47%, #3BA8E3 53.59%, #0078BA 94.31%)' }}
+        className="hero-sky-section relative w-full overflow-hidden"
+        style={{ minHeight: 'calc(100vh + 115px)', background: 'linear-gradient(264.84deg, #41BCFF 6.47%, #3BA8E3 53.59%, #0078BA 94.31%)' }}
       >
         {/* Cloud keyframe — from off-screen right to off-screen left, loop restart invisible */}
         <style>{`
@@ -550,6 +617,45 @@ function FigmaHeroSection() {
             0%   { opacity: 0; transform: scale(0.78); filter: blur(5px); }
             65%  { opacity: 1; transform: scale(1.05); filter: blur(0px); }
             100% { opacity: 1; transform: scale(1);    filter: blur(0px); }
+          }
+
+          /* ── Hero Responsive ── */
+          @media (max-width: 1100px) {
+            .hero-main-container { top: 490px !important; }
+            .hero-card, .hero-badge { display: none !important; }
+            .hero-phone-mockup {
+              position: relative !important;
+              left: 0 !important;
+              top: 0 !important;
+              width: 250px !important;
+              height: 520px !important;
+              margin: 0 auto !important;
+            }
+            .hero-content-container {
+              width: 100% !important;
+              height: auto !important;
+              min-height: 540px !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+            }
+            .hero-section { min-height: 1200px !important; }
+          }
+          @media (max-width: 767px) {
+            .hero-main-container { top: 400px !important; }
+            .hero-title span { font-size: 40px !important; letter-spacing: -0.8px !important; }
+            .hero-description-bg { display: none !important; }
+            .hero-phone-mockup { width: 210px !important; height: 437px !important; }
+            .hero-content-container { min-height: 470px !important; }
+            .hero-section { min-height: 1000px !important; }
+          }
+          @media (max-width: 430px) {
+            .hero-main-container { top: 360px !important; }
+            .hero-title span { font-size: 34px !important; letter-spacing: -0.5px !important; }
+            .hero-phone-mockup { width: 185px !important; height: 385px !important; }
+            .hero-content-container { min-height: 420px !important; }
+            .hero-section { min-height: 900px !important; }
+            .hero-airlines-text { white-space: normal !important; }
           }
         `}</style>
         {/* CLOUDS — all left-0, horizontal position set via negative animation-delay */}
@@ -600,8 +706,8 @@ function FigmaHeroSection() {
         </div>
 
         {/* CONTENT CENTERED — max-width 1200px */}
-        <div className="relative mx-auto max-w-[1200px] h-full px-5 pt-[120px]">
-          <div className="flex flex-col gap-[40px] items-center">
+        <div className="relative mx-auto max-w-[1200px] h-screen px-5 flex flex-col items-center justify-center pb-[200px]">
+          <div className="flex flex-col gap-[40px] items-center" ref={textGroupRef}>
             <div className="flex flex-col gap-[20px] items-center">
               {/* Badge */}
               <div className="bg-[rgba(255,255,255,0.15)] border border-[rgba(255,255,255,0.3)] border-solid flex gap-[8px] items-center px-[13px] py-[9px] relative rounded-[999px]" data-name="Status badge" data-node-id="7300:48512" style={textReveal(0)}>
@@ -614,17 +720,17 @@ function FigmaHeroSection() {
               </div>
               {/* Title + subtitle */}
               <div className="flex flex-col gap-[24px] items-center relative" data-name="Description Container" data-node-id="7300:48515">
-                <div className="absolute left-[23px] size-[625px] top-[-67px]">
+                <div className="hero-description-bg absolute left-[23px] size-[625px] top-[-67px]">
                   <div className="absolute inset-[-22.4%]">
                     <img alt="" className="block max-w-none size-full" src={imgEllipse1889} />
                   </div>
                 </div>
-                <p className="font-bold relative text-[0px] text-white text-center tracking-[-1.92px] w-[714px]" style={{ textShadow: '-4px 2px 12px rgba(16,32,64,0.08)', ...textReveal(130) }} data-node-id="7300:48517">
+                <p className="hero-title font-bold relative text-[0px] text-white text-center tracking-[-1.92px] max-w-[714px] w-full" style={{ textShadow: '-4px 2px 12px rgba(16,32,64,0.08)', ...textReveal(130) }} data-node-id="7300:48517">
                   <span className="leading-[1.1] text-[64px]">Know your flight </span>
                   <span className="italic font-normal leading-[1.1] text-[#a7f3d0] text-[64px]">before</span>
                   <span className="leading-[1.1] text-[64px]"> the airport does.</span>
                 </p>
-                <p className="font-normal leading-[1.4] relative text-[17px] text-white text-center w-[524px]" style={textReveal(240)} data-node-id="7300:48518">
+                <p className="hero-subtitle font-normal leading-[1.4] relative text-[17px] text-white text-center max-w-[524px] w-full px-5" style={textReveal(240)} data-node-id="7300:48518">
                   Real-time tracking, predictive delay signals, and a personal travel history — from search to landing.
                 </p>
               </div>
@@ -658,14 +764,14 @@ function FigmaHeroSection() {
         </div>
       </div>
 
-      {/* MAIN CONTAINER — absolute at top-[585px], per Figma */}
-      <div className="absolute left-0 top-[585px] w-full" data-name="Main container">
+      {/* MAIN CONTAINER — top: calc(100vh - 55px): sky is 100vh+200px, break line at 100vh+200px, formula: sky - 255px */}
+      <div className="hero-main-container absolute left-0 top-[calc(100vh_-_140px)] w-full" data-name="Main container" ref={mainContainerRef}>
         <div className="max-w-[1200px] mx-auto px-5">
-        <div className="relative w-[1046px] h-[689px] mx-auto" ref={cardsRef} data-name="Content container" data-node-id="7300:48532">
+        <div className="hero-content-container relative w-[1046px] h-[689px] mx-auto" ref={cardsRef} data-name="Content container" data-node-id="7300:48532">
           {/* Right journey card */}
           <div
             ref={rightCardRef}
-            className="absolute left-[746px] top-[80px] w-[306.5px]"
+            className="hero-card absolute left-[746px] top-[80px] w-[306.5px]"
             data-name="image 41"
             data-node-id="7300:48859"
           >
@@ -674,7 +780,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Connection awareness pill */}
-          <div className="absolute flex gap-[14px] items-center left-[725px] top-[437px]" data-node-id="7300:48537">
+          <div className="hero-badge absolute flex gap-[14px] items-center left-[725px] top-[437px]" data-node-id="7300:48537">
             <div ref={lineConnRef} className="h-0 relative shrink-0 w-[74px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine207} />
@@ -688,7 +794,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Gate & terminal changes pill */}
-          <div className="absolute flex gap-[8px] items-center left-[6px] top-[437px]" data-node-id="7300:48542">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[6px] top-[437px]" data-node-id="7300:48542">
             <div ref={pillGateRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
@@ -706,7 +812,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Aircraft insights pill */}
-          <div className="absolute flex gap-[8px] items-center left-[725px] top-[317px]" data-node-id="7300:48547">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[725px] top-[317px]" data-node-id="7300:48547">
             <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
@@ -720,7 +826,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Real-time flight tracking pill */}
-          <div className="absolute flex gap-[8px] items-center left-[49px] top-[317px]" data-node-id="7300:48552">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[49px] top-[317px]" data-node-id="7300:48552">
             <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[248px]" data-name="Real-time flight tracking" data-node-id="7300:48553" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
@@ -738,7 +844,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Personal flight history pill */}
-          <div className="absolute flex gap-[8px] items-center left-[725px] top-[557px]" data-node-id="7300:48557">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[725px] top-[557px]" data-node-id="7300:48557">
             <div ref={lineHistRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
@@ -752,7 +858,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Delay predictions pill */}
-          <div className="absolute flex gap-[8px] items-center left-[103px] top-[557px]" data-node-id="7300:48562">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[103px] top-[557px]" data-node-id="7300:48562">
             <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[194px]" data-name="Delay predictions" data-node-id="7300:48563" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
@@ -772,7 +878,7 @@ function FigmaHeroSection() {
           {/* Left journey card */}
           <div
             ref={leftCardRef}
-            className="absolute left-0 top-[80px] w-[324.5px]"
+            className="hero-card absolute left-0 top-[80px] w-[324.5px]"
             data-name="image 40"
             data-node-id="7300:48856"
           >
@@ -782,7 +888,7 @@ function FigmaHeroSection() {
           </div>
           {/* Phone */}
           <div
-            className="absolute h-[757px] left-[353px] top-[-68px] w-[364px]"
+            className="hero-phone-mockup absolute h-[757px] left-[353px] top-[-68px] w-[364px]"
             data-name="image 42"
             data-node-id="7300:48862"
             style={{
@@ -801,10 +907,10 @@ function FigmaHeroSection() {
         {/* AIRLINES STRIP — 120px gap below content container (mt relative to content container bottom: 689px within Main container) */}
         <div className="w-full bg-[#f9f8f6] mt-[60px]">
         <div className="flex flex-col gap-[40px] items-center overflow-hidden py-[40px]" data-name="airlines-strip" data-node-id="7300:48567">
-          <p className="font-normal leading-[1.4] text-[18px] text-[#a8a29e] text-center tracking-[-0.18px] whitespace-nowrap" data-node-id="7300:48569">
+          <p className="hero-airlines-text font-normal leading-[1.4] text-[18px] text-[#a8a29e] text-center tracking-[-0.18px] whitespace-nowrap" data-node-id="7300:48569">
             Tracks flights across 1200+ airlines and airports worldwide
           </p>
-          <div style={{overflow:'hidden', width:'100%', maskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)', WebkitMaskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)'}}>
+          <div style={{overflow:'hidden', width:'100%', paddingTop:'10px', paddingBottom:'10px', maskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)', WebkitMaskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)'}}>
               <div className="marquee-track" data-name="Airline logos" data-node-id="7300:48570" style={{gap:'32px'}}>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48571">
                 <div className="absolute inset-[21%_0_21.84%_0]" data-name="Paths" data-node-id="I7300:48571;1:6332">
@@ -1119,11 +1225,26 @@ function Intelligence() {
   }, []);
 
   return (
-<section id="features" style={{background: 'white', width: '100%', paddingTop: '120px', paddingBottom: '120px', borderTop: '1px solid #e7e5e4'}}>
-  <div style={{maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '64px', alignItems: 'center'}}>
+<>
+<style>{`
+  @media (max-width: 767px) {
+    .intelligence-section { padding-top: 80px !important; padding-bottom: 80px !important; }
+    .intelligence-inner { padding: 0 24px !important; box-sizing: border-box !important; }
+    .intelligence-panels { flex-direction: column !important; align-items: stretch !important; }
+    .intel-panel { flex: none !important; min-width: unset !important; }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .intelligence-section { padding-top: 80px !important; padding-bottom: 80px !important; }
+    .intelligence-inner { padding: 0 32px !important; box-sizing: border-box !important; }
+    .intelligence-panels { flex-wrap: wrap !important; }
+    .intel-panel { flex: 1 1 280px !important; min-width: 280px !important; }
+  }
+`}</style>
+<section id="features" className="intelligence-section" style={{background: 'white', width: '100%', paddingTop: '120px', paddingBottom: '120px', borderTop: '1px solid #e7e5e4'}}>
+  <div className="intelligence-inner" style={{maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '64px', alignItems: 'center'}}>
 
     {/* Header */}
-    <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '654.5px'}}>
+    <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', maxWidth: '654.5px', width: '100%'}}>
       <p style={{fontFamily: 'Inter', fontWeight: 700, fontSize: '12px', color: '#a8a29e', letterSpacing: '0.48px', textTransform: 'uppercase', lineHeight: 1}}>
         Three modes, one system
       </p>
@@ -1140,7 +1261,7 @@ function Intelligence() {
     </div>
 
     {/* Three Panels */}
-    <div style={{display: 'flex', gap: '24px', alignItems: 'stretch', width: '100%'}}>
+    <div className="intelligence-panels" style={{display: 'flex', gap: '24px', alignItems: 'stretch', width: '100%'}}>
 
       {/* Panel 1 — Before */}
       <div ref={p0} className="intel-panel" style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
@@ -1195,6 +1316,7 @@ function Intelligence() {
     </div>
   </div>
 </section>
+</>
   );
 }
 
@@ -2421,8 +2543,9 @@ function LiveActivities() {
     cardRefs.current.forEach((card) => {
       if (!card) return;
       card.style.opacity = "0";
-      card.style.transform = "translateY(32px) scale(0.96)";
-      card.style.transition = "opacity 600ms cubic-bezier(0.34,1.15,0.64,1), transform 600ms cubic-bezier(0.34,1.15,0.64,1)";
+      card.style.transform = "translateY(40px) scale(0.94)";
+      card.style.filter = "blur(6px)";
+      card.style.transition = "opacity 700ms cubic-bezier(0.25,0.46,0.45,0.94), transform 700ms cubic-bezier(0.34,1.2,0.64,1), filter 700ms cubic-bezier(0.25,0.46,0.45,0.94)";
     });
 
     // Cards — staggered entrance on scroll
@@ -2436,18 +2559,20 @@ function LiveActivities() {
             setTimeout(() => {
               card.style.opacity = "1";
               card.style.transform = "translateY(0) scale(1)";
-              // After entrance, switch to float animation
+              card.style.filter = "blur(0px)";
+              // After animation ends — clear inline styles so CSS hover takes over
               setTimeout(() => {
+                card.style.transform = "";
+                card.style.filter = "";
                 card.style.transition = "";
-                const floatClass = ["la-float-1", "la-float-2", "la-float-3"][i % 3];
-                card.classList.add(floatClass);
-              }, 650);
-            }, i * 120);
+                card.style.opacity = "";
+              }, 750);
+            }, i * 100);
           });
           obsG.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.08 }
     );
     obsG.observe(grid);
     return () => obsG.disconnect();
@@ -2476,31 +2601,52 @@ function LiveActivities() {
         .la-cards-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
+          gap: 24px;
           width: 100%;
+          max-width: 1160px;
+          margin: 0 auto;
+        }
+        .la-card {
+          width: 100%;
+          transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+          cursor: pointer;
+          will-change: transform;
+        }
+        .la-card:hover {
+          transform: scale(1.05);
         }
         .la-card img {
           width: 100%;
           height: auto;
+          aspect-ratio: 752 / 352;
           display: block;
-          border-radius: 18px;
+          object-fit: cover;
+          filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
         }
-        @keyframes laFloat1 { 0%,100% { transform: translateY(0px);  } 50% { transform: translateY(-6px); } }
-        @keyframes laFloat2 { 0%,100% { transform: translateY(-3px); } 50% { transform: translateY(4px);  } }
-        @keyframes laFloat3 { 0%,100% { transform: translateY(0px);  } 50% { transform: translateY(-8px); } }
-        .la-float-1 { animation: laFloat1 7s ease-in-out infinite; }
-        .la-float-2 { animation: laFloat2 8s ease-in-out infinite 0.5s; }
-        .la-float-3 { animation: laFloat3 6s ease-in-out infinite 1s; }
         @media (max-width: 767px) {
           .la-section { padding: 80px 20px 100px; }
           .la-title { font-size: clamp(32px, 7vw, 48px) !important; }
-          .la-cards-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+          .la-cards-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
         }
         @media (max-width: 480px) {
           .la-cards-grid { grid-template-columns: 1fr; }
         }
       `}</style>
-      <section id="states" className="la-section">
+      <section id="live-activities" className="la-section">
+          {/* Blue glow — soft vertical oval centered on the text */}
+          <div style={{
+            position: 'absolute',
+            left: '50%',
+            top: '-184px',
+            transform: 'translateX(-50%)',
+            width: '560px',
+            height: '620px',
+            background: 'radial-gradient(ellipse, rgba(14,165,233,0.28) 0%, transparent 60%)',
+            filter: 'blur(80px)',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }} />
+
         <div className="la-container">
 
           {/* Header */}
@@ -2508,19 +2654,6 @@ function LiveActivities() {
             ref={headerRef}
             style={{position: 'relative', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '654.5px', maxWidth: '100%'}}
           >
-            {/* Blue glow — CSS radial gradient (Figma node 7361:44217) */}
-            <div style={{
-              position: 'absolute',
-              left: '50%',
-              top: '-20px',
-              transform: 'translateX(-50%)',
-              width: '900px',
-              height: '340px',
-              background: 'radial-gradient(ellipse, rgba(14,165,233,0.27) 0%, transparent 65%)',
-              filter: 'blur(48px)',
-              pointerEvents: 'none',
-              zIndex: 0,
-            }} />
 
             <p style={{position: 'relative', zIndex: 1, fontFamily: 'Inter', fontWeight: 700, fontSize: '12px', color: 'rgba(255,255,255,0.72)', letterSpacing: '0.48px', textTransform: 'uppercase', lineHeight: 1, margin: 0}}>
               State driven system
@@ -2845,7 +2978,7 @@ function FAQ() {
         .faq-container {
           max-width: 690px;
           margin: 0 auto;
-          padding: 0 24px;
+          padding: 0;
           display: flex;
           flex-direction: column;
           gap: 48px;
@@ -2854,7 +2987,7 @@ function FAQ() {
         .faq-list {
           display: flex;
           flex-direction: column;
-          gap: 0;
+          gap: 12px;
           width: 100%;
         }
         .faq-row {
@@ -2887,7 +3020,7 @@ function FAQ() {
           inset: 11.67%;
           width: calc(100% - 23.34%);
           height: calc(100% - 23.34%);
-          transition: transform 250ms ease;
+          transition: transform 380ms cubic-bezier(0.4, 0, 0.2, 1);
         }
         .faq-divider {
           height: 0;
@@ -2897,14 +3030,17 @@ function FAQ() {
           margin: 0;
         }
         .faq-answer-wrap {
-          overflow: hidden;
-          max-height: 0;
+          display: grid;
+          grid-template-rows: 0fr;
           opacity: 0;
-          transition: max-height 300ms ease, opacity 150ms ease;
+          transition: grid-template-rows 420ms cubic-bezier(0.4, 0, 0.2, 1), opacity 320ms cubic-bezier(0.4, 0, 0.2, 1);
         }
         .faq-answer-wrap.open {
-          max-height: 500px;
+          grid-template-rows: 1fr;
           opacity: 1;
+        }
+        .faq-answer-inner {
+          overflow: hidden;
         }
         .faq-answer {
           font-family: var(--font-inter), sans-serif;
@@ -2914,10 +3050,11 @@ function FAQ() {
           line-height: 1.6;
           padding-bottom: 16px;
           margin: 0;
+          padding-top: 2px;
         }
         @media (max-width: 767px) {
           .faq-section { padding: 80px 0; }
-          .faq-container { padding: 0 20px; }
+          .faq-container { padding: 0 24px; }
           .faq-title { font-size: 36px !important; }
         }
       `}</style>
@@ -2958,38 +3095,35 @@ function FAQ() {
           {/* Questions list */}
           <div className="faq-list">
             {FAQ_DATA.map((item, i) => (
-              <div
-                key={i}
-                ref={(el) => { rowRefs.current[i] = el; }}
-              >
-                {/* Divider above each item */}
-                <hr className="faq-divider" style={{ borderTopColor: openIndex === i - 1 ? "transparent" : "#e7e5e4", transition: "border-color 200ms ease" }} />
+              <React.Fragment key={i}>
+                {i > 0 && <hr className="faq-divider" />}
+                <div ref={(el) => { rowRefs.current[i] = el; }}>
+                  {/* Question row */}
+                  <div
+                    className="faq-row"
+                    onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                    role="button"
+                    aria-expanded={openIndex === i}
+                  >
+                    <p className="faq-question">{item.q}</p>
+                    <div className="faq-icon-wrap">
+                      <img
+                        alt=""
+                        src={imgFaqIcon}
+                        style={{ transform: openIndex === i ? "rotate(45deg)" : "rotate(0deg)" }}
+                      />
+                    </div>
+                  </div>
 
-                {/* Question row */}
-                <div
-                  className="faq-row"
-                  onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  role="button"
-                  aria-expanded={openIndex === i}
-                >
-                  <p className="faq-question">{item.q}</p>
-                  <div className="faq-icon-wrap">
-                    <img
-                      alt=""
-                      src={imgFaqIcon}
-                      style={{ transform: openIndex === i ? "rotate(45deg)" : "rotate(0deg)" }}
-                    />
+                  {/* Answer panel */}
+                  <div className={`faq-answer-wrap${openIndex === i ? " open" : ""}`}>
+                    <div className="faq-answer-inner">
+                      <p className="faq-answer">{item.a}</p>
+                    </div>
                   </div>
                 </div>
-
-                {/* Answer panel */}
-                <div className={`faq-answer-wrap${openIndex === i ? " open" : ""}`}>
-                  <p className="faq-answer">{item.a}</p>
-                </div>
-              </div>
+              </React.Fragment>
             ))}
-            {/* Final divider */}
-            <hr className="faq-divider" style={{ borderTopColor: openIndex === FAQ_DATA.length - 1 ? "transparent" : "#e7e5e4", transition: "border-color 200ms ease" }} />
           </div>
 
         </div>

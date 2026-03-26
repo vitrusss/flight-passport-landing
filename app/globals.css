@@ -168,11 +168,13 @@
 
 /* ── Airline logo hover scale ────────────────────────────────────────────── */
 [data-name="Airline emblem"] {
-  transition: transform 200ms ease;
+  position: relative;
+  transition: transform 300ms ease;
   cursor: default;
 }
 [data-name="Airline emblem"]:hover {
-  transform: scale(1.15);
+  transform: scale(1.2);
+  z-index: 10;
 }
 
 /* ── CTA shimmer ─────────────────────────────────────────────────────────── */

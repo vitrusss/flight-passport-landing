@@ -2381,36 +2381,76 @@ function BottomSection() {
 }
 
 // ── Live Activities ───────────────────────────────────────────────────────────
-const imgImage43 = "/Images/asset-348037ab-6ed8-4c3e-bea0-9b188c61b8cc.png";
+const LA_CARDS = [
+  { src: "/Images/Live%20Activity%20Cards/BOARDING.png",            alt: "Boarding now"       },
+  { src: "/Images/Live%20Activity%20Cards/GATE_CHANGED.png",        alt: "Gate changed"       },
+  { src: "/Images/Live%20Activity%20Cards/IN_AIR.png",              alt: "In air"             },
+  { src: "/Images/Live%20Activity%20Cards/CONNECTION_AT_RISK.png",  alt: "Connection at risk" },
+  { src: "/Images/Live%20Activity%20Cards/ARRIVED_FINAL.png",       alt: "Arrived"            },
+  { src: "/Images/Live%20Activity%20Cards/CANCELLED.png",           alt: "Cancelled"          },
+];
 
 function LiveActivities() {
   const headerRef = useRef<HTMLDivElement>(null);
-  const cardsRef  = useRef<HTMLDivElement>(null);
+  const gridRef   = useRef<HTMLDivElement>(null);
+  const cardRefs  = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    const items = [
-      { el: headerRef.current, delay: 0,   duration: 500, ty: 20 },
-      { el: cardsRef.current,  delay: 200, duration: 600, ty: 30 },
-    ];
-    const observers: IntersectionObserver[] = [];
-    items.forEach(({ el, delay, duration, ty }) => {
-      if (!el) return;
-      el.style.opacity = "0";
-      el.style.transform = `translateY(${ty}px)`;
-      el.style.transition = `opacity ${duration}ms ease, transform ${duration}ms ease`;
-      const obs = new IntersectionObserver(
+    // Header — blur + slide + fade
+    const header = headerRef.current;
+    if (header) {
+      header.style.opacity = "0";
+      header.style.transform = "translateY(24px)";
+      header.style.filter = "blur(8px)";
+      header.style.transition = "opacity 700ms cubic-bezier(0.25,0.46,0.45,0.94), transform 700ms cubic-bezier(0.25,0.46,0.45,0.94), filter 700ms cubic-bezier(0.25,0.46,0.45,0.94)";
+      const obsH = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            setTimeout(() => { el.style.opacity = "1"; el.style.transform = "translateY(0)"; }, delay);
-            obs.disconnect();
+            header.style.opacity = "1";
+            header.style.transform = "translateY(0)";
+            header.style.filter = "blur(0px)";
+            obsH.disconnect();
           }
         },
         { threshold: 0.15 }
       );
-      obs.observe(el);
-      observers.push(obs);
+      obsH.observe(header);
+    }
+
+    // Cards — set initial hidden state
+    cardRefs.current.forEach((card) => {
+      if (!card) return;
+      card.style.opacity = "0";
+      card.style.transform = "translateY(32px) scale(0.96)";
+      card.style.transition = "opacity 600ms cubic-bezier(0.34,1.15,0.64,1), transform 600ms cubic-bezier(0.34,1.15,0.64,1)";
     });
-    return () => observers.forEach(o => o.disconnect());
+
+    // Cards — staggered entrance on scroll
+    const grid = gridRef.current;
+    if (!grid) return;
+    const obsG = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          cardRefs.current.forEach((card, i) => {
+            if (!card) return;
+            setTimeout(() => {
+              card.style.opacity = "1";
+              card.style.transform = "translateY(0) scale(1)";
+              // After entrance, switch to float animation
+              setTimeout(() => {
+                card.style.transition = "";
+                const floatClass = ["la-float-1", "la-float-2", "la-float-3"][i % 3];
+                card.classList.add(floatClass);
+              }, 650);
+            }, i * 120);
+          });
+          obsG.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    obsG.observe(grid);
+    return () => obsG.disconnect();
   }, []);
 
   return (
@@ -2418,67 +2458,74 @@ function LiveActivities() {
       <style>{`
         .la-section {
           background: linear-gradient(to bottom, #1c1917, #3f3731);
-          height: 867px;
           width: 100%;
           position: relative;
           overflow: hidden;
+          padding: 120px 24px 140px;
+          box-sizing: border-box;
         }
         .la-container {
-          position: absolute;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 1200px;
-          height: 594px;
-          top: 120px;
+          position: relative;
+          max-width: 1200px;
+          margin: 0 auto;
           display: flex;
           flex-direction: column;
           gap: 48px;
           align-items: center;
         }
-        @media (max-width: 1279px) {
-          .la-container {
-            width: 100%;
-            padding: 0 40px;
-            box-sizing: border-box;
-          }
+        .la-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+          width: 100%;
         }
+        .la-card img {
+          width: 100%;
+          height: auto;
+          display: block;
+          border-radius: 18px;
+        }
+        @keyframes laFloat1 { 0%,100% { transform: translateY(0px);  } 50% { transform: translateY(-6px); } }
+        @keyframes laFloat2 { 0%,100% { transform: translateY(-3px); } 50% { transform: translateY(4px);  } }
+        @keyframes laFloat3 { 0%,100% { transform: translateY(0px);  } 50% { transform: translateY(-8px); } }
+        .la-float-1 { animation: laFloat1 7s ease-in-out infinite; }
+        .la-float-2 { animation: laFloat2 8s ease-in-out infinite 0.5s; }
+        .la-float-3 { animation: laFloat3 6s ease-in-out infinite 1s; }
         @media (max-width: 767px) {
-          .la-section {
-            height: auto;
-            padding: 80px 20px;
-          }
-          .la-container {
-            position: static;
-            transform: none;
-            width: 100%;
-            height: auto;
-            top: auto;
-            padding: 0;
-          }
-          .la-title {
-            font-size: clamp(32px, 7vw, 48px) !important;
-          }
-          .la-cards-img {
-            width: 100% !important;
-            height: auto !important;
-            padding-bottom: 0 !important;
-          }
-          .la-cards-img img {
-            position: static !important;
-            width: 100% !important;
-            height: auto !important;
-          }
+          .la-section { padding: 80px 20px 100px; }
+          .la-title { font-size: clamp(32px, 7vw, 48px) !important; }
+          .la-cards-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+        }
+        @media (max-width: 480px) {
+          .la-cards-grid { grid-template-columns: 1fr; }
         }
       `}</style>
       <section id="states" className="la-section">
         <div className="la-container">
 
           {/* Header */}
-          <div ref={headerRef} style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '654.5px', maxWidth: '100%'}}>
-            <p style={{fontFamily: 'Inter', fontWeight: 700, fontSize: '12px', color: 'rgba(255,255,255,0.72)', letterSpacing: '0.48px', textTransform: 'uppercase', lineHeight: 1, margin: 0}}>
+          <div
+            ref={headerRef}
+            style={{position: 'relative', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '654.5px', maxWidth: '100%'}}
+          >
+            {/* Blue glow — CSS radial gradient (Figma node 7361:44217) */}
+            <div style={{
+              position: 'absolute',
+              left: '50%',
+              top: '-20px',
+              transform: 'translateX(-50%)',
+              width: '900px',
+              height: '340px',
+              background: 'radial-gradient(ellipse, rgba(14,165,233,0.27) 0%, transparent 65%)',
+              filter: 'blur(48px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }} />
+
+            <p style={{position: 'relative', zIndex: 1, fontFamily: 'Inter', fontWeight: 700, fontSize: '12px', color: 'rgba(255,255,255,0.72)', letterSpacing: '0.48px', textTransform: 'uppercase', lineHeight: 1, margin: 0}}>
               State driven system
             </p>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%'}}>
+            <div style={{position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%'}}>
               <p className="la-title" style={{fontFamily: 'Inter', fontSize: '48px', color: 'white', letterSpacing: '-0.96px', lineHeight: 1.1, textAlign: 'center', margin: 0, textShadow: '0 4px 16px rgba(10,16,40,0.08)', width: '518px', maxWidth: '100%'}}>
                 <span style={{fontWeight: 700}}>See problems </span>
                 <span style={{fontWeight: 400, fontStyle: 'italic', color: '#0ea5e9', letterSpacing: '-1.44px'}}>before</span>
@@ -2490,13 +2537,17 @@ function LiveActivities() {
             </div>
           </div>
 
-          {/* Cards image */}
-          <div ref={cardsRef} className="la-cards-img" style={{position: 'relative', width: '100%', paddingBottom: 'calc(421 / 1200 * 100%)', overflow: 'hidden', flexShrink: 0}}>
-            <img
-              src={imgImage43}
-              alt=""
-              style={{position: 'absolute', left: 0, width: '100%', height: '106.22%', top: '-6.2%', pointerEvents: 'none', display: 'block'}}
-            />
+          {/* Cards grid — 6 individual cards with staggered entrance */}
+          <div ref={gridRef} className="la-cards-grid">
+            {LA_CARDS.map((card, i) => (
+              <div
+                key={i}
+                ref={el => { cardRefs.current[i] = el; }}
+                className="la-card"
+              >
+                <img src={card.src} alt={card.alt} />
+              </div>
+            ))}
           </div>
 
         </div>

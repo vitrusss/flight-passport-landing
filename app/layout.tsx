@@ -32,7 +32,7 @@ export default function RootLayout({
           window.scrollTo(0, 0);
         `}} />
       </head>
-      <body className="antialiased" style={{ margin: 0, padding: 0, width: '100%', minWidth: '100%', overflowX: 'hidden' }}>{children}</body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

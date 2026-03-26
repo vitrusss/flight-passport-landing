@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         {/* Preload LCP hero phone image */}
-        <link rel="preload" as="image" href="/images/asset-28ac99e6-1e5b-405d-842f-3140b8f96b46.png" />
+        <link rel="preload" as="image" href="/Images/asset-28ac99e6-1e5b-405d-842f-3140b8f96b46.png" />
         <script dangerouslySetInnerHTML={{__html: `
           if (history.scrollRestoration) { history.scrollRestoration = 'manual'; }
           window.scrollTo(0, 0);

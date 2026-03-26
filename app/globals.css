@@ -55,16 +55,16 @@
 
 /* ── Cloud flight animations (applied via inline style per cloud) ─────────── */
 @keyframes cloudDriftFast {
-  0%   { transform: translateX(0px); }
-  100% { transform: translateX(-60px); }
+  from { transform: translateX(0px); }
+  to   { transform: translateX(-2200px); }
 }
 @keyframes cloudDriftMed {
-  0%   { transform: translateX(0px); }
-  100% { transform: translateX(-35px); }
+  from { transform: translateX(0px); }
+  to   { transform: translateX(-2200px); }
 }
 @keyframes cloudDriftSlow {
-  0%   { transform: translateX(0px); }
-  100% { transform: translateX(-18px); }
+  from { transform: translateX(0px); }
+  to   { transform: translateX(-2200px); }
 }
 
 /* ── Cloud horizontal flight (right → left, different speeds per layer) ──── */

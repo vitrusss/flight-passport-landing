@@ -1,134 +1,133 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import NextImage from "next/image";
 
 // ── Figma Hero asset URLs (node 7300:48506) ───────────────────────────────────
-const imgCloud1 = "/images/asset-81419f0d-f299-4d1e-a3f5-1f41ab41cf92.png";
-const imgCloud2 = "/images/asset-207dbb73-c845-477b-98c1-cf72019ab12e.png";
-const imgCloud4 = "/images/asset-f5147741-a43c-48f9-81f3-12823a5b4d3f.png";
-const imgImage41 = "/images/asset-cfb2bd9d-691c-4366-b955-41806588fe59.png";
-const imgImage40 = "/images/asset-f1349a54-a6c4-4d7c-9e40-ca46eeb0a40d.png";
-const imgImage42 = "/images/asset-28ac99e6-1e5b-405d-842f-3140b8f96b46.png";
-const imgImage = "/images/asset-5a211c9a-dfde-4974-a28f-85d89adba13e.png";
-const imgImage1 = "/images/asset-5c9f351a-c7f7-4758-b5d8-04b195b27a49.png";
-const imgImage2 = "/images/asset-6a39772a-5b02-4ad3-9487-dee07348776a.png";
-const imgAirlineEmblem2 = "/images/asset-39c5e315-e991-46d5-81ed-b705385a5dba.png";
-const imgImage3 = "/images/asset-b61964ad-de04-4f23-be0f-28c28b94b143.png";
-const imgImage4 = "/images/asset-0505c840-7628-4810-a407-1ed132e03847.png";
-const imgImage5 = "/images/asset-041eba01-d8b1-492d-a149-b6e32186787b.png";
-const imgImage6 = "/images/asset-948cf4c5-bc29-492f-af61-cbc365dcbaf3.png";
-const imgImage7 = "/images/asset-58873d07-2b7a-4b8d-9c6d-1cf2b077deaa.png";
-const imgImage8 = "/images/asset-722eb3b9-84f7-42eb-9850-78aeee66d07a.png";
-const imgAirlineEmblem6 = "/images/asset-e5922254-eb94-445a-811f-58a54ed81ed0.png";
-const imgImage9 = "/images/asset-5e3b8204-05fa-48b1-82da-2ebe76c7281b.png";
-const imgImage10 = "/images/asset-1cfe1b40-1f2d-4a7b-8d08-b437e82d841d.png";
-const imgImage11 = "/images/asset-1d4dcf12-d22f-4f3b-9eec-b78d3087fc90.png";
-const imgImage12 = "/images/asset-dbff2d50-0ada-415d-8ed5-da8d91927ecb.png";
-const imgAirlineEmblem9 = "/images/asset-a3854cc2-6ffc-42e2-b7da-5a366ad41577.png";
-const imgAirlineEmblem11 = "/images/asset-613b939f-e093-42e8-8370-f36da05332bc.png";
-const imgImage13 = "/images/asset-0f4651aa-3968-4372-ab10-db0d79a7351b.png";
-const imgAirlineEmblem14 = "/images/asset-5f7a719d-09de-4668-bef2-904c7629111d.png";
-const imgAirlineEmblem15 = "/images/asset-aada227f-2a11-4cc4-b8b8-433dcdc91f64.png";
-const imgAirlineEmblem17 = "/images/asset-03e2b3f7-76b4-4131-a2e4-1caf97d1d443.png";
-const imgAirlineEmblem19 = "/images/asset-c0433751-6c26-498e-b2fe-ce6b65e6aed1.png";
-const imgAirlineEmblem20 = "/images/asset-752442d2-c03a-455a-9093-9f94fee6976c.png";
-const imgImage14 = "/images/asset-c0f980be-f61d-4525-aeb9-2424ffaf590d.png";
-const imgEllipse1 = "/images/asset-e10a7d98-2e3b-4721-9195-5dca2e135f17.png";
-const imgEllipse1889 = "/images/asset-8c24ba7e-4953-49f2-b8fc-0476d0112718.png";
-const imgIconColor = "/images/asset-3f8a650c-7e01-4f57-abaa-bfdfd95080c3.png";
-const imgIconColor1 = "/images/asset-ee97dd80-97b3-4454-8d13-789b2afbc051.png";
-const imgLine207 = "/images/asset-91feb9b5-f026-48fd-a8cb-3f626d150d20.png";
-const imgEllipse2 = "/images/asset-3f174842-748e-4c3f-a393-f48d77268373.png";
-const imgEllipse3 = "/images/asset-1d1e3d8e-e681-43b2-9f7b-66e38726c99d.png";
-const imgLine210 = "/images/asset-50ee9d68-1c1c-4c7f-bbeb-5690df663bca.png";
-const imgLine208 = "/images/asset-76b390a9-6f72-47f1-942c-65d5d2bc40c0.png";
-const imgEllipse4 = "/images/asset-3927421c-302d-420a-9991-f127d5dc876a.png";
-const imgLine211 = "/images/asset-c0944040-767d-4045-afea-6fac56c83254.png";
-const imgEllipse5 = "/images/asset-3ace5494-43dc-49b3-a4e9-cabc68478069.png";
-const imgEllipse6 = "/images/asset-59e159be-bb7c-4d13-b5a4-904fd8be8263.png";
-const imgPaths = "/images/asset-9c57a498-9808-412d-8e0a-fb444b859961.png";
-const imgAirlineEmblem = "/images/asset-5e5f819d-47a6-42f4-94f9-c04e05c1e00a.png";
-const imgPaths1 = "/images/asset-82fc4045-2d03-4f69-9baa-8ff20ed29863.png";
-const imgAirlineEmblem1 = "/images/asset-c937568d-2fb8-4a42-8419-545dce147f11.png";
-const imgAirlineEmblem3 = "/images/asset-5eeee18f-31d3-4908-be46-adaa4c12b35b.png";
-const imgPaths2 = "/images/asset-e3a8c180-e982-4c54-88e5-7dd3bb37e53e.png";
-const imgAirlineEmblem4 = "/images/asset-361a4dc1-1411-45da-a1a4-76a385099172.png";
-const imgPaths3 = "/images/asset-c2e5924e-a986-4540-be1e-aed848b6e210.png";
-const imgPaths4 = "/images/asset-3f816001-5301-4a5c-8b9d-0349583efec2.png";
-const imgPaths5 = "/images/asset-1c1e56f8-f206-4017-bcb0-caa8ac4331b9.png";
-const imgAirlineEmblem5 = "/images/asset-cfa6670d-a6f9-4d59-b320-252db190b9d5.png";
-const imgPaths6 = "/images/asset-11ca07d9-be69-4d54-86a8-27fe266e6ae8.png";
-const imgPaths7 = "/images/asset-259a8f42-f0f2-4bed-a727-cde3e7857a27.png";
-const imgAirlineEmblem7 = "/images/asset-fed55540-cfab-4afe-bb03-5abbfe99cc1b.png";
-const imgPaths8 = "/images/asset-3e0d7597-bb3a-4e17-aadb-55b36faf7d16.png";
-const imgAirlineEmblem8 = "/images/asset-0fcb2424-b66b-4ae0-a119-5d27d99ea32f.png";
-const imgAirlineEmblem10 = "/images/asset-7402dd1d-a89a-4b50-9c0e-3e94d83b1882.png";
-const imgAirlineEmblem12 = "/images/asset-201dc588-aae6-400a-8a17-493b924baaa5.png";
-const imgAirlineEmblem13 = "/images/asset-d9ff3803-7414-4773-a45f-573eabca19e1.png";
-const imgVector = "/images/asset-91d300d5-7339-4496-a466-990acf04f838.png";
-const imgAirlineEmblem16 = "/images/asset-c6e1d5a7-f548-4aa0-b25c-7602829024bc.png";
-const imgAirlineEmblem18 = "/images/asset-8cd63d71-2cca-470f-beef-65b2e67bcdb7.png";
-const imgPaths9 = "/images/asset-ed458cbf-490b-474a-acfb-95bf5d6e3a4e.png";
-const imgPaths10 = "/images/asset-b6674836-1ac5-4c76-b33c-cb8de474dce8.png";
+const imgCloud1 = "/Images/asset-81419f0d-f299-4d1e-a3f5-1f41ab41cf92.png";
+const imgCloud2 = "/Images/asset-207dbb73-c845-477b-98c1-cf72019ab12e.png";
+const imgCloud4 = "/Images/asset-f5147741-a43c-48f9-81f3-12823a5b4d3f.png";
+const imgImage41 = "/Images/Connection%20Card_New.png";
+const imgImage40 = "/Images/Journey%20Card_New.png";
+const imgImage42 = "/Images/asset-28ac99e6-1e5b-405d-842f-3140b8f96b46.png";
+const imgImage = "/Images/asset-5a211c9a-dfde-4974-a28f-85d89adba13e.png";
+const imgImage1 = "/Images/asset-5c9f351a-c7f7-4758-b5d8-04b195b27a49.png";
+const imgImage2 = "/Images/asset-6a39772a-5b02-4ad3-9487-dee07348776a.png";
+const imgAirlineEmblem2 = "/Images/asset-39c5e315-e991-46d5-81ed-b705385a5dba.png";
+const imgImage3 = "/Images/asset-b61964ad-de04-4f23-be0f-28c28b94b143.png";
+const imgImage4 = "/Images/asset-0505c840-7628-4810-a407-1ed132e03847.png";
+const imgImage5 = "/Images/asset-041eba01-d8b1-492d-a149-b6e32186787b.png";
+const imgImage6 = "/Images/asset-948cf4c5-bc29-492f-af61-cbc365dcbaf3.png";
+const imgImage7 = "/Images/asset-58873d07-2b7a-4b8d-9c6d-1cf2b077deaa.png";
+const imgImage8 = "/Images/asset-722eb3b9-84f7-42eb-9850-78aeee66d07a.png";
+const imgAirlineEmblem6 = "/Images/asset-e5922254-eb94-445a-811f-58a54ed81ed0.png";
+const imgImage9 = "/Images/asset-5e3b8204-05fa-48b1-82da-2ebe76c7281b.png";
+const imgImage10 = "/Images/asset-1cfe1b40-1f2d-4a7b-8d08-b437e82d841d.png";
+const imgImage11 = "/Images/asset-1d4dcf12-d22f-4f3b-9eec-b78d3087fc90.png";
+const imgImage12 = "/Images/asset-dbff2d50-0ada-415d-8ed5-da8d91927ecb.png";
+const imgAirlineEmblem9 = "/Images/asset-a3854cc2-6ffc-42e2-b7da-5a366ad41577.png";
+const imgAirlineEmblem11 = "/Images/asset-613b939f-e093-42e8-8370-f36da05332bc.png";
+const imgImage13 = "/Images/asset-0f4651aa-3968-4372-ab10-db0d79a7351b.png";
+const imgAirlineEmblem14 = "/Images/asset-5f7a719d-09de-4668-bef2-904c7629111d.png";
+const imgAirlineEmblem15 = "/Images/asset-aada227f-2a11-4cc4-b8b8-433dcdc91f64.png";
+const imgAirlineEmblem17 = "/Images/asset-03e2b3f7-76b4-4131-a2e4-1caf97d1d443.png";
+const imgAirlineEmblem19 = "/Images/asset-c0433751-6c26-498e-b2fe-ce6b65e6aed1.png";
+const imgAirlineEmblem20 = "/Images/asset-752442d2-c03a-455a-9093-9f94fee6976c.png";
+const imgImage14 = "/Images/asset-c0f980be-f61d-4525-aeb9-2424ffaf590d.png";
+const imgEllipse1 = "/Images/asset-e10a7d98-2e3b-4721-9195-5dca2e135f17.svg";
+const imgEllipse1889 = "/Images/asset-8c24ba7e-4953-49f2-b8fc-0476d0112718.svg";
+const imgIconColor = "/Images/asset-3f8a650c-7e01-4f57-abaa-bfdfd95080c3.svg";
+const imgIconColor1 = "/Images/asset-ee97dd80-97b3-4454-8d13-789b2afbc051.svg";
+const imgLine207 = "/Images/asset-91feb9b5-f026-48fd-a8cb-3f626d150d20.svg";
+const imgEllipse2 = "/Images/asset-3f174842-748e-4c3f-a393-f48d77268373.svg";
+const imgEllipse3 = "/Images/asset-1d1e3d8e-e681-43b2-9f7b-66e38726c99d.svg";
+const imgLine210 = "/Images/asset-50ee9d68-1c1c-4c7f-bbeb-5690df663bca.svg";
+const imgLine208 = "/Images/asset-76b390a9-6f72-47f1-942c-65d5d2bc40c0.svg";
+const imgEllipse4 = "/Images/asset-3927421c-302d-420a-9991-f127d5dc876a.svg";
+const imgLine211 = "/Images/asset-c0944040-767d-4045-afea-6fac56c83254.svg";
+const imgEllipse5 = "/Images/asset-3ace5494-43dc-49b3-a4e9-cabc68478069.svg";
+const imgEllipse6 = "/Images/asset-59e159be-bb7c-4d13-b5a4-904fd8be8263.svg";
+const imgPaths = "/Images/asset-9c57a498-9808-412d-8e0a-fb444b859961.svg";
+const imgAirlineEmblem = "/Images/asset-5e5f819d-47a6-42f4-94f9-c04e05c1e00a.svg";
+const imgPaths1 = "/Images/asset-82fc4045-2d03-4f69-9baa-8ff20ed29863.svg";
+const imgAirlineEmblem1 = "/Images/asset-c937568d-2fb8-4a42-8419-545dce147f11.svg";
+const imgAirlineEmblem3 = "/Images/asset-5eeee18f-31d3-4908-be46-adaa4c12b35b.svg";
+const imgPaths2 = "/Images/asset-e3a8c180-e982-4c54-88e5-7dd3bb37e53e.svg";
+const imgAirlineEmblem4 = "/Images/asset-361a4dc1-1411-45da-a1a4-76a385099172.svg";
+const imgPaths3 = "/Images/asset-c2e5924e-a986-4540-be1e-aed848b6e210.svg";
+const imgPaths4 = "/Images/asset-3f816001-5301-4a5c-8b9d-0349583efec2.svg";
+const imgPaths5 = "/Images/asset-1c1e56f8-f206-4017-bcb0-caa8ac4331b9.svg";
+const imgAirlineEmblem5 = "/Images/asset-cfa6670d-a6f9-4d59-b320-252db190b9d5.svg";
+const imgPaths6 = "/Images/asset-11ca07d9-be69-4d54-86a8-27fe266e6ae8.svg";
+const imgPaths7 = "/Images/asset-259a8f42-f0f2-4bed-a727-cde3e7857a27.svg";
+const imgAirlineEmblem7 = "/Images/asset-fed55540-cfab-4afe-bb03-5abbfe99cc1b.svg";
+const imgPaths8 = "/Images/asset-3e0d7597-bb3a-4e17-aadb-55b36faf7d16.svg";
+const imgAirlineEmblem8 = "/Images/asset-0fcb2424-b66b-4ae0-a119-5d27d99ea32f.svg";
+const imgAirlineEmblem10 = "/Images/asset-7402dd1d-a89a-4b50-9c0e-3e94d83b1882.svg";
+const imgAirlineEmblem12 = "/Images/asset-201dc588-aae6-400a-8a17-493b924baaa5.svg";
+const imgAirlineEmblem13 = "/Images/asset-d9ff3803-7414-4773-a45f-573eabca19e1.svg";
+const imgVector = "/Images/asset-91d300d5-7339-4496-a466-990acf04f838.svg";
+const imgAirlineEmblem16 = "/Images/asset-c6e1d5a7-f548-4aa0-b25c-7602829024bc.svg";
+const imgAirlineEmblem18 = "/Images/asset-8cd63d71-2cca-470f-beef-65b2e67bcdb7.svg";
+const imgPaths9 = "/Images/asset-ed458cbf-490b-474a-acfb-95bf5d6e3a4e.svg";
+const imgPaths10 = "/Images/asset-b6674836-1ac5-4c76-b33c-cb8de474dce8.svg";
 
 // ── Nav asset URLs (node 7300-48867) ──────────────────────────────────────────
-const imgNavLogo   = "/images/asset-77e23190-18e8-44ee-a291-2afd60b71878.png";
-const imgNavFi     = "/images/asset-ced73d69-cb1b-4ed2-a9ff-08b795fd1549.png";
-const imgNavApple  = "/images/asset-ae0b76f7-15b2-4a17-ad03-611555e2e9da.png";
+const imgNavLogo   = "/Images/asset-77e23190-18e8-44ee-a291-2afd60b71878.svg";
+const imgNavFi     = "/Images/asset-ced73d69-cb1b-4ed2-a9ff-08b795fd1549.svg";
+const imgNavApple  = "/Images/asset-ae0b76f7-15b2-4a17-ad03-611555e2e9da.svg";
 
 // ── Intelligence asset URLs (node 7300:48922) ─────────────────────────────────
-const imgIntelIcon  = "/images/asset-58021945-ed81-4c67-9881-2c4461d97d3e.png";
-const imgIntelIcon1 = "/images/asset-df413132-dab5-4a52-b4ed-07022b4b9582.png";
-const imgIntelIcon2 = "/images/asset-42898160-0537-42cb-aed5-b9a2c8da56cf.png";
+const imgIntelIcon  = "/Images/asset-58021945-ed81-4c67-9881-2c4461d97d3e.svg";
+const imgIntelIcon1 = "/Images/asset-df413132-dab5-4a52-b4ed-07022b4b9582.svg";
+const imgIntelIcon2 = "/Images/asset-42898160-0537-42cb-aed5-b9a2c8da56cf.svg";
 
 // ── How It Works Step 01 asset URLs (node 7300:48957) ─────────────────────────
-const imgHiwTopImage    = "/images/asset-6d585e68-0d7f-496f-b018-4e5caf21dcec.png";
-const imgHiwCameraImage = "/images/asset-49ef7b55-4973-4b48-a834-5bd8b06c49c5.png";
-const imgHiwEllipse1    = "/images/asset-5b89eaa9-2c63-4bdc-b764-58e5120d7974.png";
-const imgHiwFlattened   = "/images/asset-86b895c0-a5f5-4a8b-9e32-263a0e68f3ce.png";
-const imgHiwRectangle1  = "/images/asset-aafac9b6-51e8-4dce-90ec-e33c5c266600.png";
-const imgHiwVector      = "/images/asset-a9fba400-bc77-420d-9de0-4da39c0394cf.png";
-const imgHiwVector1     = "/images/asset-d8920231-1efa-4db9-b77a-6ef32b757dfb.png";
-const imgHiwVector2     = "/images/asset-45fae47c-d437-4da1-b971-3a16255445ac.png";
-const imgHiwVector3     = "/images/asset-f88c0c1f-631b-4f69-ad76-8b0f6fa8c05d.png";
-const imgHiwVector4     = "/images/asset-c2d10e38-14b8-4db6-a401-eb9cf66c19af.png";
+const imgHiwTopImage    = "/Images/asset-6d585e68-0d7f-496f-b018-4e5caf21dcec.png";
+const imgHiwCameraImage = "/Images/asset-49ef7b55-4973-4b48-a834-5bd8b06c49c5.png";
+const imgHiwEllipse1    = "/Images/asset-5b89eaa9-2c63-4bdc-b764-58e5120d7974.svg";
+const imgHiwFlattened   = "/Images/asset-86b895c0-a5f5-4a8b-9e32-263a0e68f3ce.svg";
+const imgHiwRectangle1  = "/Images/asset-aafac9b6-51e8-4dce-90ec-e33c5c266600.svg";
+const imgHiwVector      = "/Images/asset-a9fba400-bc77-420d-9de0-4da39c0394cf.svg";
+const imgHiwVector1     = "/Images/asset-d8920231-1efa-4db9-b77a-6ef32b757dfb.svg";
+const imgHiwVector2     = "/Images/asset-45fae47c-d437-4da1-b971-3a16255445ac.svg";
+const imgHiwVector3     = "/Images/asset-f88c0c1f-631b-4f69-ad76-8b0f6fa8c05d.svg";
+const imgHiwVector4     = "/Images/asset-c2d10e38-14b8-4db6-a401-eb9cf66c19af.svg";
 
 // ── How It Works Step 04 asset URLs ───────────────────────────────────────────
-const imgBotMainContentImage = "/images/asset-33e58103-a12d-48c4-9294-fd508f1a4505.png";
-const imgBotUserImage        = "/images/asset-3d5ed216-a1ee-4902-9fd2-cedadd00dfd8.png";
-const imgBotFlattened        = "/images/asset-e7582851-6534-4316-bffb-6af67ae77949.png";
-const imgBotRectangle1       = "/images/asset-59e8a425-6ea2-47cc-ac21-fb6ccb85ea17.png";
-const imgBotVector           = "/images/asset-77143b6b-0db1-47ca-8e18-2e5dcdd8b0b7.png";
-const imgBotVector1          = "/images/asset-790accc2-b7fd-4c40-bc54-92cee0dda7c5.png";
-const imgBotVector2          = "/images/asset-55ea1d8a-f488-4034-a0ca-22aec953ac57.png";
-const imgBotVector3          = "/images/asset-d866a98c-a997-4865-9c78-99f1835dc853.png";
-const imgBotVector4          = "/images/asset-e8f3a0dd-a920-4b77-a1f4-85c12ed26ee9.png";
-const imgBotEllipse1         = "/images/asset-a77210d8-91c8-4cf5-9588-f4b2ee3c3dd7.png";
+const imgBotMainContentImage = "/Images/asset-33e58103-a12d-48c4-9294-fd508f1a4505.png";
+const imgBotUserImage        = "/Images/asset-3d5ed216-a1ee-4902-9fd2-cedadd00dfd8.png";
+const imgBotFlattened        = "/Images/asset-e7582851-6534-4316-bffb-6af67ae77949.svg";
+const imgBotRectangle1       = "/Images/asset-59e8a425-6ea2-47cc-ac21-fb6ccb85ea17.svg";
+const imgBotVector           = "/Images/asset-77143b6b-0db1-47ca-8e18-2e5dcdd8b0b7.svg";
+const imgBotVector1          = "/Images/asset-790accc2-b7fd-4c40-bc54-92cee0dda7c5.svg";
+const imgBotVector2          = "/Images/asset-55ea1d8a-f488-4034-a0ca-22aec953ac57.svg";
+const imgBotVector3          = "/Images/asset-d866a98c-a997-4865-9c78-99f1835dc853.svg";
+const imgBotVector4          = "/Images/asset-e8f3a0dd-a920-4b77-a1f4-85c12ed26ee9.svg";
+const imgBotEllipse1         = "/Images/asset-a77210d8-91c8-4cf5-9588-f4b2ee3c3dd7.svg";
 
 // ── How It Works Step 03 asset URLs ───────────────────────────────────────────
-const imgLowLowerImage  = "/images/asset-60c1185f-d58c-4975-aa4f-d446835553c6.png";
-const imgLowCameraImage = "/images/asset-0f8ffc66-707f-48d6-8c5e-0d4686678c97.png";
-const imgLowEllipse1    = "/images/asset-f8a82626-b0df-4801-9bf1-9b21fed61e7d.png";
-const imgLowFlattened   = "/images/asset-1eb4e9b5-50ae-4737-b860-f8defb3251a3.png";
-const imgLowRectangle1  = "/images/asset-29a95fd9-b1ab-49ae-8de9-fe47886689de.png";
-const imgLowVector      = "/images/asset-f1517653-33ba-40ee-9ed3-fac439550375.png";
-const imgLowVector1     = "/images/asset-76609896-3674-4262-be50-e4606de0da67.png";
-const imgLowVector2     = "/images/asset-f08ece90-1cf7-4ee1-8254-28b1dadbf618.png";
-const imgLowVector3     = "/images/asset-f0c5b442-5145-4c0c-b9d4-8f7f451c46ca.png";
-const imgLowVector4     = "/images/asset-ede3a099-214e-4d60-b4b3-a2a67c0cea75.png";
+const imgLowLowerImage  = "/Images/asset-60c1185f-d58c-4975-aa4f-d446835553c6.png";
+const imgLowCameraImage = "/Images/asset-0f8ffc66-707f-48d6-8c5e-0d4686678c97.png";
+const imgLowEllipse1    = "/Images/asset-f8a82626-b0df-4801-9bf1-9b21fed61e7d.svg";
+const imgLowFlattened   = "/Images/asset-1eb4e9b5-50ae-4737-b860-f8defb3251a3.svg";
+const imgLowRectangle1  = "/Images/asset-29a95fd9-b1ab-49ae-8de9-fe47886689de.svg";
+const imgLowVector      = "/Images/asset-f1517653-33ba-40ee-9ed3-fac439550375.svg";
+const imgLowVector1     = "/Images/asset-76609896-3674-4262-be50-e4606de0da67.svg";
+const imgLowVector2     = "/Images/asset-f08ece90-1cf7-4ee1-8254-28b1dadbf618.svg";
+const imgLowVector3     = "/Images/asset-f0c5b442-5145-4c0c-b9d4-8f7f451c46ca.svg";
+const imgLowVector4     = "/Images/asset-ede3a099-214e-4d60-b4b3-a2a67c0cea75.svg";
 
 // ── How It Works Step 02 asset URLs ───────────────────────────────────────────
-const imgMidMiddleImage = "/images/asset-e7f0beef-9438-42ea-8d9c-bf615f9c17d2.png";
-const imgMidRectangle   = "/images/asset-be971278-376f-466e-bb3e-c9cd34f5b501.png";
-const imgMidFlattened   = "/images/asset-c48ac6d9-3d7d-4d10-85b3-3c9906085eac.png";
-const imgMidRectangle1  = "/images/asset-6d489c3b-2eb6-4bf8-a1ab-aff3f3c3f943.png";
-const imgMidVector      = "/images/asset-f4763a5a-33c1-43c3-a2ab-a84624c380e3.png";
-const imgMidVector1     = "/images/asset-cb2a9c22-24e5-44e1-871b-62d0170427ad.png";
-const imgMidVector2     = "/images/asset-957f7264-1684-41d6-9d6a-6520da8833e5.png";
-const imgMidVector3     = "/images/asset-19981006-88f3-4b0d-8191-fb62bcbacbf5.png";
-const imgMidVector4     = "/images/asset-de680cb4-0130-41b3-971d-e4a86b594b75.png";
-const imgMidEllipse1    = "/images/asset-5b15af98-de30-4735-ae96-ada6186e4938.png";
+const imgMidMiddleImage = "/Images/asset-e7f0beef-9438-42ea-8d9c-bf615f9c17d2.png";
+const imgMidRectangle   = "/Images/asset-be971278-376f-466e-bb3e-c9cd34f5b501.png";
+const imgMidFlattened   = "/Images/asset-c48ac6d9-3d7d-4d10-85b3-3c9906085eac.svg";
+const imgMidRectangle1  = "/Images/asset-6d489c3b-2eb6-4bf8-a1ab-aff3f3c3f943.svg";
+const imgMidVector      = "/Images/asset-f4763a5a-33c1-43c3-a2ab-a84624c380e3.svg";
+const imgMidVector1     = "/Images/asset-cb2a9c22-24e5-44e1-871b-62d0170427ad.svg";
+const imgMidVector2     = "/Images/asset-957f7264-1684-41d6-9d6a-6520da8833e5.svg";
+const imgMidVector3     = "/Images/asset-19981006-88f3-4b0d-8191-fb62bcbacbf5.svg";
+const imgMidVector4     = "/Images/asset-de680cb4-0130-41b3-971d-e4a86b594b75.svg";
+const imgMidEllipse1    = "/Images/asset-5b15af98-de30-4735-ae96-ada6186e4938.svg";
 
 // ── Scroll reveal hook ────────────────────────────────────────────────────────
 function useReveal() {
@@ -262,8 +261,10 @@ function Nav() {
         }}
       >
         {/* Left — Logo + wordmark */}
-        <div
-          style={{ display: "flex", gap: 8, alignItems: "center", width: 349, flexShrink: 0 }}
+        <button
+          onClick={() => window.location.reload()}
+          aria-label="Reload page"
+          style={{ display: "flex", gap: 8, alignItems: "center", width: 349, flexShrink: 0, background: "none", border: "none", padding: 0, cursor: "pointer" }}
         >
           <img
             alt="Flight Passport"
@@ -285,7 +286,7 @@ function Nav() {
               />
             </div>
           </div>
-        </div>
+        </button>
 
         {/* Right — Download button */}
         <div style={{ display: "flex", alignItems: "center", flexShrink: 0, position: "relative", zIndex: 1 }}>
@@ -395,93 +396,189 @@ function Nav() {
   );
 }
 
-// ── Figma Hero (node 7300:48506) — pixel-perfect copy ─────────────────────────
-const HERO_HEIGHT = 1500;
-
-function FigmaHeroContent() {
-  const leftCardRef  = useRef<HTMLDivElement>(null);
+// ── Hero Section (responsive full-width) ──────────────────────────────────────
+function FigmaHeroSection() {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const leftCardRef = useRef<HTMLDivElement>(null);
   const rightCardRef = useRef<HTMLDivElement>(null);
-  const heroRef      = useRef<HTMLDivElement>(null);
-  const [cardsVisible, setCardsVisible] = useState(false);
-  const [cardsFloat,   setCardsFloat]   = useState(false);
+  const [cardsRevealed, setCardsRevealed] = useState(false);
+  const [phoneVisible, setPhoneVisible] = useState(false);
+  const [textVisible, setTextVisible] = useState(false);
 
-  // Reveal cards when hero enters viewport
+  // Reveal text and phone on mount
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setCardsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.25 }
-    );
-    if (heroRef.current) observer.observe(heroRef.current);
-    return () => observer.disconnect();
+    const t1 = setTimeout(() => setTextVisible(true), 60);
+    const t2 = setTimeout(() => setPhoneVisible(true), 100);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  // After reveal, switch to continuous float animation
+  // Blur + slide + fade helper — applied per text element with staggered delay
+  const textReveal = (delay: number): React.CSSProperties => ({
+    opacity: textVisible ? 1 : 0,
+    transform: textVisible ? 'translateY(0px)' : 'translateY(22px)',
+    filter: textVisible ? 'blur(0px)' : 'blur(10px)',
+    transition: 'opacity 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    transitionDelay: `${delay}ms`,
+  });
+
+  // Scroll-driven card entrance — hidden on load, rises as user scrolls
   useEffect(() => {
-    if (!cardsVisible) return;
-    const t = setTimeout(() => setCardsFloat(true), 1800);
-    return () => clearTimeout(t);
-  }, [cardsVisible]);
+    // Force cards hidden immediately on mount, before any scroll
+    if (leftCardRef.current) {
+      leftCardRef.current.style.opacity = '0';
+      leftCardRef.current.style.transform = 'translateY(110px) rotate(-8deg)';
+    }
+    if (rightCardRef.current) {
+      rightCardRef.current.style.opacity = '0';
+      rightCardRef.current.style.transform = 'translateY(110px) rotate(8deg)';
+    }
+
+    let settled = false;
+
+    const onScroll = () => {
+      if (settled) return;
+      // Tied to absolute scroll position: starts at 120px scroll, completes at 480px
+      const p = Math.max(0, Math.min(1, (window.scrollY - 120) / 360));
+      const y = (1 - p) * 110;
+
+      if (leftCardRef.current) {
+        leftCardRef.current.style.opacity = String(p);
+        leftCardRef.current.style.transform = `translateY(${y}px) rotate(-8deg)`;
+      }
+      if (rightCardRef.current) {
+        rightCardRef.current.style.opacity = String(p);
+        rightCardRef.current.style.transform = `translateY(${y}px) rotate(8deg)`;
+      }
+
+      if (p >= 1) {
+        settled = true;
+        setCardsRevealed(true);
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <div ref={heroRef} data-name="Hero Section" data-node-id="7300:48506"
-      style={{ position: "relative", width: "1440px", height: `${HERO_HEIGHT}px` }}>
-      <div className="absolute content-stretch flex flex-col h-[840px] items-start left-0 overflow-clip top-0" data-name="Main Frame" data-node-id="7300:48507" style={{ backgroundImage: "linear-gradient(264.8433779312478deg, rgb(65, 188, 255) 6.4655%, rgb(59, 168, 227) 53.594%, rgb(0, 120, 186) 94.305%)" }}>
-        <div className="content-stretch flex flex-[1_0_0] items-start justify-between min-h-px min-w-px relative w-[1440px]" data-name="Content Container" data-node-id="7300:48508">
-          <div className="content-stretch flex flex-[1_0_0] flex-col h-full items-center min-h-px min-w-px pt-[120px] relative" data-name="Text Container" data-node-id="7300:48509">
-            <div className="content-stretch flex flex-col gap-[var(--space\/4xl,40px)] items-center justify-center relative shrink-0" data-name="Badge and Text" data-node-id="7300:48510">
-              <div className="content-stretch flex flex-col gap-[20px] items-center relative shrink-0" data-name="Badge and Title" data-node-id="7300:48511">
-                <div className="bg-[rgba(255,255,255,0.15)] border border-[rgba(255,255,255,0.3)] border-solid content-stretch flex gap-[8px] items-center overflow-clip px-[13px] py-[9px] relative rounded-[var(--radius\/full,999px)] shrink-0" data-name="Status badge" data-node-id="7300:48512">
-                  <div className="relative shrink-0 size-[6px]" data-node-id="7300:48513">
-                    <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgEllipse1} />
-                  </div>
-                  <div className="flex flex-col font-['Inter:Bold',sans-serif] font-bold justify-center leading-[0] not-italic relative shrink-0 text-[12px] text-[color:var(--text\/text-inverse,white)] text-center tracking-[0.48px] uppercase whitespace-nowrap" data-node-id="7300:48514">
-                    <p className="leading-none">Flight intelligence platform</p>
-                  </div>
+    <section className="relative w-full bg-[#f9f8f6] min-h-[1579px]" ref={heroRef}>
+      {/* SKY GRADIENT — full width, 840px height */}
+      <div
+        className="relative w-full h-[840px] overflow-hidden"
+        style={{ background: 'linear-gradient(264.84deg, #41BCFF 6.47%, #3BA8E3 53.59%, #0078BA 94.31%)' }}
+      >
+        {/* Cloud keyframe — from off-screen right to off-screen left, loop restart invisible */}
+        <style>{`
+          @keyframes cloudFlight {
+            from { translate: 1700px 0px; }
+            to   { translate: -900px 0px; }
+          }
+          @keyframes cardFloatL {
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-10px); }
+          }
+          @keyframes cardFloatR {
+            0%, 100% { transform: translateY(-5px); }
+            50%       { transform: translateY(5px); }
+          }
+        `}</style>
+        {/* CLOUDS — all left-0, horizontal position set via negative animation-delay */}
+
+        {/* ── Upper sky: distant, faded, slow ── */}
+        <div className="absolute left-0 top-[-50px] w-[280px] h-[140px] opacity-[0.13] pointer-events-none" style={{ animation: "cloudFlight 250s linear -28s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
+        </div>
+        <div className="absolute left-0 top-[20px] w-[340px] h-[150px] opacity-[0.15] pointer-events-none" style={{ animation: "cloudFlight 270s linear -145s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud2} />
+        </div>
+        <div className="absolute left-0 top-[70px] w-[220px] h-[110px] opacity-[0.12] pointer-events-none" style={{ animation: "cloudFlight 260s linear -82s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
+        </div>
+        <div className="absolute left-0 top-[110px] w-[190px] h-[95px] opacity-[0.14] pointer-events-none" style={{ animation: "cloudFlight 240s linear -200s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
+        </div>
+
+        {/* ── Mid sky: medium depth, medium speed ── */}
+        <div className="absolute left-0 top-[180px] w-[393px] h-[252px] rotate-[173.23deg] opacity-[0.30] pointer-events-none" style={{ animation: "cloudFlight 185s linear -14s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
+        </div>
+        <div className="absolute left-0 top-[250px] w-[387px] h-[310px] opacity-[0.36] pointer-events-none" style={{ animation: "cloudFlight 175s linear -88s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
+        </div>
+        <div className="absolute left-0 top-[340px] w-[399px] h-[224px] opacity-[0.28] pointer-events-none" style={{ animation: "cloudFlight 190s linear -52s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud2} />
+        </div>
+
+        {/* ── Lower sky: foreground, denser, faster ── */}
+        <div className="absolute left-0 top-[450px] w-[445px] h-[224px] opacity-[0.50] pointer-events-none" style={{ animation: "cloudFlight 120s linear -5s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
+        </div>
+        <div className="absolute left-0 top-[490px] w-[257px] h-[183px] opacity-[0.22] pointer-events-none" style={{ animation: "cloudFlight 125s linear -31s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
+        </div>
+        <div className="absolute left-0 top-[520px] w-[478px] h-[433px] rotate-[-173.07deg] opacity-[0.38] pointer-events-none" style={{ animation: "cloudFlight 135s linear -55s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
+        </div>
+        <div className="absolute left-0 top-[600px] w-[379px] h-[248px] -scale-y-100 rotate-180 opacity-[0.20] pointer-events-none" style={{ animation: "cloudFlight 128s linear -42s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
+        </div>
+        <div className="absolute left-0 top-[645px] w-[434px] h-[182px] -scale-y-100 rotate-180 opacity-[0.55] pointer-events-none" style={{ animation: "cloudFlight 115s linear -68s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud2} />
+        </div>
+        <div className="absolute left-0 top-[580px] w-[234px] h-[188px] opacity-[0.38] pointer-events-none" style={{ animation: "cloudFlight 118s linear -20s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
+        </div>
+
+        {/* CONTENT CENTERED — max-width 1200px */}
+        <div className="relative mx-auto max-w-[1200px] h-full px-5 pt-[120px]">
+          <div className="flex flex-col gap-[40px] items-center">
+            <div className="flex flex-col gap-[20px] items-center">
+              {/* Badge */}
+              <div className="bg-[rgba(255,255,255,0.15)] border border-[rgba(255,255,255,0.3)] border-solid flex gap-[8px] items-center px-[13px] py-[9px] relative rounded-[999px]" data-name="Status badge" data-node-id="7300:48512" style={textReveal(0)}>
+                <div className="relative shrink-0 size-[6px]">
+                  <img alt="" className="absolute block max-w-none size-full" src={imgEllipse1} />
                 </div>
-                <div className="content-stretch flex flex-col gap-[24px] items-center justify-center relative shrink-0 w-full" data-name="Description Container" data-node-id="7300:48515">
-                  <div className="absolute left-[23px] size-[625px] top-[-67px]" data-node-id="7300:48516">
-                    <div className="absolute inset-[-22.4%]">
-                      <img loading="lazy" alt="" className="block max-w-none size-full" src={imgEllipse1889} />
-                    </div>
-                  </div>
-                  <p className="font-['Inter:Bold',sans-serif] font-bold leading-[0] not-italic relative shrink-0 text-[0px] text-[color:var(--text\/text-inverse,white)] text-center text-shadow-[-4px_2px_12px_rgba(16,32,64,0.08)] tracking-[-1.92px] w-[714px]" data-node-id="7300:48517">
-                    <span className="leading-[1.1] text-[64px]">{`Know your flight `}</span>
-                    <span className="font-['Inter:Italic',sans-serif] font-normal italic leading-[1.1] text-[#a7f3d0] text-[64px]">before</span>
-                    <span className="leading-[1.1] text-[64px]">{` the airport does.`}</span>
-                  </p>
-                  <p className="font-['Inter:Regular',sans-serif] font-normal leading-[1.4] not-italic relative shrink-0 text-[17px] text-[color:var(--text\/text-inverse,white)] text-center w-[524px]" data-node-id="7300:48518">
-                    Real-time tracking, predictive delay signals, and a personal travel history — from search to landing.
-                  </p>
-                </div>
+                <span className="font-bold text-[12px] text-white text-center tracking-[0.48px] uppercase whitespace-nowrap">
+                  Flight intelligence platform
+                </span>
               </div>
-              <div className="content-stretch flex gap-[16px] items-center justify-center relative shrink-0 w-full" data-name="Button Container" data-node-id="7300:48519">
-                <div className="content-stretch flex gap-[8px] h-[44px] items-center justify-center px-[20px] relative rounded-[var(--radius\/full,999px)] shadow-[0px_4px_10px_0px_rgba(28,25,23,0.04),0px_1px_2px_0px_rgba(28,25,23,0.06)] shrink-0" data-name="Primary Button" data-node-id="7300:48520">
-                  <div aria-hidden="true" className="absolute bg-[var(--backgrounds\/bg-dark,#1c1917)] inset-0 pointer-events-none rounded-[var(--radius\/full,999px)]" />
-                  <div className="overflow-clip relative shrink-0 size-[20px]" data-name="Icons / Apple" data-node-id="I7300:48520;1870:924">
-                    <div className="absolute inset-[0_10.94%_4.17%_8.33%]" data-name="icon-color" data-node-id="I7300:48520;1870:924;22:6209">
-                      <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgIconColor} />
-                    </div>
+              {/* Title + subtitle */}
+              <div className="flex flex-col gap-[24px] items-center relative" data-name="Description Container" data-node-id="7300:48515">
+                <div className="absolute left-[23px] size-[625px] top-[-67px]">
+                  <div className="absolute inset-[-22.4%]">
+                    <img alt="" className="block max-w-none size-full" src={imgEllipse1889} />
                   </div>
-                  <div className="flex flex-col font-['Inter:Semi_Bold',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[15px] text-[color:var(--text\/text-on-action,white)] text-center whitespace-nowrap" data-node-id="I7300:48520;1870:925">
-                    <p className="leading-[20px]">Download</p>
-                  </div>
-                  <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.15)]" />
                 </div>
-                <div className="content-stretch flex gap-[8px] h-[44px] items-center justify-center px-[20px] relative rounded-[var(--radius\/full,999px)] shrink-0" data-name="Ghost Button" data-node-id="7300:48521">
-                  <div className="flex flex-col font-['Inter:Semi_Bold',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[15px] text-[color:var(--text\/text-inverse,white)] text-center whitespace-nowrap" data-node-id="I7300:48521;1872:341">
-                    <p className="leading-[20px]">See how it works</p>
+                <p className="font-bold relative text-[0px] text-white text-center tracking-[-1.92px] w-[714px]" style={{ textShadow: '-4px 2px 12px rgba(16,32,64,0.08)', ...textReveal(130) }} data-node-id="7300:48517">
+                  <span className="leading-[1.1] text-[64px]">Know your flight </span>
+                  <span className="italic font-normal leading-[1.1] text-[#a7f3d0] text-[64px]">before</span>
+                  <span className="leading-[1.1] text-[64px]"> the airport does.</span>
+                </p>
+                <p className="font-normal leading-[1.4] relative text-[17px] text-white text-center w-[524px]" style={textReveal(240)} data-node-id="7300:48518">
+                  Real-time tracking, predictive delay signals, and a personal travel history — from search to landing.
+                </p>
+              </div>
+            </div>
+            {/* Buttons */}
+            <div className="flex gap-[16px] items-center justify-center" data-name="Button Container" data-node-id="7300:48519" style={textReveal(360)}>
+              <div className="relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] shadow-[0px_4px_10px_0px_rgba(28,25,23,0.04),0px_1px_2px_0px_rgba(28,25,23,0.06)]" data-name="Primary Button" data-node-id="7300:48520">
+                <div aria-hidden="true" className="absolute bg-[#1c1917] inset-0 pointer-events-none rounded-[999px]" />
+                <div className="overflow-clip relative shrink-0 size-[20px]" data-name="Icons / Apple" data-node-id="I7300:48520;1870:924">
+                  <div className="absolute inset-[0_10.94%_4.17%_8.33%]">
+                    <img alt="" className="absolute block max-w-none size-full" src={imgIconColor} />
                   </div>
-                  <div className="relative shrink-0 size-[20px]" data-name="Icons/Arrow-down" data-node-id="I7300:48521;1872:342">
-                    <div className="absolute flex inset-[36.63%_15.54%_28.3%_19.43%] items-center justify-center">
-                      <div className="flex-none h-[8.417px] rotate-180 w-[15.607px]">
-                        <div className="relative size-full" data-name="icon-color" data-node-id="I7300:48521;1872:342;22:6253">
-                          <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgIconColor1} />
-                        </div>
+                </div>
+                <span className="font-semibold relative text-[15px] text-white text-center whitespace-nowrap leading-[20px]">Download</span>
+                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.15)]" />
+              </div>
+              <div className="flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px]" data-name="Ghost Button" data-node-id="7300:48521">
+                <span className="font-semibold text-[15px] text-white text-center whitespace-nowrap leading-[20px]">See how it works</span>
+                <div className="relative shrink-0 size-[20px]" data-name="Icons/Arrow-down" data-node-id="I7300:48521;1872:342">
+                  <div className="absolute flex inset-[36.63%_15.54%_28.3%_19.43%] items-center justify-center">
+                    <div className="flex-none h-[8.417px] rotate-180 w-[15.607px]">
+                      <div className="relative size-full">
+                        <img alt="" className="absolute block max-w-none size-full" src={imgIconColor1} />
                       </div>
                     </div>
                   </div>
@@ -490,526 +587,417 @@ function FigmaHeroContent() {
             </div>
           </div>
         </div>
-        <div id="hc1" className="absolute flex h-[248px] items-center justify-center left-[920px] top-[618px] w-[379px]" style={{ willChange: "transform", animation: "cloudDriftFast 20s ease-in-out infinite alternate" }}>
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', willChange: 'transform', animation: 'cloudDrift 9s ease-in-out infinite' }}>
-            <div className="-scale-y-100 flex-none rotate-180">
-              <div className="h-[248px] relative w-[379px]" data-name="cloud-1" data-node-id="7300:48522">
-                <div className="absolute inset-0 opacity-23 overflow-hidden pointer-events-none">
-                  <img loading="lazy" alt="" className="absolute left-0 max-w-none size-full top-0" src={imgCloud1} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="hc2" className="absolute bottom-[-138px] h-[224px] left-[268px] w-[399px]" data-name="cloud-2" data-node-id="7300:48523" style={{ willChange: "transform", animation: "cloudDriftMed 26s ease-in-out infinite alternate" }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, willChange: 'transform', animation: 'cloudDrift 11s ease-in-out infinite' }}>
-            <div className="absolute inset-0 opacity-32 overflow-hidden pointer-events-none">
-              <img loading="lazy" alt="" className="absolute left-0 max-w-none size-full top-0" src={imgCloud2} />
-            </div>
-          </div>
-        </div>
-        <div id="hc3" className="absolute bottom-[7px] h-[183px] left-[601px] w-[257px]" data-name="cloud-3" data-node-id="7300:48524" style={{ willChange: "transform", animation: "cloudDriftSlow 30s ease-in-out infinite alternate" }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, willChange: 'transform', animation: 'cloudDrift 13s ease-in-out infinite' }}>
-            <div className="absolute inset-0 opacity-24 overflow-hidden pointer-events-none">
-              <img loading="lazy" alt="" className="absolute left-0 max-w-none size-full top-0" src={imgCloud1} />
-            </div>
-          </div>
-        </div>
-        <div id="hc4" className="absolute bottom-[-70px] h-[224px] right-[-160px] w-[445px]" data-name="cloud-4" data-node-id="7300:48525" style={{ willChange: "transform", animation: "cloudDriftFast 16s ease-in-out infinite alternate" }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, willChange: 'transform', animation: 'cloudDrift 8s ease-in-out infinite' }}>
-            <div className="absolute inset-0 opacity-56 overflow-hidden pointer-events-none">
-              <img loading="lazy" alt="" className="absolute left-0 max-w-none size-full top-0" src={imgCloud4} />
-            </div>
-          </div>
-        </div>
-        <div id="hc5" className="absolute bottom-[-38px] h-[188px] opacity-42 right-[359px] w-[234px]" data-name="cloud-5" data-node-id="7300:48526" style={{ willChange: "transform", animation: "cloudDriftMed 24s ease-in-out infinite alternate" }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, willChange: 'transform', animation: 'cloudDrift 10s ease-in-out infinite' }}>
-            <div className="absolute inset-0 opacity-79 overflow-hidden pointer-events-none">
-              <img loading="lazy" alt="" className="absolute left-0 max-w-none size-full top-0" src={imgCloud1} />
-            </div>
-          </div>
-        </div>
-        <div id="hc6" className="absolute flex h-[251.937px] items-center justify-center left-[338px] top-[-185px] w-[392.92px]" style={{ willChange: "transform", animation: "cloudDriftSlow 35s ease-in-out infinite alternate" }}>
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', willChange: 'transform', animation: 'cloudDrift 14s ease-in-out infinite' }}>
-            <div className="flex-none rotate-[173.23deg]">
-              <div className="h-[209.685px] opacity-34 relative w-[370.784px]" data-name="cloud-6" data-node-id="7300:48527">
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <img loading="lazy" alt="" className="absolute left-0 max-w-none size-full top-0" src={imgCloud4} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="hc7" className="absolute h-[310.197px] opacity-42 right-[-91.79px] top-[-115px] w-[386.785px]" data-name="cloud-7" data-node-id="7300:48528" style={{ willChange: "transform", animation: "cloudDriftMed 22s ease-in-out infinite alternate" }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, willChange: 'transform', animation: 'cloudDrift 12s ease-in-out infinite' }}>
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <img loading="lazy" alt="" className="absolute left-0 max-w-none size-full top-0" src={imgCloud1} />
-            </div>
-          </div>
-        </div>
-        <div id="hc8" className="absolute flex h-[432.628px] items-center justify-center left-[-301px] top-[-45px] w-[477.71px]" style={{ willChange: "transform", animation: "cloudDriftSlow 38s ease-in-out infinite alternate" }}>
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', willChange: 'transform', animation: 'cloudDrift 9.5s ease-in-out infinite' }}>
-            <div className="flex-none rotate-[-173.07deg]">
-              <div className="h-[382.991px] opacity-42 relative w-[434.686px]" data-name="cloud-8" data-node-id="7300:48529">
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <img loading="lazy" alt="" className="absolute left-[2.23%] max-w-none size-[95.74%] top-0" src={imgCloud1} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="hc9" className="absolute flex h-[182px] items-center justify-center left-[38px] top-[-71px] w-[434px]" style={{ willChange: "transform", animation: "cloudDriftSlow 42s ease-in-out infinite alternate" }}>
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', willChange: 'transform', animation: 'cloudDrift 11.5s ease-in-out infinite' }}>
-            <div className="-scale-y-100 flex-none rotate-180">
-              <div className="h-[182px] opacity-66 relative w-[434px]" data-name="cloud-9" data-node-id="7300:48530">
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <img loading="lazy" alt="" className="absolute left-0 max-w-none size-full top-0" src={imgCloud2} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-      <div className="absolute content-stretch flex flex-col gap-[var(--space\/4xl,40px)] items-center left-0 px-[191px] top-[585px] w-[1440px]" data-name="Main container" data-node-id="7300:48531">
-        <div className="h-[689px] relative shrink-0 w-[1046px]" data-name="Content container" data-node-id="7300:48532">
+
+      {/* MAIN CONTAINER — absolute at top-[585px], per Figma */}
+      <div className="absolute left-0 top-[585px] w-full" data-name="Main container">
+        <div className="max-w-[1200px] mx-auto px-5">
+        <div className="relative w-[1046px] h-[689px] mx-auto" ref={cardsRef} data-name="Content container" data-node-id="7300:48532">
+          {/* Right journey card */}
           <div
             ref={rightCardRef}
-            className={`absolute h-[167px] left-[746px] top-[31px] w-[306.5px]${cardsFloat ? ' float-right' : ''}`}
+            className="absolute left-[746px] top-[80px] w-[306.5px]"
+            style={cardsRevealed
+              ? { opacity: 1, transform: 'rotate(8deg)', willChange: 'auto' }
+              : { opacity: 0, transform: 'translateY(110px) rotate(8deg)', willChange: 'transform, opacity' }
+            }
             data-name="image 41"
             data-node-id="7300:48859"
-            style={cardsFloat ? { opacity: 1 } : cardsVisible ? {
-              opacity: 1,
-              transform: 'translateX(0px) translateY(0px) rotate(5.27deg) scale(1)',
-              transition: 'transform 1000ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 700ms ease',
-              transitionDelay: '600ms',
-            } : {
-              opacity: 0,
-              transform: 'translateX(-180px) translateY(50px) rotate(-12deg) scale(0.82)',
-              transition: 'none',
-            }}
           >
-            <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage41} />
+            <div style={{ animation: cardsRevealed ? 'cardFloatR 7s ease-in-out infinite' : 'none' }}>
+              <img alt="" className="block w-full h-auto pointer-events-none" src={imgImage41} />
+            </div>
           </div>
-          <div className="absolute content-stretch flex gap-[14px] items-center left-[725px] top-[437px]" data-node-id="7300:48537">
-            <div className="h-0 relative shrink-0 w-[74px]" data-node-id="7300:48538">
+          {/* Connection awareness pill */}
+          <div className="absolute flex gap-[14px] items-center left-[725px] top-[437px]" data-node-id="7300:48537">
+            <div className="h-0 relative shrink-0 w-[74px]">
               <div className="absolute inset-[-1px_0_0_0]">
-                <img loading="lazy" alt="" className="block max-w-none size-full" src={imgLine207} />
+                <img alt="" className="block max-w-none size-full" src={imgLine207} />
               </div>
             </div>
-            <div className="bg-gradient-to-b border border-[var(--borders\/border-subtle,#e7e5e4)] border-solid content-stretch flex from-[38.542%] from-white gap-[var(--space\/m,12px)] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[var(--radius\/xl,24px)] shrink-0 to-[#f5f5f4] w-[239px]" data-name="Connection awareness" data-node-id="7300:48539">
-              <div className="relative shrink-0 size-[8px]" data-node-id="7300:48540">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
+            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[239px]" data-name="Connection awareness" data-node-id="7300:48539">
+              <div className="relative shrink-0 size-[8px]">
+                <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
               </div>
-              <div className="flex flex-col font-['Inter:Medium',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[17px] text-[color:var(--text\/text-primary,#1c1917)] text-center whitespace-nowrap" data-node-id="7300:48541">
-                <p className="leading-[1.4]">Connection awareness</p>
-              </div>
+              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Connection awareness</span>
             </div>
           </div>
-          <div className="absolute content-stretch flex gap-[8px] items-center left-[6px] top-[437px]" data-node-id="7300:48542">
-            <div className="bg-gradient-to-b border border-[var(--borders\/border-subtle,#e7e5e4)] border-solid content-stretch flex from-[38.542%] from-white gap-[var(--space\/m,12px)] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[var(--radius\/xl,24px)] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543">
-              <div className="relative shrink-0 size-[8px]" data-node-id="7300:48544">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
+          {/* Gate & terminal changes pill */}
+          <div className="absolute flex gap-[8px] items-center left-[6px] top-[437px]" data-node-id="7300:48542">
+            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543">
+              <div className="relative shrink-0 size-[8px]">
+                <img alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
               </div>
-              <div className="flex flex-col font-['Inter:Medium',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[17px] text-[color:var(--text\/text-primary,#1c1917)] text-center whitespace-nowrap" data-node-id="7300:48545">
-                <p className="leading-[1.4]">{`Gate & terminal changes`}</p>
-              </div>
+              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">{`Gate & terminal changes`}</span>
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div className="h-0 relative w-[80px]" data-node-id="7300:48546">
+                <div className="h-0 relative w-[80px]">
                   <div className="absolute inset-[-1px_0_0_0]">
-                    <img loading="lazy" alt="" className="block max-w-none size-full" src={imgLine210} />
+                    <img alt="" className="block max-w-none size-full" src={imgLine210} />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="absolute content-stretch flex gap-[8px] items-center left-[725px] top-[317px]" data-node-id="7300:48547">
-            <div className="h-0 relative shrink-0 w-[40px]" data-node-id="7300:48548">
+          {/* Aircraft insights pill */}
+          <div className="absolute flex gap-[8px] items-center left-[725px] top-[317px]" data-node-id="7300:48547">
+            <div className="h-0 relative shrink-0 w-[40px]">
               <div className="absolute inset-[-1px_0_0_0]">
-                <img loading="lazy" alt="" className="block max-w-none size-full" src={imgLine208} />
+                <img alt="" className="block max-w-none size-full" src={imgLine208} />
               </div>
             </div>
-            <div className="bg-gradient-to-b border border-[var(--borders\/border-subtle,#e7e5e4)] border-solid content-stretch flex from-[38.542%] from-white gap-[var(--space\/m,12px)] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[var(--radius\/xl,24px)] shrink-0 to-[#f5f5f4] w-[182px]" data-name="Aircraft insights" data-node-id="7300:48549">
-              <div className="relative shrink-0 size-[8px]" data-node-id="7300:48550">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgEllipse4} />
+            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[182px]" data-name="Aircraft insights" data-node-id="7300:48549">
+              <div className="relative shrink-0 size-[8px]">
+                <img alt="" className="absolute block max-w-none size-full" src={imgEllipse4} />
               </div>
-              <div className="flex flex-col font-['Inter:Medium',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[17px] text-[color:var(--text\/text-primary,#1c1917)] text-center whitespace-nowrap" data-node-id="7300:48551">
-                <p className="leading-[1.4]">Aircraft insights</p>
-              </div>
+              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Aircraft insights</span>
             </div>
           </div>
-          <div className="absolute content-stretch flex gap-[8px] items-center left-[49px] top-[317px]" data-node-id="7300:48552">
-            <div className="bg-gradient-to-b border border-[var(--borders\/border-subtle,#e7e5e4)] border-solid content-stretch flex from-[38.542%] from-white gap-[var(--space\/m,12px)] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[var(--radius\/xl,24px)] shrink-0 to-[#f5f5f4] w-[248px]" data-name="Real-time flight tracking" data-node-id="7300:48553">
-              <div className="relative shrink-0 size-[8px]" data-node-id="7300:48554">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
+          {/* Real-time flight tracking pill */}
+          <div className="absolute flex gap-[8px] items-center left-[49px] top-[317px]" data-node-id="7300:48552">
+            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[248px]" data-name="Real-time flight tracking" data-node-id="7300:48553">
+              <div className="relative shrink-0 size-[8px]">
+                <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
               </div>
-              <div className="flex flex-col font-['Inter:Medium',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[17px] text-[color:var(--text\/text-primary,#1c1917)] text-center whitespace-nowrap" data-node-id="7300:48555">
-                <p className="leading-[1.4]">Real-time flight tracking</p>
-              </div>
+              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Real-time flight tracking</span>
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div className="h-0 relative w-[40px]" data-node-id="7300:48556">
+                <div className="h-0 relative w-[40px]">
                   <div className="absolute inset-[-1px_0_0_0]">
-                    <img loading="lazy" alt="" className="block max-w-none size-full" src={imgLine211} />
+                    <img alt="" className="block max-w-none size-full" src={imgLine211} />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="absolute content-stretch flex gap-[8px] items-center left-[725px] top-[557px]" data-node-id="7300:48557">
-            <div className="h-0 relative shrink-0 w-[40px]" data-node-id="7300:48558">
+          {/* Personal flight history pill */}
+          <div className="absolute flex gap-[8px] items-center left-[725px] top-[557px]" data-node-id="7300:48557">
+            <div className="h-0 relative shrink-0 w-[40px]">
               <div className="absolute inset-[-1px_0_0_0]">
-                <img loading="lazy" alt="" className="block max-w-none size-full" src={imgLine208} />
+                <img alt="" className="block max-w-none size-full" src={imgLine208} />
               </div>
             </div>
-            <div className="bg-gradient-to-b border border-[var(--borders\/border-subtle,#e7e5e4)] border-solid content-stretch flex from-[38.542%] from-white gap-[var(--space\/m,12px)] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[var(--radius\/xl,24px)] shrink-0 to-[#f5f5f4] w-[230px]" data-name="Personal flight history" data-node-id="7300:48559">
-              <div className="relative shrink-0 size-[8px]" data-node-id="7300:48560">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgEllipse5} />
+            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[230px]" data-name="Personal flight history" data-node-id="7300:48559">
+              <div className="relative shrink-0 size-[8px]">
+                <img alt="" className="absolute block max-w-none size-full" src={imgEllipse5} />
               </div>
-              <div className="flex flex-col font-['Inter:Medium',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[17px] text-[color:var(--text\/text-primary,#1c1917)] text-center whitespace-nowrap" data-node-id="7300:48561">
-                <p className="leading-[1.4]">Personal flight history</p>
-              </div>
+              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Personal flight history</span>
             </div>
           </div>
-          <div className="absolute content-stretch flex gap-[8px] items-center left-[103px] top-[557px]" data-node-id="7300:48562">
-            <div className="bg-gradient-to-b border border-[var(--borders\/border-subtle,#e7e5e4)] border-solid content-stretch flex from-[38.542%] from-white gap-[var(--space\/m,12px)] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[var(--radius\/xl,24px)] shrink-0 to-[#f5f5f4] w-[194px]" data-name="Delay predictions" data-node-id="7300:48563">
-              <div className="relative shrink-0 size-[8px]" data-node-id="7300:48564">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
+          {/* Delay predictions pill */}
+          <div className="absolute flex gap-[8px] items-center left-[103px] top-[557px]" data-node-id="7300:48562">
+            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[194px]" data-name="Delay predictions" data-node-id="7300:48563">
+              <div className="relative shrink-0 size-[8px]">
+                <img alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
               </div>
-              <div className="flex flex-col font-['Inter:Medium',sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[17px] text-[color:var(--text\/text-primary,#1c1917)] text-center whitespace-nowrap" data-node-id="7300:48565">
-                <p className="leading-[1.4]">Delay predictions</p>
-              </div>
+              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Delay predictions</span>
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div className="h-0 relative w-[40px]" data-node-id="7300:48566">
+                <div className="h-0 relative w-[40px]">
                   <div className="absolute inset-[-1px_0_0_0]">
-                    <img loading="lazy" alt="" className="block max-w-none size-full" src={imgLine211} />
+                    <img alt="" className="block max-w-none size-full" src={imgLine211} />
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          {/* Left journey card */}
           <div
             ref={leftCardRef}
-            className={`absolute h-[205.5px] left-0 top-[12px] w-[324.5px]${cardsFloat ? ' float-left' : ''}`}
+            className="absolute left-0 top-[80px] w-[324.5px]"
+            style={cardsRevealed
+              ? { opacity: 1, transform: 'rotate(-8deg)', willChange: 'auto' }
+              : { opacity: 0, transform: 'translateY(110px) rotate(-8deg)', willChange: 'transform, opacity' }
+            }
             data-name="image 40"
             data-node-id="7300:48856"
-            style={cardsFloat ? { opacity: 1 } : cardsVisible ? {
-              opacity: 1,
-              transform: 'translateX(0px) translateY(0px) rotate(-3.73deg) scale(1)',
-              transition: 'transform 1000ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 700ms ease',
-              transitionDelay: '400ms',
-            } : {
-              opacity: 0,
-              transform: 'translateX(180px) translateY(50px) rotate(12deg) scale(0.82)',
-              transition: 'none',
+          >
+            <div style={{ animation: cardsRevealed ? 'cardFloatL 6s ease-in-out infinite' : 'none' }}>
+              <img alt="" className="block w-full h-auto pointer-events-none" src={imgImage40} />
+            </div>
+          </div>
+          {/* Phone */}
+          <div
+            className="absolute h-[757px] left-[353px] top-[-68px] w-[364px]"
+            data-name="image 42"
+            data-node-id="7300:48862"
+            style={{
+              opacity: phoneVisible ? 1 : 0,
+              transform: phoneVisible ? 'translateY(0px) scale(1)' : 'translateY(52px) scale(0.88)',
+              filter: phoneVisible ? 'blur(0px)' : 'blur(6px)',
+              transition: 'opacity 0.9s cubic-bezier(0.34, 1.15, 0.64, 1), transform 0.9s cubic-bezier(0.34, 1.15, 0.64, 1), filter 0.9s cubic-bezier(0.34, 1.15, 0.64, 1)',
+              transitionDelay: phoneVisible ? '180ms' : '0ms',
+              willChange: 'transform, opacity',
             }}
           >
-            <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage40} />
-          </div>
-          <div className="absolute h-[757px] left-[353px] top-[-68px] w-[364px]" data-name="image 42" data-node-id="7300:48862">
-            <NextImage src={imgImage42} alt="Flight Passport App" width={364} height={757} priority={true} quality={90} className="absolute inset-0 max-w-none object-cover pointer-events-none" style={{ width: "100%", height: "100%" }} />
+            <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage42} />
           </div>
         </div>
-        <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-name="airlines-strip" data-node-id="7300:48567">
-          <div className="bg-[var(--backgrounds\/bg-page,#f9f8f6)] border-[var(--borders\/border-subtle,#e7e5e4)] border-b border-solid content-stretch flex flex-col gap-[var(--space\/4xl,40px)] items-center overflow-hidden py-[var(--space\/4xl,40px)] relative shrink-0 w-full" data-name="Footer content" data-node-id="7300:48568">
-            <p className="font-['Inter',sans-serif] font-normal leading-[1.4] not-italic relative shrink-0 text-[18px] text-[color:var(--text\/text-tertiary,#a8a29e)] text-center tracking-[-0.18px] whitespace-nowrap" data-node-id="7300:48569">
-              Tracks flights across 1200+ airlines and airports worldwide
-            </p>
-            <div style={{overflow:'hidden', width:'100%', maskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)', WebkitMaskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)'}}>
+        </div>
+        {/* AIRLINES STRIP — 120px gap below content container (mt relative to content container bottom: 689px within Main container) */}
+        <div className="w-full border-t border-[#e7e5e4] bg-[#f9f8f6] mt-[120px]">
+        <div className="flex flex-col gap-[40px] items-center overflow-hidden py-[40px]" data-name="airlines-strip" data-node-id="7300:48567">
+          <p className="font-normal leading-[1.4] text-[18px] text-[#a8a29e] text-center tracking-[-0.18px] whitespace-nowrap" data-node-id="7300:48569">
+            Tracks flights across 1200+ airlines and airports worldwide
+          </p>
+          <div style={{overflow:'hidden', width:'100%', maskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)', WebkitMaskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)'}}>
               <div className="marquee-track" data-name="Airline logos" data-node-id="7300:48570" style={{gap:'32px'}}>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48571">
                 <div className="absolute inset-[21%_0_21.84%_0]" data-name="Paths" data-node-id="I7300:48571;1:6332">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths} />
                 </div>
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48571;1:6338">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48572">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem} />
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48572;1:6886">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage1} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage1} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48573">
                 <div className="absolute inset-[37%_0_36.1%_0]" data-name="Paths" data-node-id="I7300:48573;1:6929">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths1} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths1} />
                 </div>
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48573;1:6933">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage2} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage2} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48574">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem1} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem2} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem1} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem2} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48575">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem3} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem3} />
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48575;1:6077">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage3} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage3} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48576">
                 <div className="absolute inset-[8.57%_0_11.43%_0]" data-name="Paths" data-node-id="I7300:48576;1:6114">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths2} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths2} />
                 </div>
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48576;1:6118">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage4} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage4} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48577">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem4} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem4} />
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48577;1:7019">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage5} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage5} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48578">
                 <div className="absolute inset-[16.13%_1.86%_16.39%_1.25%]" data-name="Paths" data-node-id="I7300:48578;1:6395">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths3} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths3} />
                 </div>
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48578;1:6399">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage6} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage6} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48579">
                 <div className="absolute inset-[7.67%_0_5.87%_0]" data-name="Paths" data-node-id="I7300:48579;1:5922">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths4} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths4} />
                 </div>
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48579;1:5940">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage7} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage7} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48580">
                 <div className="absolute inset-[11.43%_0_12.86%_0]" data-name="Paths" data-node-id="I7300:48580;1:6096">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths5} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths5} />
                 </div>
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48580;1:6100">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage8} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage8} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48581">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem5} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem6} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem5} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem6} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48582">
                 <div className="absolute inset-[5%_0_5.39%_0]" data-name="Paths" data-node-id="I7300:48582;1:6593">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths6} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths6} />
                 </div>
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48582;1:6597">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage9} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage9} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48583">
                 <div className="absolute inset-[0_18.93%]" data-name="Paths" data-node-id="I7300:48583;1:6288">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths7} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths7} />
                 </div>
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48583;1:6291">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage10} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage10} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48584">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem7} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem7} />
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48584;1:6321">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage11} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage11} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48585">
                 <div className="absolute inset-[14%_0_14.81%_0]" data-name="Paths" data-node-id="I7300:48585;1:6057">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths8} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths8} />
                 </div>
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48585;1:6065">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage12} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage12} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48586">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem8} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem9} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem8} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem9} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48587">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem10} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem11} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem10} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem11} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48588">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem12} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem12} />
                 <div className="-translate-x-1/2 absolute aspect-[400/400] bottom-0 left-1/2 top-0" data-name="Image" data-node-id="I7300:48588;300:506">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage13} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage13} />
                 </div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48589">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem13} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem14} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem13} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem14} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48590">
                 <div className="absolute inset-[6.06%_4.74%_6.56%_5.82%]" data-name="Vector" data-node-id="I7300:48590;162:1922">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgVector} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgVector} />
                 </div>
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem15} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem15} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48591">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem16} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem17} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem16} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem17} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48592">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem18} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem19} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem18} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem19} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48593">
                 <div className="absolute inset-[13.01%_0_11.99%_0]" data-name="Paths" data-node-id="I7300:48593;213:2474">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths9} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths9} />
                 </div>
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem20} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem20} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48594">
                 <div className="absolute inset-[12%_0]" data-name="Paths" data-node-id="I7300:48594;1:6052">
-                  <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths10} />
+                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths10} />
                 </div>
                 <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48594;1:6055">
-                  <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage14} />
+                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage14} />
                 </div>
               </div>
               {/* Second copy — identical, for seamless loop */}
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[21%_0_21.84%_0]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage} /></div>
+                <div className="absolute inset-[21%_0_21.84%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths} /></div>
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage1} /></div>
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem} />
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage1} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[37%_0_36.1%_0]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths1} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage2} /></div>
+                <div className="absolute inset-[37%_0_36.1%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths1} /></div>
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage2} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem1} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem2} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem1} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem2} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem3} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage3} /></div>
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem3} />
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage3} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[8.57%_0_11.43%_0]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths2} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage4} /></div>
+                <div className="absolute inset-[8.57%_0_11.43%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths2} /></div>
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage4} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem4} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage5} /></div>
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem4} />
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage5} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[16.13%_1.86%_16.39%_1.25%]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths3} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage6} /></div>
+                <div className="absolute inset-[16.13%_1.86%_16.39%_1.25%]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths3} /></div>
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage6} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[7.67%_0_5.87%_0]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths4} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage7} /></div>
+                <div className="absolute inset-[7.67%_0_5.87%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths4} /></div>
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage7} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[11.43%_0_12.86%_0]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths5} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage8} /></div>
+                <div className="absolute inset-[11.43%_0_12.86%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths5} /></div>
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage8} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem5} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem6} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem5} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem6} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[5%_0_5.39%_0]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths6} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage9} /></div>
+                <div className="absolute inset-[5%_0_5.39%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths6} /></div>
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage9} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[0_18.93%]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths7} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage10} /></div>
+                <div className="absolute inset-[0_18.93%]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths7} /></div>
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage10} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem7} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage11} /></div>
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem7} />
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage11} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[14%_0_14.81%_0]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths8} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage12} /></div>
+                <div className="absolute inset-[14%_0_14.81%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths8} /></div>
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage12} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem8} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem9} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem8} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem9} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem10} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem11} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem10} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem11} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem12} />
-                <div className="-translate-x-1/2 absolute aspect-[400/400] bottom-0 left-1/2 top-0"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage13} /></div>
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem12} />
+                <div className="-translate-x-1/2 absolute aspect-[400/400] bottom-0 left-1/2 top-0"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage13} /></div>
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem13} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem14} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem13} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem14} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[6.06%_4.74%_6.56%_5.82%]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgVector} /></div>
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem15} />
+                <div className="absolute inset-[6.06%_4.74%_6.56%_5.82%]"><img alt="" className="absolute block max-w-none size-full" src={imgVector} /></div>
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem15} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem16} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem17} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem16} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem17} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem18} />
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem19} />
+                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem18} />
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem19} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[13.01%_0_11.99%_0]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths9} /></div>
-                <img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem20} />
+                <div className="absolute inset-[13.01%_0_11.99%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths9} /></div>
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem20} />
               </div>
               <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[12%_0]"><img loading="lazy" alt="" className="absolute block max-w-none size-full" src={imgPaths10} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img loading="lazy" alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage14} /></div>
+                <div className="absolute inset-[12%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths10} /></div>
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage14} /></div>
               </div>
-            </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Responsive hero wrapper ───────────────────────────────────────────────────
-function FigmaHeroSection() {
-  return (
-    <>
-      <style>{`
-        .hero-wrap {
-          overflow: hidden;
-          width: 100%;
-          height: ${HERO_HEIGHT}px;
-        }
-        .hero-inner {
-          position: relative;
-          left: 50%;
-          margin-left: -720px;
-          width: 1440px;
-          height: ${HERO_HEIGHT}px;
-          transform-origin: top center;
-        }
-        @media (max-width: 1279px) {
-          .hero-wrap { height: ${Math.round(HERO_HEIGHT * 0.75)}px; }
-          .hero-inner { transform: scale(0.75); }
-        }
-        @media (max-width: 767px) {
-          .hero-wrap { height: ${Math.round(HERO_HEIGHT * 0.45)}px; }
-          .hero-inner { transform: scale(0.45); }
-        }
-      `}</style>
-      <div className="hero-wrap">
-        <div className="hero-inner">
-          <FigmaHeroContent />
         </div>
       </div>
-    </>
+    </section>
   );
 }
 
@@ -1076,7 +1064,7 @@ function Intelligence() {
       <div ref={p0} style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
         <div style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
           <div style={{position: 'relative', width: '24px', height: '24px', overflow: 'clip'}}>
-            <img loading="lazy" src="/images/asset-6571faff-0057-47a8-bb30-a2bcebd6e48a.png" alt="" style={{position: 'absolute', top: '5%', left: '7.08%', right: '5%', bottom: '7.08%', width: 'calc(100% - 12.08%)', height: 'calc(100% - 12.08%)'}} />
+            <img src="/Images/asset-6571faff-0057-47a8-bb30-a2bcebd6e48a.svg" alt="" style={{position: 'absolute', top: '5%', left: '7.08%', right: '5%', bottom: '7.08%', width: 'calc(100% - 12.08%)', height: 'calc(100% - 12.08%)'}} />
           </div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '100%'}}>
@@ -1092,7 +1080,7 @@ function Intelligence() {
       <div ref={p1} style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
         <div style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
           <div style={{position: 'relative', width: '24px', height: '24px', overflow: 'clip'}}>
-            <img loading="lazy" src="/images/asset-3d262fbf-4d0d-426e-94a8-1cb0a827cf35.png" alt="" style={{position: 'absolute', top: '5.21%', left: '9.38%', right: '9.38%', bottom: '5.21%', width: 'calc(100% - 18.76%)', height: 'calc(100% - 10.42%)'}} />
+            <img src="/Images/asset-3d262fbf-4d0d-426e-94a8-1cb0a827cf35.svg" alt="" style={{position: 'absolute', top: '5.21%', left: '9.38%', right: '9.38%', bottom: '5.21%', width: 'calc(100% - 18.76%)', height: 'calc(100% - 10.42%)'}} />
           </div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '100%'}}>
@@ -1108,7 +1096,7 @@ function Intelligence() {
       <div ref={p2} style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
         <div style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
           <div style={{position: 'relative', width: '24px', height: '24px', overflow: 'clip'}}>
-            <img loading="lazy" src="/images/asset-0520a5cb-3223-47a1-8eb9-a6ce039120d9.png" alt="" style={{position: 'absolute', top: '13.54%', left: '5.21%', right: '5.21%', bottom: '13.54%', width: 'calc(100% - 10.42%)', height: 'calc(100% - 27.08%)'}} />
+            <img src="/Images/asset-0520a5cb-3223-47a1-8eb9-a6ce039120d9.svg" alt="" style={{position: 'absolute', top: '13.54%', left: '5.21%', right: '5.21%', bottom: '13.54%', width: 'calc(100% - 10.42%)', height: 'calc(100% - 27.08%)'}} />
           </div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '100%'}}>
@@ -1407,7 +1395,7 @@ function HowItWorks() {
                     data-node-id="7300-48975"
                     style={{ position: "absolute", inset: "28.68% 12.22% 28.7% 75.16%" }}
                   >
-                    <img loading="lazy" alt="" src={imgHiwVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgHiwVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Camera lens image */}
@@ -1419,7 +1407,7 @@ function HowItWorks() {
                   >
                     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
                       <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-                        <img loading="lazy" alt="" src={imgHiwCameraImage} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
+                        <img alt="" src={imgHiwCameraImage} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
                       </div>
                       <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
                     </div>
@@ -1431,7 +1419,7 @@ function HowItWorks() {
                     data-node-id="7300-48977"
                     style={{ position: "absolute", inset: "37.82% 14.93% 37.83% 77.86%" }}
                   >
-                    <img loading="lazy" alt="" src={imgHiwVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgHiwVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector2 */}
@@ -1440,7 +1428,7 @@ function HowItWorks() {
                     data-node-id="7300-48979"
                     style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%" }}
                   >
-                    <img loading="lazy" alt="" src={imgHiwVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgHiwVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector3 — mix-blend-multiply */}
@@ -1449,7 +1437,7 @@ function HowItWorks() {
                     data-node-id="7300-48980"
                     style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%", mixBlendMode: "multiply" }}
                   >
-                    <img loading="lazy" alt="" src={imgHiwVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgHiwVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector4 — mix-blend-screen */}
@@ -1458,7 +1446,7 @@ function HowItWorks() {
                     data-node-id="7300-48981"
                     style={{ position: "absolute", inset: "51.75% 15.67% 40.64% 82.07%", mixBlendMode: "screen" }}
                   >
-                    <img loading="lazy" alt="" src={imgHiwVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgHiwVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
                 </div>
               </div>
@@ -1633,7 +1621,7 @@ function MiddleSection() {
 
                   {/* Camera detail — Vector */}
                   <div style={{ position: "absolute", inset: "28.68% 12.22% 28.7% 75.16%" }}>
-                    <img loading="lazy" alt="" src={imgMidVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgMidVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Camera lens image — imgRectangle with dark overlay */}
@@ -1643,7 +1631,7 @@ function MiddleSection() {
                   >
                     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
                       <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-                        <img loading="lazy" alt="" src={imgMidRectangle} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
+                        <img alt="" src={imgMidRectangle} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
                       </div>
                       <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
                     </div>
@@ -1651,22 +1639,22 @@ function MiddleSection() {
 
                   {/* Vector1 */}
                   <div style={{ position: "absolute", inset: "37.82% 14.93% 37.83% 77.86%" }}>
-                    <img loading="lazy" alt="" src={imgMidVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgMidVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector2 */}
                   <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%" }}>
-                    <img loading="lazy" alt="" src={imgMidVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgMidVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector3 — mix-blend-multiply */}
                   <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%", mixBlendMode: "multiply" }}>
-                    <img loading="lazy" alt="" src={imgMidVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgMidVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector4 — mix-blend-screen */}
                   <div style={{ position: "absolute", inset: "51.75% 15.67% 40.64% 82.07%", mixBlendMode: "screen" }}>
-                    <img loading="lazy" alt="" src={imgMidVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgMidVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
                 </div>
               </div>
@@ -1994,14 +1982,14 @@ function LowerSection() {
 
                   {/* Camera detail — Vector */}
                   <div style={{ position: "absolute", inset: "28.68% 12.22% 28.7% 75.16%" }}>
-                    <img loading="lazy" alt="" src={imgLowVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgLowVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Camera lens — imgCameraImage with dark overlay */}
                   <div aria-hidden="true" style={{ position: "absolute", inset: "28.65% 12.21% 28.71% 75.17%" }}>
                     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
                       <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-                        <img loading="lazy" alt="" src={imgLowCameraImage} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
+                        <img alt="" src={imgLowCameraImage} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
                       </div>
                       <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
                     </div>
@@ -2009,22 +1997,22 @@ function LowerSection() {
 
                   {/* Vector1 */}
                   <div style={{ position: "absolute", inset: "37.82% 14.93% 37.83% 77.86%" }}>
-                    <img loading="lazy" alt="" src={imgLowVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgLowVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector2 */}
                   <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%" }}>
-                    <img loading="lazy" alt="" src={imgLowVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgLowVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector3 — mix-blend-multiply */}
                   <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%", mixBlendMode: "multiply" }}>
-                    <img loading="lazy" alt="" src={imgLowVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgLowVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector4 — mix-blend-screen */}
                   <div style={{ position: "absolute", inset: "51.75% 15.67% 40.64% 82.07%", mixBlendMode: "screen" }}>
-                    <img loading="lazy" alt="" src={imgLowVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgLowVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
                 </div>
               </div>
@@ -2187,14 +2175,14 @@ function BottomSection() {
 
                   {/* Camera detail — Vector */}
                   <div style={{ position: "absolute", inset: "28.68% 12.22% 28.7% 75.16%" }}>
-                    <img loading="lazy" alt="" src={imgBotVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgBotVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Camera lens — imgUserImage with dark overlay */}
                   <div aria-hidden="true" style={{ position: "absolute", inset: "28.65% 12.21% 28.71% 75.17%" }}>
                     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
                       <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-                        <img loading="lazy" alt="" src={imgBotUserImage} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
+                        <img alt="" src={imgBotUserImage} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
                       </div>
                       <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
                     </div>
@@ -2202,22 +2190,22 @@ function BottomSection() {
 
                   {/* Vector1 */}
                   <div style={{ position: "absolute", inset: "37.82% 14.93% 37.83% 77.86%" }}>
-                    <img loading="lazy" alt="" src={imgBotVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgBotVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector2 */}
                   <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%" }}>
-                    <img loading="lazy" alt="" src={imgBotVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgBotVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector3 — mix-blend-multiply */}
                   <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%", mixBlendMode: "multiply" }}>
-                    <img loading="lazy" alt="" src={imgBotVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgBotVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
 
                   {/* Vector4 — mix-blend-screen */}
                   <div style={{ position: "absolute", inset: "51.75% 15.67% 40.64% 82.07%", mixBlendMode: "screen" }}>
-                    <img loading="lazy" alt="" src={imgBotVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
+                    <img alt="" src={imgBotVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
                   </div>
                 </div>
               </div>
@@ -2309,7 +2297,7 @@ function BottomSection() {
 }
 
 // ── Live Activities ───────────────────────────────────────────────────────────
-const imgImage43 = "/images/asset-348037ab-6ed8-4c3e-bea0-9b188c61b8cc.png";
+const imgImage43 = "/Images/asset-348037ab-6ed8-4c3e-bea0-9b188c61b8cc.png";
 
 function LiveActivities() {
   const headerRef = useRef<HTMLDivElement>(null);
@@ -2434,13 +2422,13 @@ function LiveActivities() {
 }
 
 // ── Passport ──────────────────────────────────────────────────────────────────
-const imgPassportBg  = "/images/asset-dba6f693-41d3-4c6b-9f73-2fc7f0aaffaf.png";
-const imgPassportBg1 = "/images/asset-f80fb675-dced-44b1-bb82-7caa53da7136.png";
-const imgPassportBg2 = "/images/asset-6959bf5d-0f6e-420c-b8b6-233c6134257d.png";
-const imgPassportIcon0 = "/images/asset-df603d5f-5b2f-407b-946b-a4ede02e2e61.png";
-const imgPassportIcon1 = "/images/asset-61eda8f2-9f2d-4d85-a6dd-49038088417e.png";
-const imgPassportIcon2 = "/images/asset-3d28a8cb-5899-432b-ba6c-02554b1e46a2.png";
-const imgPassportIcon3 = "/images/asset-99550e42-aadb-4ac4-a5c8-96413896b5b7.png";
+const imgPassportBg  = "/Images/asset-dba6f693-41d3-4c6b-9f73-2fc7f0aaffaf.png";
+const imgPassportBg1 = "/Images/asset-f80fb675-dced-44b1-bb82-7caa53da7136.png";
+const imgPassportBg2 = "/Images/asset-6959bf5d-0f6e-420c-b8b6-233c6134257d.png";
+const imgPassportIcon0 = "/Images/asset-df603d5f-5b2f-407b-946b-a4ede02e2e61.svg";
+const imgPassportIcon1 = "/Images/asset-61eda8f2-9f2d-4d85-a6dd-49038088417e.svg";
+const imgPassportIcon2 = "/Images/asset-3d28a8cb-5899-432b-ba6c-02554b1e46a2.svg";
+const imgPassportIcon3 = "/Images/asset-99550e42-aadb-4ac4-a5c8-96413896b5b7.svg";
 
 const PASSPORT_STATS = [
   { target: 47,  suffix: '',  label: 'Flights completed', icon: imgPassportIcon0, iconStyle: {top:'9.37%',left:'9.37%',right:'9.38%',bottom:'9.38%'}, iconOpacity: 1 },
@@ -2556,22 +2544,22 @@ function Passport() {
 
         {/* Background cloud decorations */}
         <div style={{position:'absolute',left:'-198px',top:'-148px',width:'505.301px',height:'465.589px',transform:'rotate(12.1deg)',opacity:0.42,pointerEvents:'none'}}>
-          <img loading="lazy" src={imgPassportBg} alt="" style={{position:'absolute',left:'2.23%',width:'95.74%',height:'95.74%'}} />
+          <img src={imgPassportBg} alt="" style={{position:'absolute',left:'2.23%',width:'95.74%',height:'95.74%'}} />
         </div>
         <div style={{position:'absolute',left:'166px',top:'-74px',width:'251px',height:'221px',opacity:0.42*0.74,pointerEvents:'none'}}>
-          <img loading="lazy" src={imgPassportBg} alt="" style={{position:'absolute',left:'2.23%',width:'95.74%',height:'95.74%'}} />
+          <img src={imgPassportBg} alt="" style={{position:'absolute',left:'2.23%',width:'95.74%',height:'95.74%'}} />
         </div>
         <div style={{position:'absolute',right:'-83px',bottom:'-116px',width:'406px',height:'326px',opacity:0.42*0.50,pointerEvents:'none'}}>
-          <img loading="lazy" src={imgPassportBg} alt="" style={{width:'100%',height:'100%'}} />
+          <img src={imgPassportBg} alt="" style={{width:'100%',height:'100%'}} />
         </div>
         <div style={{position:'absolute',left:'222px',bottom:'-152px',width:'445px',height:'224px',opacity:0.16,pointerEvents:'none'}}>
-          <img loading="lazy" src={imgPassportBg1} alt="" style={{width:'100%',height:'100%'}} />
+          <img src={imgPassportBg1} alt="" style={{width:'100%',height:'100%'}} />
         </div>
         <div style={{position:'absolute',right:'180px',bottom:'-152px',width:'445px',height:'224px',opacity:0.16,pointerEvents:'none'}}>
-          <img loading="lazy" src={imgPassportBg1} alt="" style={{width:'100%',height:'100%'}} />
+          <img src={imgPassportBg1} alt="" style={{width:'100%',height:'100%'}} />
         </div>
         <div style={{position:'absolute',left:'-96px',bottom:'-100px',width:'432px',height:'256px',opacity:0.39,pointerEvents:'none'}}>
-          <img loading="lazy" src={imgPassportBg2} alt="" style={{width:'100%',height:'100%'}} />
+          <img src={imgPassportBg2} alt="" style={{width:'100%',height:'100%'}} />
         </div>
 
         {/* Main content */}
@@ -2613,7 +2601,7 @@ function Passport() {
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
 // ── FAQ asset URLs ────────────────────────────────────────────────────────────
-const imgFaqIcon = "/images/asset-da12b6f2-d6cc-4a7a-b21e-c1e5b1c44487.png";
+const imgFaqIcon = "/Images/asset-da12b6f2-d6cc-4a7a-b21e-c1e5b1c44487.svg";
 
 const FAQ_DATA = [
   {
@@ -2855,7 +2843,7 @@ function FAQ() {
 }
 
 // ── Final CTA asset URLs ──────────────────────────────────────────────────────
-const imgCtaIcon = "/images/asset-ad8c634f-6331-482a-bd5a-7bbe7a2b8fc4.png";
+const imgCtaIcon = "/Images/asset-ad8c634f-6331-482a-bd5a-7bbe7a2b8fc4.svg";
 
 // ── Final CTA ─────────────────────────────────────────────────────────────────
 function FinalCTA() {
@@ -3021,8 +3009,8 @@ function FinalCTA() {
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 // ── Footer asset URLs (node 7300-49765) ──────────────────────────────────────
-const imgFooterLogo    = "/images/asset-3446d39b-7772-4f4f-8ec6-c08df549325c.png";
-const imgFiFooter      = "/images/asset-63c22fa0-1773-4419-952c-5ed5bb51d114.png";
+const imgFooterLogo    = "/Images/asset-3446d39b-7772-4f4f-8ec6-c08df549325c.svg";
+const imgFiFooter      = "/Images/asset-63c22fa0-1773-4419-952c-5ed5bb51d114.svg";
 
 const FOOTER_LINKS = [
   { label: "Features", href: "#features" },
@@ -3114,7 +3102,7 @@ function Footer() {
       <footer className="footer-root">
         {/* Left — logo + wordmark */}
         <div className="footer-logo-block">
-          <img loading="lazy" src={imgFooterLogo} alt="Flight Passport" style={{ width: 34, height: 34, flexShrink: 0, display: "block" }} />
+          <img src={imgFooterLogo} alt="Flight Passport" style={{ width: 34, height: 34, flexShrink: 0, display: "block" }} />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
             <span style={{ fontSize: 15, fontWeight: 600, color: "white", whiteSpace: "nowrap", lineHeight: 1.4 }}>
               FlightPassport
@@ -3123,7 +3111,7 @@ function Footer() {
               <span style={{ fontSize: 8, fontWeight: 500, color: "#a8a29e", letterSpacing: "0.16px", lineHeight: "14px", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                 BORN IN FINLAND
               </span>
-              <img loading="lazy" alt="Finnish flag" src={imgFiFooter} style={{ width: 14, height: 10, flexShrink: 0, display: "block" }} />
+              <img alt="Finnish flag" src={imgFiFooter} style={{ width: 14, height: 10, flexShrink: 0, display: "block" }} />
             </div>
           </div>
         </div>

@@ -392,6 +392,19 @@ function FigmaHeroSection() {
   const [cardsRevealed, setCardsRevealed] = useState(false);
   const [phoneVisible, setPhoneVisible] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
+  // Badge refs — line elements (clip-path animation) and pill elements (badge-pop animation)
+  const lineConnRef     = useRef<HTMLDivElement>(null);
+  const lineGateRef     = useRef<HTMLDivElement>(null);
+  const lineAircraftRef = useRef<HTMLDivElement>(null);
+  const lineRealRef     = useRef<HTMLDivElement>(null);
+  const lineHistRef     = useRef<HTMLDivElement>(null);
+  const lineDelayRef    = useRef<HTMLDivElement>(null);
+  const pillConnRef     = useRef<HTMLDivElement>(null);
+  const pillGateRef     = useRef<HTMLDivElement>(null);
+  const pillAircraftRef = useRef<HTMLDivElement>(null);
+  const pillRealRef     = useRef<HTMLDivElement>(null);
+  const pillHistRef     = useRef<HTMLDivElement>(null);
+  const pillDelayRef    = useRef<HTMLDivElement>(null);
 
   // Reveal text and phone on mount
   useEffect(() => {
@@ -466,6 +479,48 @@ function FigmaHeroSection() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Badge animations — scroll-triggered, fires once when badge area scrolls into view
+  useEffect(() => {
+    const badges: [React.RefObject<HTMLDivElement | null>, React.RefObject<HTMLDivElement | null>, number, number][] = [
+      [lineRealRef,     pillRealRef,     0,    300],
+      [lineAircraftRef, pillAircraftRef, 200,  500],
+      [lineConnRef,     pillConnRef,     400,  700],
+      [lineHistRef,     pillHistRef,     600,  900],
+      [lineDelayRef,    pillDelayRef,    800,  1100],
+      [lineGateRef,     pillGateRef,     1000, 1300],
+    ];
+
+    function runBadges() {
+      badges.forEach(([lineRef, pillRef, lineDelay, pillDelay]) => {
+        setTimeout(() => {
+          if (lineRef.current) lineRef.current.style.animation = 'line-reveal 0.45s ease-out forwards';
+        }, lineDelay);
+        setTimeout(() => {
+          if (pillRef.current) pillRef.current.style.animation = 'badge-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+        }, pillDelay);
+      });
+    }
+
+    // Check if the MIDDLE badge row is actually visible in the viewport
+    function isBadgesInView() {
+      if (!pillConnRef.current) return false;
+      const rect = pillConnRef.current.getBoundingClientRect();
+      return rect.top < window.innerHeight * 0.9 && rect.bottom > 0;
+    }
+
+    let triggered = false;
+    function onScroll() {
+      if (triggered) return;
+      if (!isBadgesInView()) return;
+      triggered = true;
+      window.removeEventListener('scroll', onScroll);
+      runBadges();
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <section className="relative w-full bg-[#f9f8f6] min-h-[1579px] overflow-x-hidden" ref={heroRef}>
       {/* SKY GRADIENT — full width, 840px height */}
@@ -487,11 +542,14 @@ function FigmaHeroSection() {
             0%, 100% { transform: translateY(-5px); }
             50%       { transform: translateY(5px); }
           }
-          @keyframes badge-appear {
-            0%   { opacity: 0; transform: scale(0.7) translateY(14px); filter: blur(6px); }
-            60%  { opacity: 1; filter: blur(0px); }
-            80%  { transform: scale(1.05) translateY(0); }
-            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+          @keyframes line-reveal {
+            from { clip-path: inset(-2px 100% -2px -2px); }
+            to   { clip-path: inset(-2px 0%   -2px -2px); }
+          }
+          @keyframes badge-pop {
+            0%   { opacity: 0; transform: scale(0.78); filter: blur(5px); }
+            65%  { opacity: 1; transform: scale(1.05); filter: blur(0px); }
+            100% { opacity: 1; transform: scale(1);    filter: blur(0px); }
           }
         `}</style>
         {/* CLOUDS — all left-0, horizontal position set via negative animation-delay */}
@@ -616,13 +674,13 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Connection awareness pill */}
-          <div className="absolute flex gap-[14px] items-center left-[725px] top-[437px]" data-node-id="7300:48537" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.0s forwards' }}>
-            <div className="h-0 relative shrink-0 w-[74px]">
+          <div className="absolute flex gap-[14px] items-center left-[725px] top-[437px]" data-node-id="7300:48537">
+            <div ref={lineConnRef} className="h-0 relative shrink-0 w-[74px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine207} />
               </div>
             </div>
-            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[239px]" data-name="Connection awareness" data-node-id="7300:48539">
+            <div ref={pillConnRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[239px]" data-name="Connection awareness" data-node-id="7300:48539" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
               </div>
@@ -630,8 +688,8 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Gate & terminal changes pill */}
-          <div className="absolute flex gap-[8px] items-center left-[6px] top-[437px]" data-node-id="7300:48542" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.6s forwards' }}>
-            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543">
+          <div className="absolute flex gap-[8px] items-center left-[6px] top-[437px]" data-node-id="7300:48542">
+            <div ref={pillGateRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
               </div>
@@ -639,7 +697,7 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div className="h-0 relative w-[80px]">
+                <div ref={lineGateRef} className="h-0 relative w-[80px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
                   <div className="absolute inset-[-1px_0_0_0]">
                     <img alt="" className="block max-w-none size-full" src={imgLine210} />
                   </div>
@@ -648,13 +706,13 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Aircraft insights pill */}
-          <div className="absolute flex gap-[8px] items-center left-[725px] top-[317px]" data-node-id="7300:48547" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s forwards' }}>
-            <div className="h-0 relative shrink-0 w-[40px]">
+          <div className="absolute flex gap-[8px] items-center left-[725px] top-[317px]" data-node-id="7300:48547">
+            <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
               </div>
             </div>
-            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[182px]" data-name="Aircraft insights" data-node-id="7300:48549">
+            <div ref={pillAircraftRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[182px]" data-name="Aircraft insights" data-node-id="7300:48549" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse4} />
               </div>
@@ -662,8 +720,8 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Real-time flight tracking pill */}
-          <div className="absolute flex gap-[8px] items-center left-[49px] top-[317px]" data-node-id="7300:48552" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards' }}>
-            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[248px]" data-name="Real-time flight tracking" data-node-id="7300:48553">
+          <div className="absolute flex gap-[8px] items-center left-[49px] top-[317px]" data-node-id="7300:48552">
+            <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[248px]" data-name="Real-time flight tracking" data-node-id="7300:48553" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
               </div>
@@ -671,7 +729,7 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div className="h-0 relative w-[40px]">
+                <div ref={lineRealRef} className="h-0 relative w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
                   <div className="absolute inset-[-1px_0_0_0]">
                     <img alt="" className="block max-w-none size-full" src={imgLine211} />
                   </div>
@@ -680,13 +738,13 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Personal flight history pill */}
-          <div className="absolute flex gap-[8px] items-center left-[725px] top-[557px]" data-node-id="7300:48557" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.2s forwards' }}>
-            <div className="h-0 relative shrink-0 w-[40px]">
+          <div className="absolute flex gap-[8px] items-center left-[725px] top-[557px]" data-node-id="7300:48557">
+            <div ref={lineHistRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
               </div>
             </div>
-            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[230px]" data-name="Personal flight history" data-node-id="7300:48559">
+            <div ref={pillHistRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[230px]" data-name="Personal flight history" data-node-id="7300:48559" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse5} />
               </div>
@@ -694,8 +752,8 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Delay predictions pill */}
-          <div className="absolute flex gap-[8px] items-center left-[103px] top-[557px]" data-node-id="7300:48562" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.4s forwards' }}>
-            <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[194px]" data-name="Delay predictions" data-node-id="7300:48563">
+          <div className="absolute flex gap-[8px] items-center left-[103px] top-[557px]" data-node-id="7300:48562">
+            <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[194px]" data-name="Delay predictions" data-node-id="7300:48563" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
               </div>
@@ -703,7 +761,7 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div className="h-0 relative w-[40px]">
+                <div ref={lineDelayRef} className="h-0 relative w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
                   <div className="absolute inset-[-1px_0_0_0]">
                     <img alt="" className="block max-w-none size-full" src={imgLine211} />
                   </div>
@@ -1024,10 +1082,16 @@ function Intelligence() {
         if (entry.isIntersecting) {
           panels.forEach((el, i) => {
             if (!el) return;
+            const delay = i * 150;
             setTimeout(() => {
               el.style.opacity = '1';
               el.style.transform = 'translateY(0)';
-            }, i * 120);
+            }, delay);
+            setTimeout(() => {
+              el.style.transform = '';
+              el.style.transition = '';
+              el.style.willChange = 'auto';
+            }, delay + 650);
           });
           obs.disconnect();
         }
@@ -1063,9 +1127,9 @@ function Intelligence() {
     {/* Three Panels */}
     <div style={{display: 'flex', gap: '24px', alignItems: 'stretch', width: '100%'}}>
 
-      {/* Panel 1 */}
-      <div ref={p0} style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
-        <div style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+      {/* Panel 1 — Before */}
+      <div ref={p0} className="intel-panel" style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
+        <div className="intel-icon" style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
           <div style={{position: 'relative', width: '24px', height: '24px', overflow: 'clip'}}>
             <img src="/Images/asset-6571faff-0057-47a8-bb30-a2bcebd6e48a.svg" alt="" style={{position: 'absolute', top: '5%', left: '7.08%', right: '5%', bottom: '7.08%', width: 'calc(100% - 12.08%)', height: 'calc(100% - 12.08%)'}} />
           </div>
@@ -1079,15 +1143,17 @@ function Intelligence() {
         </div>
       </div>
 
-      {/* Panel 2 */}
-      <div ref={p1} style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
-        <div style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+      {/* Panel 2 — During (live) */}
+      <div ref={p1} className="intel-panel" style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
+        <div className="intel-icon" style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
           <div style={{position: 'relative', width: '24px', height: '24px', overflow: 'clip'}}>
             <img src="/Images/asset-3d262fbf-4d0d-426e-94a8-1cb0a827cf35.svg" alt="" style={{position: 'absolute', top: '5.21%', left: '9.38%', right: '9.38%', bottom: '5.21%', width: 'calc(100% - 18.76%)', height: 'calc(100% - 10.42%)'}} />
           </div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '100%'}}>
-          <p style={{fontFamily: 'Inter', fontWeight: 700, fontSize: '12px', color: '#a8a29e', letterSpacing: '0.48px', textTransform: 'uppercase', lineHeight: 1, width: '100%', textAlign: 'center'}}>While you travel</p>
+          <p style={{fontFamily: 'Inter', fontWeight: 700, fontSize: '12px', color: '#a8a29e', letterSpacing: '0.48px', textTransform: 'uppercase', lineHeight: 1, width: '100%', textAlign: 'center'}}>
+            <span className="intel-live-dot" />While you travel
+          </p>
           <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%'}}>
             <p style={{fontFamily: 'Inter', fontWeight: 600, fontSize: '24px', color: '#1c1917', letterSpacing: '-0.24px', lineHeight: 1.2, width: '273px', textAlign: 'center'}}>Track every leg live</p>
             <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', color: '#78716c', lineHeight: '24px', textAlign: 'center'}}>Boarding alerts, gate changes, connection timing, and live progress — across multi-leg journeys.</p>
@@ -1095,9 +1161,9 @@ function Intelligence() {
         </div>
       </div>
 
-      {/* Panel 3 */}
-      <div ref={p2} style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
-        <div style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+      {/* Panel 3 — After */}
+      <div ref={p2} className="intel-panel" style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
+        <div className="intel-icon" style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
           <div style={{position: 'relative', width: '24px', height: '24px', overflow: 'clip'}}>
             <img src="/Images/asset-0520a5cb-3223-47a1-8eb9-a6ce039120d9.svg" alt="" style={{position: 'absolute', top: '13.54%', left: '5.21%', right: '5.21%', bottom: '13.54%', width: 'calc(100% - 10.42%)', height: 'calc(100% - 27.08%)'}} />
           </div>

@@ -487,6 +487,12 @@ function FigmaHeroSection() {
             0%, 100% { transform: translateY(-5px); }
             50%       { transform: translateY(5px); }
           }
+          @keyframes badge-appear {
+            0%   { opacity: 0; transform: scale(0.7) translateY(14px); filter: blur(6px); }
+            60%  { opacity: 1; filter: blur(0px); }
+            80%  { transform: scale(1.05) translateY(0); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+          }
         `}</style>
         {/* CLOUDS — all left-0, horizontal position set via negative animation-delay */}
 
@@ -610,7 +616,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Connection awareness pill */}
-          <div className="absolute flex gap-[14px] items-center left-[725px] top-[437px]" data-node-id="7300:48537">
+          <div className="absolute flex gap-[14px] items-center left-[725px] top-[437px]" data-node-id="7300:48537" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.0s forwards' }}>
             <div className="h-0 relative shrink-0 w-[74px]">
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine207} />
@@ -624,7 +630,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Gate & terminal changes pill */}
-          <div className="absolute flex gap-[8px] items-center left-[6px] top-[437px]" data-node-id="7300:48542">
+          <div className="absolute flex gap-[8px] items-center left-[6px] top-[437px]" data-node-id="7300:48542" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.6s forwards' }}>
             <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543">
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
@@ -642,7 +648,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Aircraft insights pill */}
-          <div className="absolute flex gap-[8px] items-center left-[725px] top-[317px]" data-node-id="7300:48547">
+          <div className="absolute flex gap-[8px] items-center left-[725px] top-[317px]" data-node-id="7300:48547" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s forwards' }}>
             <div className="h-0 relative shrink-0 w-[40px]">
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
@@ -656,7 +662,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Real-time flight tracking pill */}
-          <div className="absolute flex gap-[8px] items-center left-[49px] top-[317px]" data-node-id="7300:48552">
+          <div className="absolute flex gap-[8px] items-center left-[49px] top-[317px]" data-node-id="7300:48552" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards' }}>
             <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[248px]" data-name="Real-time flight tracking" data-node-id="7300:48553">
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
@@ -674,7 +680,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Personal flight history pill */}
-          <div className="absolute flex gap-[8px] items-center left-[725px] top-[557px]" data-node-id="7300:48557">
+          <div className="absolute flex gap-[8px] items-center left-[725px] top-[557px]" data-node-id="7300:48557" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.2s forwards' }}>
             <div className="h-0 relative shrink-0 w-[40px]">
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
@@ -688,7 +694,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Delay predictions pill */}
-          <div className="absolute flex gap-[8px] items-center left-[103px] top-[557px]" data-node-id="7300:48562">
+          <div className="absolute flex gap-[8px] items-center left-[103px] top-[557px]" data-node-id="7300:48562" style={{ opacity: 0, animation: 'badge-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1.4s forwards' }}>
             <div className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[194px]" data-name="Delay predictions" data-node-id="7300:48563">
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
@@ -2855,7 +2861,7 @@ function FinalCTA() {
       { el: buttonRef.current,   delay: 200, from: "scale(0.96)",       to: "scale(1)",     scale: true  },
     ];
     const observers: IntersectionObserver[] = [];
-    items.forEach(({ el, delay, from, to }) => {
+    items.forEach(({ el, delay, from, to, scale }) => {
       if (!el) return;
       el.style.opacity = "0";
       el.style.transform = from;
@@ -2866,6 +2872,13 @@ function FinalCTA() {
             el.style.opacity = "1";
             el.style.transform = to;
             obs.disconnect();
+            if (scale) {
+              // Clear inline transform/transition after reveal so CSS :hover/:active take over
+              setTimeout(() => {
+                el.style.transform = "";
+                el.style.transition = "";
+              }, 500 + delay + 50);
+            }
           }
         },
         { threshold: 0.15 }

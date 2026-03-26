@@ -94,7 +94,7 @@ const imgHiwVector3     = "/Images/asset-f88c0c1f-631b-4f69-ad76-8b0f6fa8c05d.sv
 const imgHiwVector4     = "/Images/asset-c2d10e38-14b8-4db6-a401-eb9cf66c19af.svg";
 
 // ── How It Works Step 04 asset URLs ───────────────────────────────────────────
-const imgBotMainContentImage = "/Images/asset-33e58103-a12d-48c4-9294-fd508f1a4505.png";
+const imgBotMainContentImage = "/Images/asset-step04-passport-screen.png";
 const imgBotUserImage        = "/Images/asset-3d5ed216-a1ee-4902-9fd2-cedadd00dfd8.png";
 const imgBotFlattened        = "/Images/asset-e7582851-6534-4316-bffb-6af67ae77949.svg";
 const imgBotRectangle1       = "/Images/asset-59e8a425-6ea2-47cc-ac21-fb6ccb85ea17.svg";
@@ -2227,11 +2227,11 @@ function BottomSection() {
                     width: 226.355,
                   }}
                 >
-                  <div style={{ position: "absolute", height: 490.667, left: -0.16, top: -0.24, width: 226.667 }}>
+                  <div style={{ position: "absolute", height: "126.52%", left: -0.16, top: "-0.22%", width: 226.667 }}>
                     <img
                       alt=""
                       src={imgBotMainContentImage}
-                      style={{ position: "absolute", inset: 0, maxWidth: "none", objectFit: "cover", pointerEvents: "none", width: "100%", height: "100%" }}
+                      style={{ position: "absolute", inset: 0, maxWidth: "none", pointerEvents: "none", width: "100%", height: "100%" }}
                     />
                   </div>
                 </div>
@@ -3038,7 +3038,7 @@ function FinalCTA() {
               <em style={{ fontWeight: 400, fontStyle: "italic", color: "#0ea5e9" }}>with clarity</em>
               {","}
               <br />
-              from takeoff to touchdown
+              from departure to destination
             </h2>
 
             {/* Subtitle */}

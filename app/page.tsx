@@ -422,39 +422,57 @@ function FigmaHeroSection() {
     transitionDelay: `${delay}ms`,
   });
 
-  // Scroll-driven card entrance — hidden on load, rises as user scrolls
+  // Cards emerge from behind the phone and slide outward to their final positions
   useEffect(() => {
-    // Force cards hidden immediately on mount, before any scroll
+    // Set initial hidden state synchronously — behind the phone, small, no tilt
     if (leftCardRef.current) {
+      leftCardRef.current.style.transform = 'translateX(373px) scale(0.88)';
       leftCardRef.current.style.opacity = '0';
-      leftCardRef.current.style.transform = 'translateY(110px) rotate(-8deg)';
     }
     if (rightCardRef.current) {
+      rightCardRef.current.style.transform = 'translateX(-364px) scale(0.88)';
       rightCardRef.current.style.opacity = '0';
-      rightCardRef.current.style.transform = 'translateY(110px) rotate(8deg)';
     }
 
-    let settled = false;
+    let triggered = false;
 
     const onScroll = () => {
-      if (settled) return;
-      // Tied to absolute scroll position: starts at 120px scroll, completes at 480px
-      const p = Math.max(0, Math.min(1, (window.scrollY - 120) / 360));
-      const y = (1 - p) * 110;
+      if (triggered || window.scrollY < 200) return;
+      triggered = true;
+      window.removeEventListener('scroll', onScroll);
 
-      if (leftCardRef.current) {
-        leftCardRef.current.style.opacity = String(p);
-        leftCardRef.current.style.transform = `translateY(${y}px) rotate(-8deg)`;
-      }
-      if (rightCardRef.current) {
-        rightCardRef.current.style.opacity = String(p);
-        rightCardRef.current.style.transform = `translateY(${y}px) rotate(8deg)`;
-      }
-
-      if (p >= 1) {
-        settled = true;
+      // Sync with next frame to avoid mid-frame style conflicts
+      requestAnimationFrame(() => {
+        // Enable float immediately — no gap between entrance and float
         setCardsRevealed(true);
-      }
+
+        if (leftCardRef.current) {
+          leftCardRef.current.style.willChange = 'transform, opacity';
+          leftCardRef.current.style.transition =
+            'transform 900ms cubic-bezier(0.34, 1.4, 0.64, 1), opacity 450ms ease-out';
+          leftCardRef.current.style.transform = 'rotate(-8deg)';
+          leftCardRef.current.style.opacity = '1';
+        }
+        if (rightCardRef.current) {
+          rightCardRef.current.style.willChange = 'transform, opacity';
+          rightCardRef.current.style.transition =
+            'transform 900ms cubic-bezier(0.34, 1.4, 0.64, 1) 140ms, opacity 450ms ease-out 140ms';
+          rightCardRef.current.style.transform = 'rotate(8deg)';
+          rightCardRef.current.style.opacity = '1';
+        }
+
+        // Clean up after entrance completes — free GPU layer
+        setTimeout(() => {
+          if (leftCardRef.current) {
+            leftCardRef.current.style.transition = 'none';
+            leftCardRef.current.style.willChange = 'auto';
+          }
+          if (rightCardRef.current) {
+            rightCardRef.current.style.transition = 'none';
+            rightCardRef.current.style.willChange = 'auto';
+          }
+        }, 1100);
+      });
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -462,7 +480,7 @@ function FigmaHeroSection() {
   }, []);
 
   return (
-    <section className="relative w-full bg-[#f9f8f6] min-h-[1579px]" ref={heroRef}>
+    <section className="relative w-full bg-[#f9f8f6] min-h-[1579px] overflow-x-hidden" ref={heroRef}>
       {/* SKY GRADIENT — full width, 840px height */}
       <div
         className="relative w-full h-[840px] overflow-hidden"
@@ -597,10 +615,6 @@ function FigmaHeroSection() {
           <div
             ref={rightCardRef}
             className="absolute left-[746px] top-[80px] w-[306.5px]"
-            style={cardsRevealed
-              ? { opacity: 1, transform: 'rotate(8deg)', willChange: 'auto' }
-              : { opacity: 0, transform: 'translateY(110px) rotate(8deg)', willChange: 'transform, opacity' }
-            }
             data-name="image 41"
             data-node-id="7300:48859"
           >
@@ -708,10 +722,6 @@ function FigmaHeroSection() {
           <div
             ref={leftCardRef}
             className="absolute left-0 top-[80px] w-[324.5px]"
-            style={cardsRevealed
-              ? { opacity: 1, transform: 'rotate(-8deg)', willChange: 'auto' }
-              : { opacity: 0, transform: 'translateY(110px) rotate(-8deg)', willChange: 'transform, opacity' }
-            }
             data-name="image 40"
             data-node-id="7300:48856"
           >

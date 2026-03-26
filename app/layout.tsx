@@ -23,6 +23,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <head>
+        <link rel="icon" type="image/png" href="/Favicon.png" />
+        <link rel="apple-touch-icon" href="/Favicon.png" />
         {/* Preload LCP hero phone image */}
         <link rel="preload" as="image" href="/Images/asset-28ac99e6-1e5b-405d-842f-3140b8f96b46.png" />
         <script dangerouslySetInnerHTML={{__html: `

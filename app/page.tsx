@@ -590,7 +590,7 @@ function FigmaHeroSection() {
                 <span className="font-semibold relative text-[15px] text-white text-center whitespace-nowrap leading-[20px]">Download</span>
                 <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.15)]" />
               </div>
-              <div className="flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px]" data-name="Ghost Button" data-node-id="7300:48521">
+              <div className="flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] cursor-pointer" data-name="Ghost Button" data-node-id="7300:48521" onClick={() => { const s = document.querySelector('#how-it-works'); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
                 <span className="font-semibold text-[15px] text-white text-center whitespace-nowrap leading-[20px]">See how it works</span>
                 <div className="relative shrink-0 size-[20px]" data-name="Icons/Arrow-down" data-node-id="I7300:48521;1872:342">
                   <div className="absolute flex inset-[36.63%_15.54%_28.3%_19.43%] items-center justify-center">

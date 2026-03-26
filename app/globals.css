@@ -184,7 +184,8 @@
 .cta-btn {
   position: relative;
   overflow: hidden;
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  cursor: pointer;
+  transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
 }
 .cta-btn:hover {
   transform: translateY(-2px) scale(1.02);

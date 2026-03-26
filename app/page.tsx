@@ -580,7 +580,7 @@ function FigmaHeroSection() {
             </div>
             {/* Buttons */}
             <div className="flex gap-[16px] items-center justify-center" data-name="Button Container" data-node-id="7300:48519" style={textReveal(360)}>
-              <div className="relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] shadow-[0px_4px_10px_0px_rgba(28,25,23,0.04),0px_1px_2px_0px_rgba(28,25,23,0.06)]" data-name="Primary Button" data-node-id="7300:48520">
+              <div className="cta-btn relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] shadow-[0px_4px_10px_0px_rgba(28,25,23,0.04),0px_1px_2px_0px_rgba(28,25,23,0.06)] cursor-pointer" data-name="Primary Button" data-node-id="7300:48520">
                 <div aria-hidden="true" className="absolute bg-[#1c1917] inset-0 pointer-events-none rounded-[999px]" />
                 <div className="overflow-clip relative shrink-0 size-[20px]" data-name="Icons / Apple" data-node-id="I7300:48520;1870:924">
                   <div className="absolute inset-[0_10.94%_4.17%_8.33%]">
@@ -748,7 +748,7 @@ function FigmaHeroSection() {
         </div>
         </div>
         {/* AIRLINES STRIP — 120px gap below content container (mt relative to content container bottom: 689px within Main container) */}
-        <div className="w-full border-t border-[#e7e5e4] bg-[#f9f8f6] mt-[120px]">
+        <div className="w-full bg-[#f9f8f6] mt-[60px]">
         <div className="flex flex-col gap-[40px] items-center overflow-hidden py-[40px]" data-name="airlines-strip" data-node-id="7300:48567">
           <p className="font-normal leading-[1.4] text-[18px] text-[#a8a29e] text-center tracking-[-0.18px] whitespace-nowrap" data-node-id="7300:48569">
             Tracks flights across 1200+ airlines and airports worldwide
@@ -1047,7 +1047,7 @@ function Intelligence() {
   }, []);
 
   return (
-<section id="features" style={{background: 'white', width: '100%', paddingTop: '120px', paddingBottom: '120px'}}>
+<section id="features" style={{background: 'white', width: '100%', paddingTop: '120px', paddingBottom: '120px', borderTop: '1px solid #e7e5e4'}}>
   <div style={{maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '64px', alignItems: 'center'}}>
 
     {/* Header */}
@@ -2860,7 +2860,6 @@ function FinalCTA() {
   const titleRef    = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const buttonRef   = useRef<HTMLButtonElement>(null);
-  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     const items = [
@@ -2961,12 +2960,10 @@ function FinalCTA() {
           <button
             ref={buttonRef}
             className="cta-btn"
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
             style={{
               height: 52,
               padding: "0 24px",
-              background: hovered ? "#333333" : "#1c1917",
+              background: "#1c1917",
               borderRadius: 999,
               border: "none",
               display: "flex",
@@ -2974,8 +2971,6 @@ function FinalCTA() {
               alignItems: "center",
               justifyContent: "center",
               boxShadow: "0px 4px 10px 0px rgba(28,25,23,0.04), 0px 1px 2px 0px rgba(28,25,23,0.06), inset 0px 1px 0px 0px rgba(255,255,255,0.15)",
-              transform: hovered ? "translateY(-1px)" : "translateY(0)",
-              transition: "all 150ms ease",
               cursor: "pointer",
             }}
           >
@@ -3111,7 +3106,7 @@ function Footer() {
       `}</style>
       <footer className="footer-root">
         {/* Left — logo + wordmark */}
-        <div className="footer-logo-block">
+        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="footer-logo-block" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
           <img src={imgFooterLogo} alt="Flight Passport" style={{ width: 34, height: 34, flexShrink: 0, display: "block" }} />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
             <span style={{ fontSize: 15, fontWeight: 600, color: "white", whiteSpace: "nowrap", lineHeight: 1.4 }}>
@@ -3124,7 +3119,7 @@ function Footer() {
               <img alt="Finnish flag" src={imgFiFooter} style={{ width: 14, height: 10, flexShrink: 0, display: "block" }} />
             </div>
           </div>
-        </div>
+        </button>
 
         {/* Center + Right */}
         <div className="footer-center-right">

@@ -302,20 +302,7 @@ function Nav() {
               borderRadius: 999,
               background: "#1c1917",
               border: "none",
-              cursor: "pointer",
-              transition: "all 150ms ease",
-              boxShadow: "0px 4px 10px 0px rgba(28,25,23,0.04), 0px 1px 2px 0px rgba(28,25,23,0.06), inset 0px 1px 0px 0px rgba(255,255,255,0.15)",
               flexShrink: 0,
-            }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget;
-              el.style.background = "#333";
-              el.style.transform = "translateY(-1px)";
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget;
-              el.style.background = "#1c1917";
-              el.style.transform = "translateY(0)";
             }}
           >
             <div style={{ position: "relative", width: 16, height: 16, flexShrink: 0, overflow: "hidden" }}>
@@ -580,7 +567,7 @@ function FigmaHeroSection() {
             </div>
             {/* Buttons */}
             <div className="flex gap-[16px] items-center justify-center" data-name="Button Container" data-node-id="7300:48519" style={textReveal(360)}>
-              <div className="cta-btn relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] shadow-[0px_4px_10px_0px_rgba(28,25,23,0.04),0px_1px_2px_0px_rgba(28,25,23,0.06)] cursor-pointer" data-name="Primary Button" data-node-id="7300:48520">
+              <div className="cta-btn relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] cursor-pointer" data-name="Primary Button" data-node-id="7300:48520">
                 <div aria-hidden="true" className="absolute bg-[#1c1917] inset-0 pointer-events-none rounded-[999px]" />
                 <div className="overflow-clip relative shrink-0 size-[20px]" data-name="Icons / Apple" data-node-id="I7300:48520;1870:924">
                   <div className="absolute inset-[0_10.94%_4.17%_8.33%]">
@@ -2970,7 +2957,6 @@ function FinalCTA() {
               gap: 8,
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0px 4px 10px 0px rgba(28,25,23,0.04), 0px 1px 2px 0px rgba(28,25,23,0.06), inset 0px 1px 0px 0px rgba(255,255,255,0.15)",
               cursor: "pointer",
             }}
           >

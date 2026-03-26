@@ -1070,37 +1070,52 @@ function Intelligence() {
 
   useEffect(() => {
     const panels = [p0.current, p1.current, p2.current];
+
+    // 1. Hide instantly — NO transition yet (prevents flash animation on load)
     panels.forEach((el) => {
       if (!el) return;
       el.style.opacity = '0';
-      el.style.transform = 'translateY(20px)';
-      el.style.transition = 'opacity 500ms ease, transform 500ms ease';
+      el.style.transform = 'translateY(28px)';
+      el.style.transition = 'none';
       el.style.willChange = 'transform, opacity';
     });
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          panels.forEach((el, i) => {
-            if (!el) return;
+
+    const observers: IntersectionObserver[] = [];
+
+    // 2. Setup observers after a tick — ensures page is at scroll 0 before observing
+    const setup = setTimeout(() => {
+      panels.forEach((el, i) => {
+        if (!el) return;
+        const obs = new IntersectionObserver(
+          ([entry]) => {
+            if (!entry.isIntersecting) return;
             const delay = i * 150;
+            // 3. Add transition only NOW — just before revealing
+            el.style.transition = 'opacity 600ms ease, transform 600ms ease';
             setTimeout(() => {
               el.style.opacity = '1';
               el.style.transform = 'translateY(0)';
             }, delay);
+            // 4. Clear inline styles after reveal so CSS hover works
             setTimeout(() => {
               el.style.transform = '';
               el.style.transition = '';
               el.style.willChange = 'auto';
             }, delay + 650);
-          });
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-    const section = p0.current?.closest('section');
-    if (section) obs.observe(section);
-    return () => obs.disconnect();
+            obs.disconnect();
+          },
+          // threshold 0.25 + negative bottom margin = panel must be well into viewport
+          { threshold: 0.25, rootMargin: '0px 0px -60px 0px' }
+        );
+        obs.observe(el);
+        observers.push(obs);
+      });
+    }, 150);
+
+    return () => {
+      clearTimeout(setup);
+      observers.forEach(o => o.disconnect());
+    };
   }, []);
 
   return (
@@ -2611,24 +2626,45 @@ function Passport() {
       `}</style>
       <section id="passport" className="passport-section">
 
-        {/* Background cloud decorations */}
-        <div style={{position:'absolute',left:'-198px',top:'-148px',width:'505.301px',height:'465.589px',transform:'rotate(12.1deg)',opacity:0.42,pointerEvents:'none'}}>
-          <img src={imgPassportBg} alt="" style={{position:'absolute',left:'2.23%',width:'95.74%',height:'95.74%'}} />
+        {/* ── Clouds: top zone (distant, very soft) ── */}
+        <div className="absolute left-0 top-[15px] w-[260px] h-[115px] opacity-[0.08] pointer-events-none" style={{ animation: "cloudFlight 275s linear -38s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud2} />
         </div>
-        <div style={{position:'absolute',left:'166px',top:'-74px',width:'251px',height:'221px',opacity:0.42*0.74,pointerEvents:'none'}}>
-          <img src={imgPassportBg} alt="" style={{position:'absolute',left:'2.23%',width:'95.74%',height:'95.74%'}} />
+        <div className="absolute left-0 top-[60px] w-[340px] h-[140px] opacity-[0.10] pointer-events-none" style={{ animation: "cloudFlight 260s linear -152s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
         </div>
-        <div style={{position:'absolute',right:'-83px',bottom:'-116px',width:'406px',height:'326px',opacity:0.42*0.50,pointerEvents:'none'}}>
-          <img src={imgPassportBg} alt="" style={{width:'100%',height:'100%'}} />
+        <div className="absolute left-0 top-[130px] w-[200px] h-[90px] opacity-[0.07] pointer-events-none" style={{ animation: "cloudFlight 248s linear -208s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
         </div>
-        <div style={{position:'absolute',left:'222px',bottom:'-152px',width:'445px',height:'224px',opacity:0.16,pointerEvents:'none'}}>
-          <img src={imgPassportBg1} alt="" style={{width:'100%',height:'100%'}} />
+
+        {/* ── Clouds: upper-mid zone ── */}
+        <div className="absolute left-0 top-[200px] w-[380px] h-[185px] opacity-[0.12] pointer-events-none" style={{ animation: "cloudFlight 210s linear -68s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
         </div>
-        <div style={{position:'absolute',right:'180px',bottom:'-152px',width:'445px',height:'224px',opacity:0.16,pointerEvents:'none'}}>
-          <img src={imgPassportBg1} alt="" style={{width:'100%',height:'100%'}} />
+        <div className="absolute left-0 top-[270px] w-[300px] h-[145px] opacity-[0.09] pointer-events-none" style={{ animation: "cloudFlight 225s linear -135s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
         </div>
-        <div style={{position:'absolute',left:'-96px',bottom:'-100px',width:'432px',height:'256px',opacity:0.39,pointerEvents:'none'}}>
-          <img src={imgPassportBg2} alt="" style={{width:'100%',height:'100%'}} />
+
+        {/* ── Clouds: mid zone ── */}
+        <div className="absolute left-0 top-[340px] w-[420px] h-[195px] opacity-[0.13] pointer-events-none" style={{ animation: "cloudFlight 195s linear -85s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud2} />
+        </div>
+        <div className="absolute left-0 top-[420px] w-[290px] h-[135px] opacity-[0.09] pointer-events-none" style={{ animation: "cloudFlight 215s linear -172s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
+        </div>
+
+        {/* ── Clouds: lower zone (foreground, still soft) ── */}
+        <div className="absolute left-0 top-[510px] w-[450px] h-[195px] opacity-[0.18] pointer-events-none" style={{ animation: "cloudFlight 148s linear -22s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
+        </div>
+        <div className="absolute left-0 top-[575px] w-[320px] h-[155px] opacity-[0.14] pointer-events-none" style={{ animation: "cloudFlight 158s linear -80s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
+        </div>
+        <div className="absolute left-0 top-[645px] w-[400px] h-[165px] opacity-[0.16] pointer-events-none" style={{ animation: "cloudFlight 142s linear -48s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud2} />
+        </div>
+        <div className="absolute left-0 top-[720px] w-[255px] h-[120px] opacity-[0.11] pointer-events-none" style={{ animation: "cloudFlight 152s linear -118s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
         </div>
 
         {/* Main content */}

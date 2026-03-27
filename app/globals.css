@@ -211,6 +211,11 @@
   animation: shimmer 3s ease-in-out infinite;
   pointer-events: none;
 }
+.cta-btn.no-shimmer::after {
+  animation: none !important;
+  content: none;
+  display: none;
+}
 
 /* ── Scroll reveal ───────────────────────────────────────────────────────── */
 .reveal {

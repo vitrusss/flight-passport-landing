@@ -8,7 +8,8 @@ const imgCloud2 = "/Images/asset-207dbb73-c845-477b-98c1-cf72019ab12e.png";
 const imgCloud4 = "/Images/asset-f5147741-a43c-48f9-81f3-12823a5b4d3f.png";
 const imgImage41 = "/Images/Connection%20Card_New.png";
 const imgImage40 = "/Images/Journey%20Card_New.png";
-const imgImage42 = "/Images/asset-28ac99e6-1e5b-405d-842f-3140b8f96b46.png";
+const imgPhoneApp        = "/Images/hero-phone-app.png";
+const imgPhonePlane      = "/Images/hero-plane.svg";
 const imgImage = "/Images/asset-5a211c9a-dfde-4974-a28f-85d89adba13e.png";
 const imgImage1 = "/Images/asset-5c9f351a-c7f7-4758-b5d8-04b195b27a49.png";
 const imgImage2 = "/Images/asset-6a39772a-5b02-4ad3-9487-dee07348776a.png";
@@ -33,10 +34,8 @@ const imgAirlineEmblem17 = "/Images/asset-03e2b3f7-76b4-4131-a2e4-1caf97d1d443.p
 const imgAirlineEmblem19 = "/Images/asset-c0433751-6c26-498e-b2fe-ce6b65e6aed1.png";
 const imgAirlineEmblem20 = "/Images/asset-752442d2-c03a-455a-9093-9f94fee6976c.png";
 const imgImage14 = "/Images/asset-c0f980be-f61d-4525-aeb9-2424ffaf590d.png";
-const imgEllipse1 = "/Images/asset-e10a7d98-2e3b-4721-9195-5dca2e135f17.svg";
 const imgEllipse1889 = "/Images/asset-8c24ba7e-4953-49f2-b8fc-0476d0112718.svg";
 const imgIconColor = "/Images/asset-3f8a650c-7e01-4f57-abaa-bfdfd95080c3.svg";
-const imgIconColor1 = "/Images/asset-ee97dd80-97b3-4454-8d13-789b2afbc051.svg";
 const imgLine207 = "/Images/asset-91feb9b5-f026-48fd-a8cb-3f626d150d20.svg";
 const imgEllipse2 = "/Images/asset-3f174842-748e-4c3f-a393-f48d77268373.svg";
 const imgEllipse3 = "/Images/asset-1d1e3d8e-e681-43b2-9f7b-66e38726c99d.svg";
@@ -77,9 +76,9 @@ const imgNavFi     = "/Images/asset-ced73d69-cb1b-4ed2-a9ff-08b795fd1549.svg";
 const imgNavApple  = "/Images/asset-ae0b76f7-15b2-4a17-ad03-611555e2e9da.svg";
 
 // ── Intelligence asset URLs (node 7300:48922) ─────────────────────────────────
-const imgIntelIcon  = "/Images/asset-58021945-ed81-4c67-9881-2c4461d97d3e.svg";
-const imgIntelIcon1 = "/Images/asset-df413132-dab5-4a52-b4ed-07022b4b9582.svg";
-const imgIntelIcon2 = "/Images/asset-42898160-0537-42cb-aed5-b9a2c8da56cf.svg";
+const imgIntelIcon  = "/Images/asset-0d27bc45-intel-search.svg";
+const imgIntelIcon1 = "/Images/asset-f795357a-intel-location.svg";
+const imgIntelIcon2 = "/Images/asset-447d565c-intel-policy.svg";
 
 // ── How It Works Step 01 asset URLs (node 7300:48957) ─────────────────────────
 const imgHiwTopImage    = "/Images/asset-6d585e68-0d7f-496f-b018-4e5caf21dcec.png";
@@ -181,10 +180,195 @@ function useCounter(target: number, duration = 1200) {
   return { count, ref };
 }
 
+// ── Mobile Nav overlay + burger trigger ───────────────────────────────────────
+function MobileNav({ links }: { links: typeof NAV_LINKS }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setIsOpen(false); };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  return (
+    <>
+      <style>{`
+        .mobile-burger {
+          display: none;
+        }
+        @media (max-width: 767px) {
+          .mobile-burger {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5.5px;
+            width: 44px;
+            height: 44px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 201;
+          }
+          .nav-download-btn { display: none !important; }
+        }
+        .mobile-burger-line {
+          display: block;
+          width: 22px;
+          height: 1.5px;
+          background: #1c1917;
+          border-radius: 2px;
+          transform-origin: center;
+          transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1),
+                      opacity  200ms ease,
+                      width    250ms ease;
+        }
+        .mobile-burger[aria-expanded="true"] .mobile-burger-line:nth-child(1) {
+          transform: translateY(7px) rotate(45deg);
+        }
+        .mobile-burger[aria-expanded="true"] .mobile-burger-line:nth-child(2) {
+          opacity: 0;
+          width: 0;
+        }
+        .mobile-burger[aria-expanded="true"] .mobile-burger-line:nth-child(3) {
+          transform: translateY(-7px) rotate(-45deg);
+        }
+        .mobile-nav-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 200;
+          background: rgba(255, 255, 255, 0.97);
+          backdrop-filter: blur(24px) saturate(180%);
+          -webkit-backdrop-filter: blur(24px) saturate(180%);
+          display: flex;
+          flex-direction: column;
+          padding: 80px 24px 40px;
+          box-sizing: border-box;
+          pointer-events: none;
+          opacity: 0;
+          transform: scale(0.98) translateY(-6px);
+          transition: opacity 280ms cubic-bezier(0.4, 0, 0.2, 1),
+                      transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .mobile-nav-overlay.mobile-nav-open {
+          pointer-events: all;
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+        .mobile-nav-links {
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          justify-content: center;
+          flex: 1;
+          gap: 4px;
+        }
+        .mobile-nav-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 60px;
+          text-decoration: none;
+          font-family: var(--font-inter), sans-serif;
+          font-size: 20px;
+          font-weight: 400;
+          color: #1c1917;
+          letter-spacing: -0.3px;
+          border-radius: 14px;
+          opacity: 0;
+          transform: translateY(14px);
+          transition: opacity 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                      transform 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                      background 140ms ease;
+        }
+        .mobile-nav-overlay.mobile-nav-open .mobile-nav-link {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        .mobile-nav-link:hover  { background: rgba(28, 25, 23, 0.05); }
+        .mobile-nav-link:active { background: rgba(28, 25, 23, 0.09); }
+        .mobile-nav-cta {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          height: 52px;
+          border-radius: 999px;
+          background: #1c1917;
+          border: none;
+          cursor: pointer;
+          width: 100%;
+          flex-shrink: 0;
+          opacity: 0;
+          transform: translateY(14px);
+          transition: opacity 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                      transform 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .mobile-nav-overlay.mobile-nav-open .mobile-nav-cta {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        .mobile-nav-cta:active { opacity: 0.85; }
+      `}</style>
+
+      {/* Burger trigger */}
+      <button
+        className="mobile-burger"
+        aria-label={isOpen ? "Close navigation" : "Open navigation"}
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(o => !o)}
+      >
+        <span className="mobile-burger-line" />
+        <span className="mobile-burger-line" />
+        <span className="mobile-burger-line" />
+      </button>
+
+      {/* Overlay */}
+      <nav
+        className={`mobile-nav-overlay${isOpen ? " mobile-nav-open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Site navigation"
+      >
+        <div className="mobile-nav-links">
+          {links.map(({ label, href }, i) => (
+            <a
+              key={href}
+              href={href}
+              className="mobile-nav-link"
+              style={{ transitionDelay: isOpen ? `${40 + i * 45}ms` : "0ms" }}
+              onClick={() => setIsOpen(false)}
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+        <button
+          className="mobile-nav-cta"
+          style={{ transitionDelay: isOpen ? `${40 + links.length * 45 + 30}ms` : "0ms" }}
+          onClick={() => setIsOpen(false)}
+        >
+          <span style={{ fontSize: 15, fontWeight: 600, color: "white", lineHeight: "20px" }}>
+            Download on the App Store
+          </span>
+        </button>
+      </nav>
+    </>
+  );
+}
+
 // ── Nav (Figma node 7300:47109) ───────────────────────────────────────────────
 const NAV_LINKS = [
   { label: "Features",        href: "#features",        section: "features"        },
-  { label: "How it works",   href: "#how-it-works",    section: "how-it-works"    },
+  { label: "How it works",    href: "#how-it-works",    section: "how-it-works"    },
   { label: "Live Activities", href: "#live-activities", section: "live-activities" },
   { label: "Passport",        href: "#passport",        section: "passport"        },
   { label: "FAQ",             href: "#faq",             section: "faq"             },
@@ -251,7 +435,7 @@ function Nav() {
     clickLock.current = true;
     clearTimeout(clickLockRef.current);
     clickLockRef.current = setTimeout(() => { clickLock.current = false; }, 1100);
-    const top = target.getBoundingClientRect().top + window.scrollY - 64;
+    const top = target.getBoundingClientRect().top + window.scrollY - 48;
     window.scrollTo({ top, behavior: "smooth" });
   };
 
@@ -267,13 +451,14 @@ function Nav() {
         /* Reserve bold width so layout never shifts on weight change */
         .nav-label {
           display: inline-grid;
-          font-size: 15px;
+          font-size: 11px;
+          letter-spacing: 0.22px;
           white-space: nowrap;
           transition: color 200ms ease;
         }
         .nav-label::before {
           content: attr(data-label);
-          font-weight: 600;
+          font-weight: 500;
           visibility: hidden;
           height: 0;
           overflow: hidden;
@@ -283,7 +468,7 @@ function Nav() {
         /* Active label styling */
         .nav-label-active {
           color: #1c1917 !important;
-          font-weight: 600;
+          font-weight: 500;
         }
         /* Sliding indicator bar */
         .nav-indicator {
@@ -312,7 +497,7 @@ function Nav() {
           position: "sticky",
           top: 0,
           zIndex: 50,
-          height: 64,
+          height: 48,
           width: "100%",
           display: "flex",
           alignItems: "center",
@@ -339,10 +524,10 @@ function Nav() {
           <img
             alt="Flight Passport"
             src={imgNavLogo}
-            style={{ width: 34, height: 34, flexShrink: 0, display: "block" }}
+            style={{ width: 28, height: 28, flexShrink: 0, display: "block" }}
           />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: "#1c1917", whiteSpace: "nowrap", lineHeight: 1.4 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#1c1917", whiteSpace: "nowrap", lineHeight: 1.4 }}>
               FlightPassport
             </span>
             <div style={{ display: "flex", gap: 2, alignItems: "center", justifyContent: "center" }}>
@@ -352,20 +537,20 @@ function Nav() {
               <img
                 alt="Finnish flag"
                 src={imgNavFi}
-                style={{ width: 14, height: 10, flexShrink: 0, display: "block" }}
+                style={{ width: 10, height: 7, flexShrink: 0, display: "block" }}
               />
             </div>
           </div>
         </button>
 
-        {/* Right — Download button */}
-        <div style={{ display: "flex", alignItems: "center", flexShrink: 0, position: "relative", zIndex: 1 }}>
+        {/* Right — Download button + mobile burger */}
+        <div className="nav-download-btn" style={{ display: "flex", alignItems: "center", flexShrink: 0, position: "relative", zIndex: 1 }}>
           <button
-            className="cta-btn"
+            className="cta-btn no-shimmer"
             style={{
               display: "flex",
               gap: 6,
-              height: 36,
+              height: 32,
               alignItems: "center",
               justifyContent: "center",
               padding: "0 16px",
@@ -389,6 +574,9 @@ function Nav() {
             </span>
           </button>
         </div>
+
+        {/* Mobile burger + overlay */}
+        <MobileNav links={NAV_LINKS} />
 
         {/* Center — Nav links (absolute, centered) */}
         <div
@@ -429,7 +617,7 @@ function Nav() {
                   style={{
                     position: "relative",
                     color: isActive ? "#1c1917" : "#6c6760",
-                    fontWeight: isActive ? 600 : 400,
+                    fontWeight: isActive ? 500 : 300,
                   }}
                 >
                   {label}
@@ -451,12 +639,10 @@ function Nav() {
 // ── Hero Section (responsive full-width) ──────────────────────────────────────
 function FigmaHeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
-  const leftCardRef = useRef<HTMLDivElement>(null);
-  const rightCardRef = useRef<HTMLDivElement>(null);
-  const [cardsRevealed, setCardsRevealed] = useState(false);
   const [phoneVisible, setPhoneVisible] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
+  const [landingMinutes, setLandingMinutes] = useState(6 * 60 + 25);
+  const [tickerKey, setTickerKey] = useState(0);
   // Badge refs — line elements (clip-path animation) and pill elements (badge-pop animation)
   const lineConnRef     = useRef<HTMLDivElement>(null);
   const lineGateRef     = useRef<HTMLDivElement>(null);
@@ -470,15 +656,36 @@ function FigmaHeroSection() {
   const pillRealRef     = useRef<HTMLDivElement>(null);
   const pillHistRef     = useRef<HTMLDivElement>(null);
   const pillDelayRef    = useRef<HTMLDivElement>(null);
-  const textGroupRef    = useRef<HTMLDivElement>(null);
-  const mainContainerRef = useRef<HTMLDivElement>(null);
 
-  // Reveal text and phone on mount
+  // Reveal text on mount; phone + cards reveal on scroll
   useEffect(() => {
     const t1 = setTimeout(() => setTextVisible(true), 60);
-    const t2 = setTimeout(() => setPhoneVisible(true), 120);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    return () => clearTimeout(t1);
   }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => setPhoneVisible(true), 60);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Landing countdown — decrements every 3–5 s with a ticker animation
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      const delay = 3000 + Math.random() * 2000;
+      timeout = setTimeout(() => {
+        setLandingMinutes(prev => (prev > 1 ? prev - 1 : 6 * 60 + 25));
+        setTickerKey(k => k + 1);
+        tick();
+      }, delay);
+    };
+    tick();
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const landingH = Math.floor(landingMinutes / 60);
+  const landingM = landingMinutes % 60;
+  const landingStr = `${landingH}h ${landingM.toString().padStart(2, '0')}m`;
 
   // Blur + slide + fade helper — applied per text element with staggered delay
   const textReveal = (delay: number): React.CSSProperties => ({
@@ -489,62 +696,6 @@ function FigmaHeroSection() {
     transitionDelay: `${delay}ms`,
   });
 
-  // Cards emerge from behind the phone and slide outward to their final positions
-  useEffect(() => {
-    // Set initial hidden state synchronously — behind the phone, small, no tilt
-    if (leftCardRef.current) {
-      leftCardRef.current.style.transform = 'translateX(373px) scale(0.88)';
-      leftCardRef.current.style.opacity = '0';
-    }
-    if (rightCardRef.current) {
-      rightCardRef.current.style.transform = 'translateX(-364px) scale(0.88)';
-      rightCardRef.current.style.opacity = '0';
-    }
-
-    let triggered = false;
-
-    const onScroll = () => {
-      if (triggered || window.scrollY < 50) return;
-      triggered = true;
-      window.removeEventListener('scroll', onScroll);
-
-      // Sync with next frame to avoid mid-frame style conflicts
-      requestAnimationFrame(() => {
-        // Enable card float and slide cards out from behind phone
-        setCardsRevealed(true);
-
-        if (leftCardRef.current) {
-          leftCardRef.current.style.willChange = 'transform, opacity';
-          leftCardRef.current.style.transition =
-            'transform 900ms cubic-bezier(0.34, 1.4, 0.64, 1), opacity 450ms ease-out';
-          leftCardRef.current.style.transform = 'rotate(-8deg)';
-          leftCardRef.current.style.opacity = '1';
-        }
-        if (rightCardRef.current) {
-          rightCardRef.current.style.willChange = 'transform, opacity';
-          rightCardRef.current.style.transition =
-            'transform 900ms cubic-bezier(0.34, 1.4, 0.64, 1) 140ms, opacity 450ms ease-out 140ms';
-          rightCardRef.current.style.transform = 'rotate(8deg)';
-          rightCardRef.current.style.opacity = '1';
-        }
-
-        // Clean up after entrance completes — free GPU layer
-        setTimeout(() => {
-          if (leftCardRef.current) {
-            leftCardRef.current.style.transition = 'none';
-            leftCardRef.current.style.willChange = 'auto';
-          }
-          if (rightCardRef.current) {
-            rightCardRef.current.style.transition = 'none';
-            rightCardRef.current.style.willChange = 'auto';
-          }
-        }, 1100);
-      });
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   // Badge animations — scroll-triggered, fires once when badge area scrolls into view
   useEffect(() => {
@@ -589,11 +740,11 @@ function FigmaHeroSection() {
   }, []);
 
   return (
-    <section className="hero-section relative w-full bg-[#f9f8f6] min-h-[calc(100vh_+_800px)] overflow-x-hidden" ref={heroRef}>
-      {/* SKY GRADIENT — full width, fills 100vh (min-h-screen) */}
+    <section className="hero-section relative w-full bg-[#f9f8f6] [overflow-x:clip]" ref={heroRef}>
+      {/* SKY GRADIENT — exactly 100vh, phone overlaps from below */}
       <div
         className="hero-sky-section relative w-full overflow-hidden"
-        style={{ minHeight: 'calc(100vh + 115px)', background: 'linear-gradient(264.84deg, #41BCFF 6.47%, #3BA8E3 53.59%, #0078BA 94.31%)' }}
+        style={{ height: '100vh', background: 'linear-gradient(180deg, #0A6DB8 0%, #0F7EC6 30%, #1589D8 60%, #1E9AE8 82%, #4BBEF5 100%)' }}
       >
         {/* Cloud keyframe — from off-screen right to off-screen left, loop restart invisible */}
         <style>{`
@@ -606,8 +757,20 @@ function FigmaHeroSection() {
             50%       { transform: translateY(-10px); }
           }
           @keyframes cardFloatR {
-            0%, 100% { transform: translateY(-5px); }
-            50%       { transform: translateY(5px); }
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-10px); }
+          }
+          @keyframes ticker-in {
+            0%   { transform: translateY(7px); opacity: 0; }
+            100% { transform: translateY(0px); opacity: 1; }
+          }
+          @keyframes plane-progress {
+            0%   { transform: translateX(0px);    opacity: 1; }
+            75%  { transform: translateX(235px);  opacity: 1; }
+            83%  { transform: translateX(235px);  opacity: 0; }
+            84%  { transform: translateX(0px);    opacity: 0; }
+            93%  { transform: translateX(0px);    opacity: 1; }
+            100% { transform: translateX(0px);    opacity: 1; }
           }
           @keyframes line-reveal {
             from { clip-path: inset(-2px 100% -2px -2px); }
@@ -621,15 +784,11 @@ function FigmaHeroSection() {
 
           /* ── Hero Responsive ── */
           @media (max-width: 1100px) {
-            .hero-main-container { top: 490px !important; }
             .hero-card, .hero-badge { display: none !important; }
-            .hero-phone-mockup {
-              position: relative !important;
-              left: 0 !important;
-              top: 0 !important;
-              width: 250px !important;
-              height: 520px !important;
-              margin: 0 auto !important;
+            /* When cards hidden — center just the 364px phone */
+            .hero-phone-row {
+              left: calc(50vw - 182px) !important;
+              width: 364px !important;
             }
             .hero-content-container {
               width: 100% !important;
@@ -639,35 +798,57 @@ function FigmaHeroSection() {
               align-items: center !important;
               justify-content: center !important;
             }
-            .hero-section { min-height: 1200px !important; }
           }
           @media (max-width: 767px) {
-            .hero-main-container { top: 400px !important; }
-            .hero-title span { font-size: 40px !important; letter-spacing: -0.8px !important; }
+            /* Sky fills the viewport on mobile */
+            .hero-sky-section {
+              height: 100svh !important;
+              min-height: 620px !important;
+            }
+            /* Title */
+            .hero-title span { font-size: 36px !important; line-height: 1.12 !important; letter-spacing: -0.72px !important; }
             .hero-description-bg { display: none !important; }
-            .hero-phone-mockup { width: 210px !important; height: 437px !important; }
-            .hero-content-container { min-height: 470px !important; }
-            .hero-section { min-height: 1000px !important; }
+            /* Subtitle wraps naturally */
+            .hero-subtitle {
+              white-space: normal !important;
+              max-width: 300px !important;
+              margin: 0 auto !important;
+            }
+            /* Buttons: full width, stacked */
+            .hero-buttons-row {
+              flex-direction: column !important;
+              width: 100% !important;
+              padding: 0 20px !important;
+              box-sizing: border-box !important;
+            }
+            .hero-buttons-row > * { width: 100% !important; justify-content: center !important; }
+            /* Phone: in-flow, centered */
+            .hero-main-container { padding-top: 24px !important; }
+            .hero-content-container {
+              width: 100% !important;
+              height: auto !important;
+              min-height: unset !important;
+              display: flex !important;
+              justify-content: center !important;
+              align-items: flex-start !important;
+            }
+            /* Airlines text wraps */
+            .hero-airlines-text { white-space: normal !important; padding: 0 24px !important; }
           }
-          @media (max-width: 430px) {
-            .hero-main-container { top: 360px !important; }
-            .hero-title span { font-size: 34px !important; letter-spacing: -0.5px !important; }
-            .hero-phone-mockup { width: 185px !important; height: 385px !important; }
-            .hero-content-container { min-height: 420px !important; }
-            .hero-section { min-height: 900px !important; }
-            .hero-airlines-text { white-space: normal !important; }
+          @media (max-width: 390px) {
+            .hero-title span { font-size: 32px !important; letter-spacing: -0.5px !important; }
           }
         `}</style>
         {/* CLOUDS — all left-0, horizontal position set via negative animation-delay */}
 
-        {/* ── Upper sky: distant, faded, slow ── */}
-        <div className="absolute left-0 top-[-50px] w-[280px] h-[140px] opacity-[0.13] pointer-events-none" style={{ animation: "cloudFlight 250s linear -28s infinite", willChange: "translate" }}>
+        {/* ── Upper sky: distant, faded, slow — z-10 so they fly over the text layer ── */}
+        <div className="absolute z-[10] left-0 top-[-50px] w-[280px] h-[140px] opacity-[0.13] pointer-events-none" style={{ animation: "cloudFlight 250s linear -28s infinite", willChange: "translate" }}>
           <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
         </div>
-        <div className="absolute left-0 top-[20px] w-[340px] h-[150px] opacity-[0.15] pointer-events-none" style={{ animation: "cloudFlight 270s linear -145s infinite", willChange: "translate" }}>
+        <div className="absolute z-[10] left-0 top-[20px] w-[340px] h-[150px] opacity-[0.15] pointer-events-none" style={{ animation: "cloudFlight 270s linear -145s infinite", willChange: "translate" }}>
           <img alt="" className="block max-w-none w-full h-full" src={imgCloud2} />
         </div>
-        <div className="absolute left-0 top-[70px] w-[220px] h-[110px] opacity-[0.12] pointer-events-none" style={{ animation: "cloudFlight 260s linear -82s infinite", willChange: "translate" }}>
+        <div className="absolute z-[10] left-0 top-[70px] w-[220px] h-[110px] opacity-[0.12] pointer-events-none" style={{ animation: "cloudFlight 260s linear -82s infinite", willChange: "translate" }}>
           <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
         </div>
         <div className="absolute left-0 top-[110px] w-[190px] h-[95px] opacity-[0.14] pointer-events-none" style={{ animation: "cloudFlight 240s linear -200s infinite", willChange: "translate" }}>
@@ -705,38 +886,36 @@ function FigmaHeroSection() {
           <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
         </div>
 
-        {/* CONTENT CENTERED — max-width 1200px */}
-        <div className="relative mx-auto max-w-[1200px] h-screen px-5 flex flex-col items-center justify-center pb-[200px]">
-          <div className="flex flex-col gap-[40px] items-center" ref={textGroupRef}>
-            <div className="flex flex-col gap-[20px] items-center">
-              {/* Badge */}
-              <div className="bg-[rgba(255,255,255,0.15)] border border-[rgba(255,255,255,0.3)] border-solid flex gap-[8px] items-center px-[13px] py-[9px] relative rounded-[999px]" data-name="Status badge" data-node-id="7300:48512" style={textReveal(0)}>
-                <div className="relative shrink-0 size-[6px]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgEllipse1} />
-                </div>
-                <span className="font-bold text-[12px] text-white text-center tracking-[0.48px] uppercase whitespace-nowrap">
-                  Flight intelligence platform
-                </span>
-              </div>
+
+        {/* Sky-to-white fade — eliminates sharp horizon where sky meets page background */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-[160px] pointer-events-none z-[6]"
+          style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(249,248,246,0.08) 25%, rgba(249,248,246,0.25) 45%, rgba(249,248,246,0.55) 65%, rgba(249,248,246,0.82) 82%, #f9f8f6 100%)' }}
+        />
+
+        {/* CONTENT — centered in sky — z-5 keeps text above mid/lower clouds but below upper clouds (z-10) */}
+        <div className="hero-sky-content relative z-[7] mx-auto max-w-[1200px] px-5 flex flex-col items-center justify-center h-full pb-[348px]">
+          <div className="flex flex-col gap-[40px] items-center">
+            <div className="flex flex-col gap-[16px] items-center">
               {/* Title + subtitle */}
-              <div className="flex flex-col gap-[24px] items-center relative" data-name="Description Container" data-node-id="7300:48515">
+              <div className="flex flex-col gap-[16px] items-center relative" data-name="Description Container" data-node-id="7300:48515">
                 <div className="hero-description-bg absolute left-[23px] size-[625px] top-[-67px]">
                   <div className="absolute inset-[-22.4%]">
                     <img alt="" className="block max-w-none size-full" src={imgEllipse1889} />
                   </div>
                 </div>
-                <p className="hero-title font-bold relative text-[0px] text-white text-center tracking-[-1.92px] max-w-[714px] w-full" style={{ textShadow: '-4px 2px 12px rgba(16,32,64,0.08)', ...textReveal(130) }} data-node-id="7300:48517">
-                  <span className="leading-[1.1] text-[64px]">Know your flight </span>
-                  <span className="italic font-normal leading-[1.1] text-[#a7f3d0] text-[64px]">before</span>
-                  <span className="leading-[1.1] text-[64px]"> the airport does.</span>
+                <p className="hero-title font-bold relative text-[0px] text-white text-center tracking-[-1.68px] max-w-[610px] w-full" style={{ textShadow: '-4px 2px 12px rgba(16,32,64,0.08)', ...textReveal(130) }} data-node-id="7300:48517">
+                  <span className="leading-[1.1] text-[56px]">Know your flight </span>
+                  <span className="italic font-normal leading-[1.1] text-[#a7f3d0] text-[56px]">before</span>
+                  <span className="leading-[1.1] text-[56px]"> the airport does.</span>
                 </p>
-                <p className="hero-subtitle font-normal leading-[1.4] relative text-[17px] text-white text-center max-w-[524px] w-full px-5" style={textReveal(240)} data-node-id="7300:48518">
-                  Real-time tracking, predictive delay signals, and a personal travel history — from search to landing.
+                <p className="hero-subtitle font-normal leading-[1.4] relative text-[17px] text-white text-center" style={textReveal(240)} data-node-id="7300:48518">
+                  Real-time tracking, predictive delay signals, and a personal travel history
                 </p>
               </div>
             </div>
             {/* Buttons */}
-            <div className="flex gap-[16px] items-center justify-center" data-name="Button Container" data-node-id="7300:48519" style={textReveal(360)}>
+            <div className="hero-buttons-row flex gap-[16px] items-center justify-center" data-name="Button Container" data-node-id="7300:48519" style={textReveal(360)}>
               <div className="cta-btn relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] cursor-pointer" data-name="Primary Button" data-node-id="7300:48520">
                 <div aria-hidden="true" className="absolute bg-[#1c1917] inset-0 pointer-events-none rounded-[999px]" />
                 <div className="overflow-clip relative shrink-0 size-[20px]" data-name="Icons / Apple" data-node-id="I7300:48520;1870:924">
@@ -747,46 +926,21 @@ function FigmaHeroSection() {
                 <span className="font-semibold relative text-[15px] text-white text-center whitespace-nowrap leading-[20px]">Download</span>
                 <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.15)]" />
               </div>
-              <div className="flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] cursor-pointer" data-name="Ghost Button" data-node-id="7300:48521" onClick={() => { const s = document.querySelector('#how-it-works'); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
-                <span className="font-semibold text-[15px] text-white text-center whitespace-nowrap leading-[20px]">See how it works</span>
-                <div className="relative shrink-0 size-[20px]" data-name="Icons/Arrow-down" data-node-id="I7300:48521;1872:342">
-                  <div className="absolute flex inset-[36.63%_15.54%_28.3%_19.43%] items-center justify-center">
-                    <div className="flex-none h-[8.417px] rotate-180 w-[15.607px]">
-                      <div className="relative size-full">
-                        <img alt="" className="absolute block max-w-none size-full" src={imgIconColor1} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* MAIN CONTAINER — top: calc(100vh - 55px): sky is 100vh+200px, break line at 100vh+200px, formula: sky - 255px */}
-      <div className="hero-main-container absolute left-0 top-[calc(100vh_-_140px)] w-full" data-name="Main container" ref={mainContainerRef}>
+      {/* MAIN CONTAINER — proportional: phone starts at 54.4% of sky height (matches Figma ratio 384/706) */}
+      <div className="hero-main-container relative w-full z-[10]" style={{ marginTop: 'calc(322px - 45.6vh)' }} data-name="Main container">
         <div className="max-w-[1200px] mx-auto px-5">
-        <div className="hero-content-container relative w-[1046px] h-[689px] mx-auto" ref={cardsRef} data-name="Content container" data-node-id="7300:48532">
-          {/* Right journey card */}
-          <div
-            ref={rightCardRef}
-            className="hero-card absolute left-[746px] top-[80px] w-[306.5px]"
-            data-name="image 41"
-            data-node-id="7300:48859"
-          >
-            <div style={{ animation: cardsRevealed ? 'cardFloatR 7s ease-in-out infinite' : 'none' }}>
-              <img alt="" className="block w-full h-auto pointer-events-none" src={imgImage41} />
-            </div>
-          </div>
+        <div className="hero-content-container relative w-[1046px] h-[434px] mx-auto" data-name="Content container" data-node-id="7300:48532">
           {/* Connection awareness pill */}
-          <div className="hero-badge absolute flex gap-[14px] items-center left-[725px] top-[437px]" data-node-id="7300:48537">
-            <div ref={lineConnRef} className="h-0 relative shrink-0 w-[74px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
-              <div className="absolute inset-[-1px_0_0_0]">
-                <img alt="" className="block max-w-none size-full" src={imgLine207} />
-              </div>
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[704px] top-[176px]" data-node-id="7300:48537">
+            <div ref={lineConnRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+              <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
             </div>
-            <div ref={pillConnRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[239px]" data-name="Connection awareness" data-node-id="7300:48539" style={{ opacity: 0 }}>
+            <div ref={pillConnRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Connection awareness" data-node-id="7300:48539" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
               </div>
@@ -794,7 +948,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Gate & terminal changes pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[6px] top-[437px]" data-node-id="7300:48542">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[29px] top-[176px]" data-node-id="7300:48542">
             <div ref={pillGateRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
@@ -803,22 +957,18 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineGateRef} className="h-0 relative w-[80px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
-                  <div className="absolute inset-[-1px_0_0_0]">
-                    <img alt="" className="block max-w-none size-full" src={imgLine210} />
-                  </div>
+                <div ref={lineGateRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+                  <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
                 </div>
               </div>
             </div>
           </div>
           {/* Aircraft insights pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[725px] top-[317px]" data-node-id="7300:48547">
-            <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
-              <div className="absolute inset-[-1px_0_0_0]">
-                <img alt="" className="block max-w-none size-full" src={imgLine208} />
-              </div>
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[704px] top-[56px]" data-node-id="7300:48547">
+            <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+              <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
             </div>
-            <div ref={pillAircraftRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[182px]" data-name="Aircraft insights" data-node-id="7300:48549" style={{ opacity: 0 }}>
+            <div ref={pillAircraftRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Aircraft insights" data-node-id="7300:48549" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse4} />
               </div>
@@ -826,8 +976,8 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Real-time flight tracking pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[49px] top-[317px]" data-node-id="7300:48552">
-            <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[248px]" data-name="Real-time flight tracking" data-node-id="7300:48553" style={{ opacity: 0 }}>
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[29px] top-[56px]" data-node-id="7300:48552">
+            <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Real-time flight tracking" data-node-id="7300:48553" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
               </div>
@@ -835,22 +985,18 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineRealRef} className="h-0 relative w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
-                  <div className="absolute inset-[-1px_0_0_0]">
-                    <img alt="" className="block max-w-none size-full" src={imgLine211} />
-                  </div>
+                <div ref={lineRealRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+                  <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
                 </div>
               </div>
             </div>
           </div>
           {/* Personal flight history pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[725px] top-[557px]" data-node-id="7300:48557">
-            <div ref={lineHistRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
-              <div className="absolute inset-[-1px_0_0_0]">
-                <img alt="" className="block max-w-none size-full" src={imgLine208} />
-              </div>
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[704px] top-[296px]" data-node-id="7300:48557">
+            <div ref={lineHistRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+              <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
             </div>
-            <div ref={pillHistRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[230px]" data-name="Personal flight history" data-node-id="7300:48559" style={{ opacity: 0 }}>
+            <div ref={pillHistRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Personal flight history" data-node-id="7300:48559" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse5} />
               </div>
@@ -858,8 +1004,8 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Delay predictions pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[103px] top-[557px]" data-node-id="7300:48562">
-            <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[194px]" data-name="Delay predictions" data-node-id="7300:48563" style={{ opacity: 0 }}>
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[29px] top-[296px]" data-node-id="7300:48562">
+            <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Delay predictions" data-node-id="7300:48563" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
               </div>
@@ -867,45 +1013,85 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineDelayRef} className="h-0 relative w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
-                  <div className="absolute inset-[-1px_0_0_0]">
-                    <img alt="" className="block max-w-none size-full" src={imgLine211} />
-                  </div>
+                <div ref={lineDelayRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+                  <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
                 </div>
               </div>
             </div>
           </div>
-          {/* Left journey card */}
-          <div
-            ref={leftCardRef}
-            className="hero-card absolute left-0 top-[80px] w-[324.5px]"
-            data-name="image 40"
-            data-node-id="7300:48856"
-          >
-            <div style={{ animation: cardsRevealed ? 'cardFloatL 6s ease-in-out infinite' : 'none' }}>
-              <img alt="" className="block w-full h-auto pointer-events-none" src={imgImage40} />
+
+        </div>
+        </div>
+        {/* ── Figma node 7379:46095: flex row [left card | phone | right card] ── */}
+        {/* Direct child of hero-main-container (relative w-full, x=0) — 50vw centers correctly */}
+        <div
+          className="hero-phone-row absolute flex gap-[34px] items-start top-[-346px] w-[1016px] pointer-events-none"
+          style={{
+            left: 'calc(50vw - 508px)',
+            zIndex: 20,
+            opacity: phoneVisible ? 1 : 0,
+            transform: `translateY(${phoneVisible ? '0px' : '52px'}) scale(${phoneVisible ? 1 : 0.88})`,
+            filter: phoneVisible ? 'blur(0px)' : 'blur(6px)',
+            transition: 'opacity 0.9s cubic-bezier(0.34, 1.15, 0.64, 1), transform 0.9s cubic-bezier(0.34, 1.15, 0.64, 1), filter 0.9s cubic-bezier(0.34, 1.15, 0.64, 1)',
+            transitionDelay: phoneVisible ? '180ms' : '0ms',
+            willChange: 'transform, opacity',
+          }}
+        >
+          {/* Left card — Connection card (Paris to Bangkok) */}
+          <div className="hero-card flex flex-col items-start pt-[120px] relative self-stretch shrink-0 w-[291px]">
+            <div className="flex items-center justify-center relative shrink-0 w-full">
+              <div className="flex-none rotate-[-5.43deg]">
+                <img alt="" className="block w-[281px] h-auto" src={imgImage41} style={{ animation: 'cardFloatL 6s ease-in-out 0.6s infinite' }} />
+              </div>
             </div>
           </div>
-          {/* Phone */}
-          <div
-            className="hero-phone-mockup absolute h-[757px] left-[353px] top-[-68px] w-[364px]"
-            data-name="image 42"
-            data-node-id="7300:48862"
-            style={{
-              opacity: phoneVisible ? 1 : 0,
-              transform: phoneVisible ? 'translateY(0px) scale(1)' : 'translateY(52px) scale(0.88)',
-              filter: phoneVisible ? 'blur(0px)' : 'blur(6px)',
-              transition: 'opacity 0.9s cubic-bezier(0.34, 1.15, 0.64, 1), transform 0.9s cubic-bezier(0.34, 1.15, 0.64, 1), filter 0.9s cubic-bezier(0.34, 1.15, 0.64, 1)',
-              transitionDelay: phoneVisible ? '180ms' : '0ms',
-              willChange: 'transform, opacity',
-            }}
-          >
-            <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage42} />
+
+          {/* Phone — Figma node 7379:46770 */}
+          <div className="h-[756px] overflow-clip relative shrink-0 w-[364px]" data-name="iphone 18" data-node-id="7379:46770">
+            <div className="absolute h-[747px] left-[12px] top-[10px] w-[340px]" data-node-id="7379:46771">
+              <div className="absolute h-[755px] left-[0.36px] top-[-4px] w-[341px]" data-name="image 44" data-node-id="7379:46772">
+                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgPhoneApp} />
+              </div>
+              <div className="absolute h-[30.848px] left-[15.36px] top-[187px] w-[74.331px]" data-node-id="7379:46773">
+                <div className="absolute bg-[#97d0ef] h-[6px] left-0 rounded-[929.555px] top-[15px] w-[309px]" />
+                <div className="absolute bg-gradient-to-l from-white h-[6px] left-0 rounded-[929.555px] to-[rgba(255,255,255,0.04)] top-[15px] w-[65px]" style={{animation:'plane-progress 120s linear infinite'}} />
+                <div className="absolute h-[30.848px] left-[45.88px] top-[2px] w-[27.806px]" data-name="Plane Model" data-node-id="7379:46775" style={{animation:'plane-progress 120s linear infinite'}}>
+                  <div className="absolute flex items-center justify-center left-[1.18px] size-[25.412px] top-[2.97px]">
+                    <div className="flex-none rotate-[2.91deg]">
+                      <div className="relative size-[24.214px]">
+                        <div className="absolute inset-[0_-2.1%_0_0]">
+                          <img alt="" className="block max-w-none size-full" src={imgPhonePlane} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Landing countdown overlay — covers static text in the phone PNG */}
+              <div className="absolute" style={{top:'228px', left:'15px', width:'200px', height:'20px', background:'white', display:'flex', alignItems:'center', overflow:'hidden'}}>
+                <span style={{fontFamily:'Inter, sans-serif', fontSize:'12px', fontWeight:500, color:'#6b7280', letterSpacing:'0.01em', lineHeight:1}}>Landing in{' '}</span>
+                <span key={tickerKey} style={{fontFamily:'Inter, sans-serif', fontSize:'12px', fontWeight:600, color:'#111827', letterSpacing:'0.01em', lineHeight:1, marginLeft:'3px', animation:'ticker-in 0.35s cubic-bezier(0.22,1,0.36,1) both'}}>{landingStr}</span>
+              </div>
+            </div>
+            <div className="absolute h-[756.789px] left-0 top-0 w-[364px]" data-name="Flattened" data-node-id="7379:46808">
+              <img alt="" className="absolute block max-w-none size-full" src="/Images/hero-phone-chrome.svg" />
+            </div>
+            <div className="absolute h-[32.182px] left-[127.64px] top-[21.44px] w-[108.724px]" data-node-id="7379:46809">
+              <div className="absolute inset-0 bg-black rounded-[20px]" />
+            </div>
+          </div>
+
+          {/* Right card — Journey card (San Francisco to Tokyo) */}
+          <div className="hero-card flex flex-col items-start pt-[120px] relative self-stretch shrink-0 w-[292px]">
+            <div className="flex items-center justify-center relative shrink-0 w-full">
+              <div className="flex-none rotate-[6.23deg]">
+                <img alt="" className="block w-[281px] h-auto" src={imgImage40} style={{ animation: 'cardFloatR 7s ease-in-out 0.8s infinite' }} />
+              </div>
+            </div>
           </div>
         </div>
-        </div>
-        {/* AIRLINES STRIP — 120px gap below content container (mt relative to content container bottom: 689px within Main container) */}
-        <div className="w-full bg-[#f9f8f6] mt-[60px]">
+        {/* AIRLINES STRIP */}
+        <div className="w-full bg-[#f9f8f6] mt-[64px]">
         <div className="flex flex-col gap-[40px] items-center overflow-hidden py-[40px]" data-name="airlines-strip" data-node-id="7300:48567">
           <p className="hero-airlines-text font-normal leading-[1.4] text-[18px] text-[#a8a29e] text-center tracking-[-0.18px] whitespace-nowrap" data-node-id="7300:48569">
             Tracks flights across 1200+ airlines and airports worldwide
@@ -1228,10 +1414,12 @@ function Intelligence() {
 <>
 <style>{`
   @media (max-width: 767px) {
-    .intelligence-section { padding-top: 80px !important; padding-bottom: 80px !important; }
-    .intelligence-inner { padding: 0 24px !important; box-sizing: border-box !important; }
-    .intelligence-panels { flex-direction: column !important; align-items: stretch !important; }
+    .intelligence-section { padding-top: 72px !important; padding-bottom: 72px !important; }
+    .intelligence-inner { padding: 0 20px !important; box-sizing: border-box !important; gap: 48px !important; }
+    .intelligence-panels { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; }
     .intel-panel { flex: none !important; min-width: unset !important; }
+    .intel-section-title { font-size: clamp(28px, 7vw, 36px) !important; letter-spacing: -0.6px !important; }
+    .intel-section-sub { font-size: 15px !important; }
   }
   @media (min-width: 768px) and (max-width: 1023px) {
     .intelligence-section { padding-top: 80px !important; padding-bottom: 80px !important; }
@@ -1249,12 +1437,12 @@ function Intelligence() {
         Three modes, one system
       </p>
       <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%'}}>
-        <p style={{fontFamily: 'Inter', fontWeight: 700, fontSize: '48px', color: '#1c1917', letterSpacing: '-0.96px', lineHeight: 1.1, textAlign: 'center'}}>
+        <p className="intel-section-title" style={{fontFamily: 'Inter', fontWeight: 700, fontSize: '48px', color: '#1c1917', letterSpacing: '-0.96px', lineHeight: 1.1, textAlign: 'center'}}>
           <span style={{fontWeight: 700}}>Before. </span>
           <span style={{fontWeight: 400, fontStyle: 'italic', color: '#0ea5e9'}}>During.</span>
           <span style={{fontWeight: 700}}> After</span>
         </p>
-        <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '15px', color: '#6c6760', lineHeight: 1.4, width: '510px', textAlign: 'center'}}>
+        <p className="intel-section-sub" style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '15px', color: '#6c6760', lineHeight: 1.4, maxWidth: '510px', width: '100%', textAlign: 'center'}}>
           Most apps only track flights you&#39;ve already booked. Flight Passport stays with you across the entire journey lifecycle.
         </p>
       </div>
@@ -1265,9 +1453,9 @@ function Intelligence() {
 
       {/* Panel 1 — Before */}
       <div ref={p0} className="intel-panel" style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
-        <div className="intel-icon" style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+        <div className="intel-icon" style={{width: '48px', height: '48px', background: 'white', border: '1px solid #e7e5e4', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
           <div style={{position: 'relative', width: '24px', height: '24px', overflow: 'clip'}}>
-            <img src="/Images/asset-6571faff-0057-47a8-bb30-a2bcebd6e48a.svg" alt="" style={{position: 'absolute', top: '5%', left: '7.08%', right: '5%', bottom: '7.08%', width: 'calc(100% - 12.08%)', height: 'calc(100% - 12.08%)'}} />
+            <img src={imgIntelIcon} alt="" style={{position: 'absolute', top: '5%', right: '5%', bottom: '7.08%', left: '7.08%', width: 'calc(100% - 12.08%)', height: 'calc(100% - 12.08%)'}} />
           </div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '100%'}}>
@@ -1281,9 +1469,9 @@ function Intelligence() {
 
       {/* Panel 2 — During (live) */}
       <div ref={p1} className="intel-panel" style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
-        <div className="intel-icon" style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+        <div className="intel-icon" style={{width: '48px', height: '48px', background: 'white', border: '1px solid #e7e5e4', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
           <div style={{position: 'relative', width: '24px', height: '24px', overflow: 'clip'}}>
-            <img src="/Images/asset-3d262fbf-4d0d-426e-94a8-1cb0a827cf35.svg" alt="" style={{position: 'absolute', top: '5.21%', left: '9.38%', right: '9.38%', bottom: '5.21%', width: 'calc(100% - 18.76%)', height: 'calc(100% - 10.42%)'}} />
+            <img src={imgIntelIcon1} alt="" style={{position: 'absolute', top: '4.58%', right: '8.75%', bottom: '4.58%', left: '8.75%', width: 'calc(100% - 17.5%)', height: 'calc(100% - 9.16%)'}} />
           </div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '100%'}}>
@@ -1299,9 +1487,9 @@ function Intelligence() {
 
       {/* Panel 3 — After */}
       <div ref={p2} className="intel-panel" style={{flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', borderRadius: '24px', border: '1px solid #e7e5e4', backgroundImage: 'linear-gradient(138.2deg, rgb(255,255,255) 3.222%, rgb(245,245,244) 117.85%)'}}>
-        <div className="intel-icon" style={{width: '48px', height: '48px', border: '1px solid #b8daf2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
+        <div className="intel-icon" style={{width: '48px', height: '48px', background: 'white', border: '1px solid #e7e5e4', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
           <div style={{position: 'relative', width: '24px', height: '24px', overflow: 'clip'}}>
-            <img src="/Images/asset-0520a5cb-3223-47a1-8eb9-a6ce039120d9.svg" alt="" style={{position: 'absolute', top: '13.54%', left: '5.21%', right: '5.21%', bottom: '13.54%', width: 'calc(100% - 10.42%)', height: 'calc(100% - 27.08%)'}} />
+            <img src={imgIntelIcon2} alt="" style={{position: 'absolute', top: '5.21%', right: '5.21%', bottom: '5.2%', left: '9.37%', width: 'calc(100% - 14.58%)', height: 'calc(100% - 10.41%)'}} />
           </div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', width: '100%'}}>
@@ -1406,7 +1594,11 @@ function HowItWorks() {
           }
         }
         @media (max-width: 767px) {
-          .hiw-section { padding: 80px 20px; }
+          .hiw-section { padding: 64px 20px; }
+          .hiw-content { flex-direction: column !important; gap: 32px !important; }
+          .hiw-phone-wrap { width: 320px !important; max-width: 320px !important; margin: 0 auto !important; justify-content: center !important; }
+          .hiw-title  { font-size: clamp(24px, 6vw, 30px) !important; letter-spacing: -0.5px !important; }
+          .hiw-desc   { font-size: 15px !important; }
         }
       `}</style>
       <section
@@ -1476,6 +1668,7 @@ function HowItWorks() {
 
               {/* Title */}
               <p
+                className="hiw-title"
                 data-node-id="7300-48964"
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
@@ -1494,6 +1687,7 @@ function HowItWorks() {
 
               {/* Body */}
               <p
+                className="hiw-desc"
                 data-node-id="7300-48965"
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
@@ -1749,7 +1943,9 @@ function MiddleSection() {
           }
         }
         @media (max-width: 767px) {
-          .mid-section { padding: 80px 20px; }
+          .mid-section { padding: 64px 20px; }
+          .mid-content { flex-direction: column-reverse !important; gap: 32px !important; }
+          .mid-phone-wrap { max-width: 240px !important; }
         }
       `}</style>
       <section
@@ -1916,6 +2112,7 @@ function MiddleSection() {
 
               {/* Title */}
               <p
+                className="hiw-title"
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
                   fontWeight: 700,
@@ -1933,6 +2130,7 @@ function MiddleSection() {
 
               {/* Body */}
               <p
+                className="hiw-desc"
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
                   fontWeight: 400,
@@ -2041,7 +2239,9 @@ function LowerSection() {
           }
         }
         @media (max-width: 767px) {
-          .low-section { padding: 80px 20px; }
+          .low-section { padding: 64px 20px; }
+          .low-content { flex-direction: column !important; gap: 32px !important; }
+          .low-phone-wrap { max-width: 240px !important; }
         }
       `}</style>
       <section
@@ -2095,6 +2295,7 @@ function LowerSection() {
 
               {/* Title */}
               <p
+                className="hiw-title"
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
                   fontWeight: 700,
@@ -2112,6 +2313,7 @@ function LowerSection() {
 
               {/* Body */}
               <p
+                className="hiw-desc"
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
                   fontWeight: 400,
@@ -2314,7 +2516,9 @@ function BottomSection() {
           }
         }
         @media (max-width: 767px) {
-          .bot-section { padding: 80px 20px; }
+          .bot-section { padding: 64px 20px; }
+          .bot-content { flex-direction: column-reverse !important; gap: 32px !important; }
+          .bot-phone-wrap { max-width: 240px !important; }
         }
       `}</style>
       <section className="bot-section" data-name="Bottom Section">
@@ -2463,6 +2667,7 @@ function BottomSection() {
 
               {/* Title */}
               <p
+                className="hiw-title"
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
                   fontWeight: 700,
@@ -2480,6 +2685,7 @@ function BottomSection() {
 
               {/* Body */}
               <p
+                className="hiw-desc"
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
                   fontWeight: 400,
@@ -2513,9 +2719,21 @@ const LA_CARDS = [
 ];
 
 function LiveActivities() {
-  const headerRef = useRef<HTMLDivElement>(null);
-  const gridRef   = useRef<HTMLDivElement>(null);
-  const cardRefs  = useRef<(HTMLDivElement | null)[]>([]);
+  const headerRef  = useRef<HTMLDivElement>(null);
+  const gridRef    = useRef<HTMLDivElement>(null);
+  const cardRefs   = useRef<(HTMLDivElement | null)[]>([]);
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    e.currentTarget.classList.add('la-card-pressing');
+  }
+  function handlePointerUp(e: React.PointerEvent<HTMLDivElement>) {
+    e.currentTarget.classList.remove('la-card-pressing');
+  }
+  function handleCardClick(e: React.MouseEvent<HTMLDivElement>) {
+    const card = e.currentTarget;
+    if (card.classList.contains('la-card-active')) return;
+    card.classList.add('la-card-active');
+    setTimeout(() => card.classList.remove('la-card-active'), 380);
+  }
 
   useEffect(() => {
     // Header — blur + slide + fade
@@ -2606,14 +2824,38 @@ function LiveActivities() {
           max-width: 1160px;
           margin: 0 auto;
         }
+        @keyframes laFloatA {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-9px); }
+        }
+        @keyframes laFloatB {
+          0%, 100% { transform: translateY(-5px); }
+          50%       { transform: translateY(5px); }
+        }
+        @keyframes laFloatC {
+          0%, 100% { transform: translateY(-2px); }
+          50%       { transform: translateY(-11px); }
+        }
         .la-card {
           width: 100%;
-          transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
           cursor: pointer;
           will-change: transform;
         }
+        .la-card:nth-child(1) { animation: laFloatA 6.0s ease-in-out 0.0s infinite; }
+        .la-card:nth-child(2) { animation: laFloatB 7.2s ease-in-out 0.4s infinite; }
+        .la-card:nth-child(3) { animation: laFloatC 5.8s ease-in-out 1.1s infinite; }
+        .la-card:nth-child(4) { animation: laFloatB 6.6s ease-in-out 0.7s infinite; }
+        .la-card:nth-child(5) { animation: laFloatA 7.4s ease-in-out 1.4s infinite; }
+        .la-card:nth-child(6) { animation: laFloatC 6.2s ease-in-out 0.2s infinite; }
         .la-card:hover {
-          transform: scale(1.05);
+          animation-play-state: paused;
+        }
+        .la-card-inner {
+          width: 100%;
+          transition: transform 0.4s cubic-bezier(0.34, 1.28, 0.64, 1);
+        }
+        .la-card:hover .la-card-inner {
+          transform: scale(1.04);
         }
         .la-card img {
           width: 100%;
@@ -2621,15 +2863,44 @@ function LiveActivities() {
           aspect-ratio: 752 / 352;
           display: block;
           object-fit: cover;
-          filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
+          filter: drop-shadow(0 8px 24px rgba(0,0,0,0.28));
+          transition: filter 0.4s ease;
+        }
+        .la-card:hover img {
+          filter: drop-shadow(0 20px 44px rgba(0,0,0,0.36)) drop-shadow(0 4px 12px rgba(0,0,0,0.18));
+        }
+        /* ── Press reaction ── */
+        .la-card-inner {
+          position: relative;
+        }
+        .la-pulse-ring {
+          position: absolute;
+          inset: 1px;
+          border-radius: 44px;
+          border: 1px solid rgba(255,255,255,0.55);
+          pointer-events: none;
+          opacity: 0;
+          z-index: 1;
+        }
+        @keyframes laPulseRing {
+          0%   { opacity: 0.55; }
+          100% { opacity: 0; }
+        }
+        .la-card.la-card-pressing .la-card-inner {
+          transform: scale(0.972);
+          transition: transform 90ms ease-out;
+        }
+        .la-card.la-card-active .la-pulse-ring {
+          animation: laPulseRing 380ms ease-out forwards;
         }
         @media (max-width: 767px) {
-          .la-section { padding: 80px 20px 100px; }
-          .la-title { font-size: clamp(32px, 7vw, 48px) !important; }
-          .la-cards-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
-        }
-        @media (max-width: 480px) {
-          .la-cards-grid { grid-template-columns: 1fr; }
+          .la-section { padding: 64px 20px !important; }
+          .la-container { gap: 40px !important; }
+          .la-title { font-size: 32px !important; letter-spacing: -0.64px !important; }
+          .la-desc { font-size: 15px !important; width: 100% !important; max-width: 100% !important; }
+          .la-cards-grid { grid-template-columns: 1fr; gap: 20px; }
+          /* Disable float animation on mobile — saves battery, avoids jitter */
+          .la-card { animation: none !important; }
         }
       `}</style>
       <section id="live-activities" className="la-section">
@@ -2664,7 +2935,7 @@ function LiveActivities() {
                 <span style={{fontWeight: 400, fontStyle: 'italic', color: '#0ea5e9', letterSpacing: '-1.44px'}}>before</span>
                 <span style={{fontWeight: 700}}> they become yours.</span>
               </p>
-              <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '15px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.4, width: '366px', maxWidth: '100%', textAlign: 'center', margin: 0}}>
+              <p className="la-desc" style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '15px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.4, width: '366px', maxWidth: '100%', textAlign: 'center', margin: 0}}>
                 Flight Passport reads every phase of your journey and surfaces only what matters at that moment.
               </p>
             </div>
@@ -2677,8 +2948,15 @@ function LiveActivities() {
                 key={i}
                 ref={el => { cardRefs.current[i] = el; }}
                 className="la-card"
+                onClick={handleCardClick}
+                onPointerDown={handlePointerDown}
+                onPointerUp={handlePointerUp}
+                onPointerLeave={handlePointerUp}
               >
-                <img src={card.src} alt={card.alt} />
+                <div className="la-card-inner">
+                  <img src={card.src} alt={card.alt} />
+                  <div className="la-pulse-ring" />
+                </div>
               </div>
             ))}
           </div>
@@ -2690,13 +2968,13 @@ function LiveActivities() {
 }
 
 // ── Passport ──────────────────────────────────────────────────────────────────
-const imgPassportBg  = "/Images/asset-dba6f693-41d3-4c6b-9f73-2fc7f0aaffaf.png";
-const imgPassportBg1 = "/Images/asset-f80fb675-dced-44b1-bb82-7caa53da7136.png";
-const imgPassportBg2 = "/Images/asset-6959bf5d-0f6e-420c-b8b6-233c6134257d.png";
-const imgPassportIcon0 = "/Images/asset-df603d5f-5b2f-407b-946b-a4ede02e2e61.svg";
-const imgPassportIcon1 = "/Images/asset-61eda8f2-9f2d-4d85-a6dd-49038088417e.svg";
-const imgPassportIcon2 = "/Images/asset-3d28a8cb-5899-432b-ba6c-02554b1e46a2.svg";
-const imgPassportIcon3 = "/Images/asset-99550e42-aadb-4ac4-a5c8-96413896b5b7.svg";
+const imgPassportBg  = "/Images/asset-26946291-f6a0-4ff9-8a55-76558e481309.png";
+const imgPassportBg1 = "/Images/asset-d14c4d0c-e01a-4598-bc67-f72d46c26cb2.png";
+const imgPassportBg2 = "/Images/asset-b9e0cf1d-7066-4fc7-9f3a-ef9412beea85.png";
+const imgPassportIcon0 = "/Images/asset-f666c8bb-7021-4db4-950b-3c926692867b.svg";
+const imgPassportIcon1 = "/Images/asset-0253905e-4beb-46e3-ab04-b0081f10a5a7.svg";
+const imgPassportIcon2 = "/Images/asset-963ebc02-1135-4773-8241-9ae0b36fbbc8.svg";
+const imgPassportIcon3 = "/Images/asset-b5b5912a-0ca5-46a2-bd4c-014c2773e113.svg";
 
 const PASSPORT_STATS = [
   { target: 47,  suffix: '',  label: 'Flights completed', icon: imgPassportIcon0, iconStyle: {top:'9.37%',left:'9.37%',right:'9.38%',bottom:'9.38%'}, iconOpacity: 1 },
@@ -2737,11 +3015,19 @@ function PassportStatCard({ stat, delay }: { stat: typeof PASSPORT_STATS[0]; del
       className="passport-stat-card"
       style={{
         flex: '1 0 0',
-        border: '1px solid rgba(255,255,255,0.32)',
         borderRadius: '24px',
         padding: '24px',
-        background: 'linear-gradient(138.635deg, rgba(255,255,255,0.24) 12.588%, rgba(255,255,255,0) 89.877%)',
-        boxShadow: '0 12px 24px rgba(28,25,23,0.08)',
+        background: 'linear-gradient(145deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.07) 100%)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        boxShadow: [
+          'inset 0 0.5px 0 rgba(255,255,255,0.75)',   /* top bright glass edge */
+          'inset 0.5px 0 0 rgba(255,255,255,0.32)',   /* left gleam */
+          'inset 0 -0.5px 0 rgba(255,255,255,0.10)',  /* bottom soft */
+          'inset -0.5px 0 0 rgba(255,255,255,0.12)',  /* right soft */
+          '0 20px 48px rgba(0,0,0,0.13)',
+          '0 4px 12px rgba(0,0,0,0.07)',
+        ].join(', '),
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
@@ -2770,6 +3056,8 @@ function PassportStatCard({ stat, delay }: { stat: typeof PASSPORT_STATS[0]; del
       <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', color: 'rgba(255,255,255,0.72)', lineHeight: '24px', textAlign: 'center', width: '100%', margin: 0}}>
         {stat.label}
       </p>
+      {/* Shimmer sweep — staggered per card via animationDelay */}
+      <div className="passport-shimmer" style={{ animationDelay: `${delay * 0.8}ms` }} />
     </div>
   );
 }
@@ -2802,10 +3090,57 @@ function Passport() {
         @media (max-width: 1023px) {
           .passport-grid { padding: 0 80px; }
         }
+        /* Glass card base */
+        .passport-stat-card {
+          position: relative;
+          overflow: hidden;
+        }
+        /* Shimmer sweep — diagonal light beam that crosses each card */
+        .passport-shimmer {
+          position: absolute;
+          top: -60%;
+          left: -100%;
+          width: 45%;
+          height: 220%;
+          background: linear-gradient(
+            100deg,
+            transparent 0%,
+            rgba(255,255,255,0.07) 35%,
+            rgba(255,255,255,0.16) 50%,
+            rgba(255,255,255,0.07) 65%,
+            transparent 100%
+          );
+          transform: skewX(-18deg);
+          animation: passport-shimmer 7s ease-in-out infinite;
+          pointer-events: none;
+          z-index: 2;
+        }
+        @keyframes passport-shimmer {
+          0%, 55%, 100% { left: -100%; opacity: 0; }
+          57%            { opacity: 1; }
+          75%            { left: 140%;  opacity: 1; }
+          78%            { opacity: 0; }
+        }
         @media (max-width: 767px) {
-          .passport-section { padding: 80px 0; }
-          .passport-grid { padding: 0 24px; }
-          .passport-stat-number { font-size: 36px !important; }
+          .passport-section { padding: 0 !important; }
+          .passport-label { display: none !important; }
+          .passport-inner { gap: 0 !important; max-width: 100% !important; align-items: stretch !important; }
+          .passport-header {
+            padding: 64px 20px 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+          }
+          .passport-title { font-size: 32px !important; width: 100% !important; max-width: 100% !important; }
+          .passport-grid { padding: 40px 20px 64px !important; gap: 24px !important; width: 100% !important; }
+          .passport-grid-row { flex-direction: column !important; gap: 24px !important; }
+          .passport-stat-card {
+            flex: none !important;
+            width: 100% !important;
+            height: auto !important;
+            border: 1px solid rgba(255,255,255,0.6) !important;
+          }
+          .passport-stat-number { font-size: 32px !important; letter-spacing: -0.64px !important; }
         }
       `}</style>
       <section id="passport" className="passport-section">
@@ -2852,15 +3187,15 @@ function Passport() {
         </div>
 
         {/* Main content */}
-        <div style={{position:'relative', zIndex:1, maxWidth:'1200px', margin:'0 auto', display:'flex', flexDirection:'column', gap:'40px', alignItems:'center'}}>
+        <div className="passport-inner" style={{position:'relative', zIndex:1, maxWidth:'1200px', margin:'0 auto', display:'flex', flexDirection:'column', gap:'40px', alignItems:'center'}}>
 
           {/* Header */}
-          <div style={{display:'flex',flexDirection:'column',gap:'15px',alignItems:'center',textAlign:'center',width:'654.5px',maxWidth:'100%'}}>
-            <p style={{fontFamily:'Inter',fontWeight:700,fontSize:'12px',color:'rgba(255,255,255,0.72)',letterSpacing:'0.48px',textTransform:'uppercase',lineHeight:1,margin:0}}>
+          <div className="passport-header" style={{display:'flex',flexDirection:'column',gap:'15px',alignItems:'center',textAlign:'center',width:'654.5px',maxWidth:'100%'}}>
+            <p className="passport-label" style={{fontFamily:'Inter',fontWeight:700,fontSize:'12px',color:'rgba(255,255,255,0.72)',letterSpacing:'0.48px',textTransform:'uppercase',lineHeight:1,margin:0}}>
               Travel history
             </p>
             <div style={{display:'flex',flexDirection:'column',gap:'15px',alignItems:'center',width:'100%'}}>
-              <p style={{fontFamily:'Inter',fontSize:'48px',color:'white',letterSpacing:'-0.96px',lineHeight:1.1,textAlign:'center',margin:0,textShadow:'0 4px 16px rgba(10,16,40,0.08)',width:'518px',maxWidth:'100%'}}>
+              <p className="passport-title" style={{fontFamily:'Inter',fontSize:'48px',color:'white',letterSpacing:'-0.96px',lineHeight:1.1,textAlign:'center',margin:0,textShadow:'0 4px 16px rgba(10,16,40,0.08)',width:'518px',maxWidth:'100%'}}>
                 <span style={{fontWeight:700}}>Every flight becomes part of </span>
                 <span style={{fontWeight:400,fontStyle:'italic',color:'#a7f3d0',letterSpacing:'-1.44px'}}>your story.</span>
               </p>
@@ -3056,6 +3391,8 @@ function FAQ() {
           .faq-section { padding: 80px 0; }
           .faq-container { padding: 0 24px; }
           .faq-title { font-size: 36px !important; }
+          .faq-row { padding: 20px 0 !important; }
+          .faq-question { font-size: 16px !important; }
         }
       `}</style>
       <section id="faq" className="faq-section" data-name="FAQ">
@@ -3190,19 +3527,37 @@ function FinalCTA() {
           flex-direction: column;
           align-items: center;
         }
+        .cta-inner {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 48px;
+          align-items: center;
+        }
+        .cta-content {
+          max-width: 706px;
+          width: 100%;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          align-items: center;
+        }
         @media (max-width: 1023px) {
           .cta-section { padding: 80px 80px; }
         }
         @media (max-width: 767px) {
-          .cta-section { padding: 80px 24px; }
-          .cta-title { font-size: clamp(32px, 8vw, 48px) !important; }
+          .cta-section { padding: 64px 20px; }
+          .cta-content { max-width: 100%; }
+          .cta-title { font-size: 32px !important; letter-spacing: -0.64px !important; }
+          .cta-btn { width: 100% !important; }
         }
       `}</style>
       <section id="cta" className="cta-section" data-name="Final CTA">
-        <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 48, alignItems: "center" }}>
+        <div className="cta-inner">
 
           {/* Text block */}
-          <div style={{ maxWidth: 706, textAlign: "center", display: "flex", flexDirection: "column", gap: 16, alignItems: "center" }}>
+          <div className="cta-content">
 
             {/* Title */}
             <h2
@@ -3316,111 +3671,112 @@ function Footer() {
       <style>{`
         .footer-root {
           background: linear-gradient(to bottom, #1c1917, #3f3731);
-          height: 64px;
           width: 100%;
-          padding: 0 120px;
+          padding: 12px 120px 16px;
           box-sizing: border-box;
           display: flex;
-          flex-direction: row;
+          flex-direction: column;
           align-items: center;
+          gap: 12px;
+        }
+        .footer-links-row {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          position: relative;
         }
         .footer-logo-block {
           display: flex;
           gap: 8px;
           align-items: center;
           flex-shrink: 0;
+          position: absolute;
+          left: 0;
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
         }
-        .footer-center-right {
-          flex: 1;
-          display: flex;
-          flex-direction: row;
-          gap: 24px;
-          height: 64px;
-          align-items: center;
-        }
-        .footer-links {
+        .footer-nav {
           flex: 1;
           display: flex;
           gap: 24px;
-          height: 100%;
           align-items: center;
           justify-content: center;
         }
         .footer-link {
-          height: 100%;
           display: flex;
           align-items: center;
-          padding: 0 12px;
+          padding: 8px 12px;
           text-decoration: none;
           font-family: Inter, sans-serif;
           font-weight: 400;
-          font-size: 15px;
+          font-size: 12px;
           color: #a8a29e;
-          line-height: 1.4;
+          line-height: 1.3;
           white-space: nowrap;
           transition: color 150ms ease;
         }
         .footer-link:hover { color: white; }
-        .footer-copyright {
+        .footer-divider {
+          width: 100%;
+          height: 1px;
+          background: rgba(168, 162, 158, 0.15);
           flex-shrink: 0;
+        }
+        .footer-copyright {
           font-family: Inter, sans-serif;
           font-weight: 400;
-          font-size: 15px;
-          color: #a8a29e;
-          line-height: 1.4;
+          font-size: 12px;
+          color: #6c6760;
+          line-height: 1.3;
           white-space: nowrap;
         }
         @media (max-width: 767px) {
           .footer-root {
-            flex-direction: column;
-            height: auto;
-            padding: 32px 24px;
-            gap: 24px;
-          }
-          .footer-logo-block { flex-direction: column; align-items: center; }
-          .footer-center-right {
-            flex: none;
-            flex-direction: column;
-            height: auto;
+            padding: 24px 24px 20px;
             gap: 16px;
-            align-items: center;
           }
-          .footer-links { flex: none; height: auto; gap: 16px; justify-content: center; }
-          .footer-link { height: auto; padding: 4px 8px; }
+          .footer-links-row {
+            flex-direction: column;
+            gap: 16px;
+          }
+          .footer-logo-block { position: static; }
+          .footer-nav { flex-wrap: wrap; justify-content: center; gap: 0; }
           .footer-copyright { text-align: center; }
         }
       `}</style>
       <footer className="footer-root">
-        {/* Left — logo + wordmark */}
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="footer-logo-block" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-          <img src={imgFooterLogo} alt="Flight Passport" style={{ width: 34, height: 34, flexShrink: 0, display: "block" }} />
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: "white", whiteSpace: "nowrap", lineHeight: 1.4 }}>
-              FlightPassport
-            </span>
-            <div style={{ display: "flex", gap: 2, alignItems: "center" }}>
-              <span style={{ fontSize: 8, fontWeight: 500, color: "#a8a29e", letterSpacing: "0.16px", lineHeight: "14px", textTransform: "uppercase", whiteSpace: "nowrap" }}>
-                BORN IN FINLAND
+        {/* Row 1 — logo (absolute left) + centered nav links */}
+        <div className="footer-links-row">
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="footer-logo-block">
+            <img src={imgFooterLogo} alt="Flight Passport" style={{ width: 32, height: 32, flexShrink: 0, display: "block" }} />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+              <span style={{ fontSize: 15, fontWeight: 600, color: "white", whiteSpace: "nowrap", lineHeight: 1.4 }}>
+                FlightPassport
               </span>
-              <img alt="Finnish flag" src={imgFiFooter} style={{ width: 14, height: 10, flexShrink: 0, display: "block" }} />
+              <div style={{ display: "flex", gap: 2, alignItems: "center" }}>
+                <span style={{ fontSize: 8, fontWeight: 500, color: "#a8a29e", letterSpacing: "0.16px", lineHeight: "14px", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                  BORN IN FINLAND
+                </span>
+                <img alt="Finnish flag" src={imgFiFooter} style={{ width: 14, height: 10, flexShrink: 0, display: "block" }} />
+              </div>
             </div>
-          </div>
-        </button>
-
-        {/* Center + Right */}
-        <div className="footer-center-right">
-          {/* Center links */}
-          <nav className="footer-links">
+          </button>
+          <nav className="footer-nav">
             {FOOTER_LINKS.map(({ label, href }) => (
               <a key={label} href={href} className="footer-link">{label}</a>
             ))}
           </nav>
-
-          {/* Right — copyright */}
-          <span className="footer-copyright">
-            © 2026 Flight Passport. All rights reserved.
-          </span>
         </div>
+
+        {/* Divider */}
+        <div className="footer-divider" />
+
+        {/* Row 2 — copyright */}
+        <span className="footer-copyright">
+          © 2026 Flight Passport. All rights reserved.
+        </span>
       </footer>
     </>
   );

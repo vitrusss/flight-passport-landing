@@ -381,6 +381,9 @@ export default function HowItWorksScroll() {
         /* ── Step indicator track (left of text col) ─────────────────── */
         .hiw-indicator-track {
           position: absolute;
+          left: -48px;
+          top: 50%;
+          transform: translateY(-50%);
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -419,7 +422,7 @@ export default function HowItWorksScroll() {
         }
         .hiw-dot {
           border-radius: 50%;
-          transition: width 300ms ease, height 300ms ease, background 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+          transition: width 300ms ease, height 300ms ease, background 300ms ease, box-shadow 300ms ease, border-color 300ms ease, transform 200ms ease;
         }
         .hiw-dot.upcoming {
           width: 8px;
@@ -734,6 +737,17 @@ export default function HowItWorksScroll() {
           .phase-exiting .hiw-screen-img { opacity: 0; }
           .phase-paused .hiw-screen-img  { opacity: 0; }
           .phase-entering .hiw-screen-img { opacity: 1; }
+
+          .hiw-mobile-screen-wrap.phase-exiting .hiw-mobile-screen-img,
+          .hiw-mobile-screen-wrap.phase-entering .hiw-mobile-screen-img {
+            filter: none !important;
+            transform: none !important;
+            animation: none !important;
+            transition: opacity 200ms ease !important;
+          }
+          .hiw-mobile-screen-wrap.phase-exiting .hiw-mobile-screen-img { opacity: 0; }
+          .hiw-mobile-screen-wrap.phase-paused .hiw-mobile-screen-img  { opacity: 0; }
+          .hiw-mobile-screen-wrap.phase-entering .hiw-mobile-screen-img { opacity: 1; }
 
           .hiw-step-label,
           .hiw-step-title,

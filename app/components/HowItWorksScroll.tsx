@@ -228,6 +228,10 @@ export default function HowItWorksScroll() {
     };
   }, [handleScroll, startAuto, stopAuto]);
 
+  // Progress bar fill % and indicator track fill height
+  const progressFillPct = (active / (STEPS.length - 1)) * 100;
+  const trackFillHeightPx = active * 40; // 40px per slot (8px margin + 24px dot area + 8px margin)
+
   // ─────────────────────────────────────────────────────────────────────────
   // Return — CSS block added in Task 2; JSX added in Tasks 3 & 4
   // ─────────────────────────────────────────────────────────────────────────
@@ -809,7 +813,7 @@ export default function HowItWorksScroll() {
                   <div className="hiw-track-line-bg" />
                   <div
                     className="hiw-track-line-fill"
-                    style={{ height: active > 0 ? `${active * 40}px` : '0px' }}
+                    style={{ height: `${trackFillHeightPx}px` }}
                   />
                   {STEPS.map((step, i) => {
                     const dotState = i < active ? 'completed' : i === active ? 'active-dot' : 'upcoming';
@@ -861,7 +865,7 @@ export default function HowItWorksScroll() {
       <div className={`hiw-progress-bar${inView && !isMobile ? '' : ' hidden'}`}>
         <div
           className="hiw-progress-fill"
-          style={{ height: `${(active / (STEPS.length - 1)) * 100}%` }}
+          style={{ height: `${progressFillPct}%` }}
         />
         {STEPS.map((_, i) => (
           <div

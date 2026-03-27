@@ -641,8 +641,6 @@ function FigmaHeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
   const [phoneVisible, setPhoneVisible] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
-  const [landingMinutes, setLandingMinutes] = useState(6 * 60 + 25);
-  const [tickerKey, setTickerKey] = useState(0);
   // Badge refs — line elements (clip-path animation) and pill elements (badge-pop animation)
   const lineConnRef     = useRef<HTMLDivElement>(null);
   const lineGateRef     = useRef<HTMLDivElement>(null);
@@ -667,25 +665,6 @@ function FigmaHeroSection() {
     const t = setTimeout(() => setPhoneVisible(true), 60);
     return () => clearTimeout(t);
   }, []);
-
-  // Landing countdown — decrements every 3–5 s with a ticker animation
-  useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
-    const tick = () => {
-      const delay = 3000 + Math.random() * 2000;
-      timeout = setTimeout(() => {
-        setLandingMinutes(prev => (prev > 1 ? prev - 1 : 6 * 60 + 25));
-        setTickerKey(k => k + 1);
-        tick();
-      }, delay);
-    };
-    tick();
-    return () => clearTimeout(timeout);
-  }, []);
-
-  const landingH = Math.floor(landingMinutes / 60);
-  const landingM = landingMinutes % 60;
-  const landingStr = `${landingH}h ${landingM.toString().padStart(2, '0')}m`;
 
   // Blur + slide + fade helper — applied per text element with staggered delay
   const textReveal = (delay: number): React.CSSProperties => ({
@@ -760,11 +739,7 @@ function FigmaHeroSection() {
             0%, 100% { transform: translateY(0px); }
             50%       { transform: translateY(-10px); }
           }
-          @keyframes ticker-in {
-            0%   { transform: translateY(7px); opacity: 0; }
-            100% { transform: translateY(0px); opacity: 1; }
-          }
-          @keyframes plane-progress {
+@keyframes plane-progress {
             0%   { transform: translateX(0px);    opacity: 1; }
             75%  { transform: translateX(235px);  opacity: 1; }
             83%  { transform: translateX(235px);  opacity: 0; }
@@ -1040,14 +1015,19 @@ function FigmaHeroSection() {
           {/* Left card — Connection card (Paris to Bangkok) */}
           <div className="hero-card flex flex-col items-start pt-[120px] relative self-stretch shrink-0 w-[291px]">
             <div className="flex items-center justify-center relative shrink-0 w-full">
-              <div className="flex-none rotate-[-5.43deg]">
-                <img alt="" className="block w-[281px] h-auto" src={imgImage41} style={{ animation: 'cardFloatL 6s ease-in-out 0.6s infinite' }} />
+              <div className="flex-none" style={{
+                transform: phoneVisible ? 'rotate(-5.43deg) translateX(0px)' : 'rotate(-5.43deg) translateX(170px)',
+                transition: 'transform 0.95s cubic-bezier(0.34, 1.18, 0.64, 1)',
+                transitionDelay: phoneVisible ? '220ms' : '0ms',
+                willChange: 'transform',
+              }}>
+                <img alt="" className="block w-[281px] h-auto" src={imgImage41} style={{ animation: phoneVisible ? 'cardFloatL 6s ease-in-out 1.3s infinite' : 'none' }} />
               </div>
             </div>
           </div>
 
           {/* Phone — Figma node 7379:46770 */}
-          <div className="h-[756px] overflow-clip relative shrink-0 w-[364px]" data-name="iphone 18" data-node-id="7379:46770">
+          <div className="h-[764px] overflow-clip relative shrink-0 w-[364px]" data-name="iphone 18" data-node-id="7379:46770">
             <div className="absolute h-[747px] left-[12px] top-[10px] w-[340px]" data-node-id="7379:46771">
               <div className="absolute h-[755px] left-[0.36px] top-[-4px] w-[341px]" data-name="image 44" data-node-id="7379:46772">
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgPhoneApp} />
@@ -1067,11 +1047,6 @@ function FigmaHeroSection() {
                   </div>
                 </div>
               </div>
-              {/* Landing countdown overlay — covers static text in the phone PNG */}
-              <div className="absolute" style={{top:'228px', left:'15px', width:'200px', height:'20px', background:'white', display:'flex', alignItems:'center', overflow:'hidden'}}>
-                <span style={{fontFamily:'Inter, sans-serif', fontSize:'12px', fontWeight:500, color:'#6b7280', letterSpacing:'0.01em', lineHeight:1}}>Landing in{' '}</span>
-                <span key={tickerKey} style={{fontFamily:'Inter, sans-serif', fontSize:'12px', fontWeight:600, color:'#111827', letterSpacing:'0.01em', lineHeight:1, marginLeft:'3px', animation:'ticker-in 0.35s cubic-bezier(0.22,1,0.36,1) both'}}>{landingStr}</span>
-              </div>
             </div>
             <div className="absolute h-[756.789px] left-0 top-0 w-[364px]" data-name="Flattened" data-node-id="7379:46808">
               <img alt="" className="absolute block max-w-none size-full" src="/Images/hero-phone-chrome.svg" />
@@ -1084,8 +1059,13 @@ function FigmaHeroSection() {
           {/* Right card — Journey card (San Francisco to Tokyo) */}
           <div className="hero-card flex flex-col items-start pt-[120px] relative self-stretch shrink-0 w-[292px]">
             <div className="flex items-center justify-center relative shrink-0 w-full">
-              <div className="flex-none rotate-[6.23deg]">
-                <img alt="" className="block w-[281px] h-auto" src={imgImage40} style={{ animation: 'cardFloatR 7s ease-in-out 0.8s infinite' }} />
+              <div className="flex-none" style={{
+                transform: phoneVisible ? 'rotate(6.23deg) translateX(0px)' : 'rotate(6.23deg) translateX(-170px)',
+                transition: 'transform 0.95s cubic-bezier(0.34, 1.18, 0.64, 1)',
+                transitionDelay: phoneVisible ? '310ms' : '0ms',
+                willChange: 'transform',
+              }}>
+                <img alt="" className="block w-[281px] h-auto" src={imgImage40} style={{ animation: phoneVisible ? 'cardFloatR 7s ease-in-out 1.4s infinite' : 'none' }} />
               </div>
             </div>
           </div>

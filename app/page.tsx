@@ -678,19 +678,19 @@ function FigmaHeroSection() {
 
   // Badge animations — scroll-triggered, fires once when badge area scrolls into view
   useEffect(() => {
-    const badges: [React.RefObject<HTMLDivElement | null>, React.RefObject<HTMLDivElement | null>, number, number][] = [
-      [lineRealRef,     pillRealRef,     0,    300],
-      [lineAircraftRef, pillAircraftRef, 200,  500],
-      [lineConnRef,     pillConnRef,     400,  700],
-      [lineHistRef,     pillHistRef,     600,  900],
-      [lineDelayRef,    pillDelayRef,    800,  1100],
-      [lineGateRef,     pillGateRef,     1000, 1300],
+    const badges: [React.RefObject<HTMLDivElement | null>, React.RefObject<HTMLDivElement | null>, number, number, boolean][] = [
+      [lineRealRef,     pillRealRef,     0,    300,  true],
+      [lineAircraftRef, pillAircraftRef, 200,  500,  false],
+      [lineConnRef,     pillConnRef,     400,  700,  false],
+      [lineHistRef,     pillHistRef,     600,  900,  false],
+      [lineDelayRef,    pillDelayRef,    800,  1100, true],
+      [lineGateRef,     pillGateRef,     1000, 1300, true],
     ];
 
     function runBadges() {
-      badges.forEach(([lineRef, pillRef, lineDelay, pillDelay]) => {
+      badges.forEach(([lineRef, pillRef, lineDelay, pillDelay, isLeft]) => {
         setTimeout(() => {
-          if (lineRef.current) lineRef.current.style.animation = 'line-reveal 0.45s ease-out forwards';
+          if (lineRef.current) lineRef.current.style.animation = `${isLeft ? 'line-reveal-rtl' : 'line-reveal'} 0.45s ease-out forwards`;
         }, lineDelay);
         setTimeout(() => {
           if (pillRef.current) pillRef.current.style.animation = 'badge-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
@@ -746,6 +746,10 @@ function FigmaHeroSection() {
           @keyframes line-reveal {
             from { clip-path: inset(-2px 100% -2px -2px); }
             to   { clip-path: inset(-2px 0%   -2px -2px); }
+          }
+          @keyframes line-reveal-rtl {
+            from { clip-path: inset(-2px -2px -2px 100%); }
+            to   { clip-path: inset(-2px -2px -2px 0%);   }
           }
           @keyframes badge-pop {
             0%   { opacity: 0; transform: scale(0.78); filter: blur(5px); }
@@ -919,7 +923,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Gate & terminal changes pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[13px] top-[176px]" data-node-id="7300:48542">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[27px] top-[176px]" data-node-id="7300:48542">
             <div ref={pillGateRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
@@ -928,7 +932,7 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineGateRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+                <div ref={lineGateRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px -2px -2px 100%)' }}>
                   <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
                 </div>
               </div>
@@ -947,7 +951,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Real-time flight tracking pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[13px] top-[56px]" data-node-id="7300:48552">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[27px] top-[56px]" data-node-id="7300:48552">
             <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Real-time flight tracking" data-node-id="7300:48553" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
@@ -956,7 +960,7 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineRealRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+                <div ref={lineRealRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px -2px -2px 100%)' }}>
                   <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
                 </div>
               </div>
@@ -975,7 +979,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Delay predictions pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[13px] top-[296px]" data-node-id="7300:48562">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[27px] top-[296px]" data-node-id="7300:48562">
             <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Delay predictions" data-node-id="7300:48563" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
@@ -984,7 +988,7 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineDelayRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+                <div ref={lineDelayRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px -2px -2px 100%)' }}>
                   <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
                 </div>
               </div>
@@ -1028,10 +1032,23 @@ function FigmaHeroSection() {
               <div className="absolute h-[755px] left-[0.36px] top-[-4px] w-[341px]" data-name="image 44" data-node-id="7379:46772">
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgPhoneApp} />
               </div>
+              {/* In Air text — Figma node 7300:40934 */}
+              <div className="absolute left-0 right-0 top-[140px] flex flex-col items-center gap-[3.5px] pointer-events-none">
+                <p className="text-[11.5px] font-medium text-white/70 text-center leading-[1.38]">Leg 1 of 2</p>
+                <p className="text-[24px] font-bold text-white text-center tracking-[-0.5px]" style={{ textShadow: '0px 3px 3px rgba(0,0,0,0.09)' }}>In Air</p>
+              </div>
+              {/* Landing time — below progress bar */}
+              <div className="absolute left-0 right-0 top-[218px] flex flex-col items-center pointer-events-none">
+                <div className="flex items-center justify-center gap-[3.5px]">
+                  <p className="text-[13px] font-semibold text-white/70 leading-[1.4]">Landing in</p>
+                  <p className="text-[13px] font-semibold text-white leading-[1.4]">6h 25m</p>
+                </div>
+              </div>
+
               <div className="absolute h-[30.848px] left-[15.36px] top-[187px] w-[74.331px]" data-node-id="7379:46773">
                 <div className="absolute bg-[#97d0ef] h-[6px] left-0 rounded-[929.555px] top-[15px] w-[309px]" />
-                <div className="absolute bg-gradient-to-l from-white h-[6px] left-0 rounded-[929.555px] to-[rgba(255,255,255,0.04)] top-[15px] w-[65px]" style={{animation:'plane-progress 120s linear infinite'}} />
-                <div className="absolute h-[30.848px] left-[45.88px] top-[2px] w-[27.806px]" data-name="Plane Model" data-node-id="7379:46775" style={{animation:'plane-progress 120s linear infinite'}}>
+                <div className="absolute bg-gradient-to-l from-white h-[6px] left-0 rounded-[929.555px] to-[rgba(255,255,255,0.04)] top-[15px] w-[65px]" style={{animation:'plane-progress 90s linear infinite'}} />
+                <div className="absolute h-[30.848px] left-[45.88px] top-[2px] w-[27.806px]" data-name="Plane Model" data-node-id="7379:46775" style={{animation:'plane-progress 90s linear infinite'}}>
                   <div className="absolute flex items-center justify-center left-[1.18px] size-[25.412px] top-[2.97px]">
                     <div className="flex-none rotate-[2.91deg]">
                       <div className="relative size-[24.214px]">

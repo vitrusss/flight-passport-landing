@@ -420,7 +420,15 @@ function MobileNav({ links }: { links: typeof NAV_LINKS }) {
                   href={href}
                   className="mnav-link"
                   style={{ transitionDelay: isOpen ? `${50 + i * 55}ms` : "0ms" }}
-                  onClick={() => setIsOpen(false)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsOpen(false);
+                    const target = document.querySelector(href);
+                    if (!target) return;
+                    const top = target.getBoundingClientRect().top + window.scrollY - 48;
+                    history.replaceState(null, "", window.location.pathname);
+                    window.scrollTo({ top, behavior: "smooth" });
+                  }}
                 >
                   {label}
                 </a>
@@ -848,6 +856,7 @@ function FigmaHeroSection() {
           }
 
           /* ── Hero Responsive ── */
+          .sky-fade { height: 160px; }
           @media (max-width: 1023px) {
             .hero-badge { display: none !important; }
           }
@@ -870,6 +879,30 @@ function FigmaHeroSection() {
             .airlines-strip-wrapper {
               padding-top: 0 !important;
             }
+            /* Ensure sky is tall enough and fade is smooth at tablet */
+            .hero-sky-section {
+              min-height: 700px !important;
+            }
+            .sky-fade { height: 35% !important; }
+          }
+          /* ── 1024–1100px: cards + badges pinned to phone ── */
+          @media (min-width: 1024px) and (max-width: 1100px) {
+            .hero-card { display: flex !important; }
+            /* gap: 0 + negative margin to compensate for scale(0.824) leaving 32px of dead space */
+            .hero-phone-row { left: calc(50vw - 508px) !important; width: 1016px !important; gap: 0px !important; }
+            .hero-card:first-child { margin-right: -24px !important; }
+            .hero-card:last-child  { margin-left:  -24px !important; }
+            .airlines-strip-wrapper { margin-top: -64px !important; }
+            .badge-conn, .badge-aircraft, .badge-hist {
+              left: calc(50vw + 146px) !important;
+            }
+            .badge-gate, .badge-real, .badge-delay {
+              left: auto !important;
+              right: calc(50vw + 146px) !important;
+            }
+            .badge-aircraft, .badge-real { top: -10px !important; }
+            .badge-conn, .badge-gate     { top: 84px !important; }
+            .badge-hist, .badge-delay    { top: 180px !important; }
           }
           @media (max-width: 767px) {
             /* Sky fills the viewport on mobile */
@@ -902,8 +935,13 @@ function FigmaHeroSection() {
               margin-right: auto !important;
             }
             .hero-buttons-row > * { width: 100% !important; justify-content: center !important; }
-            /* Phone: in-flow, centered */
-            .hero-main-container { padding-top: 24px !important; }
+            /* Phone: in-flow, centered.
+               Use svh (not vh) so positioning matches the sky section height on Safari,
+               which shrinks the viewport when browser chrome (address/toolbar) is visible. */
+            .hero-main-container {
+              padding-top: 24px !important;
+              margin-top: calc(322px - 45.6svh) !important;
+            }
             .hero-content-container {
               width: 100% !important;
               height: auto !important;
@@ -998,7 +1036,7 @@ function FigmaHeroSection() {
 
         {/* Sky-to-white fade — eliminates sharp horizon where sky meets page background */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-[160px] pointer-events-none z-[6]"
+          className="sky-fade absolute bottom-0 left-0 right-0 pointer-events-none z-[6]"
           style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(249,248,246,0.08) 25%, rgba(249,248,246,0.25) 45%, rgba(249,248,246,0.55) 65%, rgba(249,248,246,0.82) 82%, #f9f8f6 100%)' }}
         />
 
@@ -1046,7 +1084,7 @@ function FigmaHeroSection() {
         <div className="max-w-[1200px] mx-auto px-5">
         <div className="hero-content-container relative w-[1046px] h-[434px] mx-auto" data-name="Content container" data-node-id="7300:48532">
           {/* Connection awareness pill */}
-          <div className="hero-badge absolute flex gap-[14px] items-center left-[725px] top-[176px]" data-node-id="7300:48537">
+          <div className="hero-badge badge-conn absolute flex gap-[14px] items-center left-[725px] top-[176px]" data-node-id="7300:48537">
             <div ref={lineConnRef} className="h-0 relative shrink-0 w-[74px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine207} />
@@ -1060,7 +1098,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Gate & terminal changes pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[-2px] top-[176px]" data-node-id="7300:48542">
+          <div className="hero-badge badge-gate absolute flex gap-[8px] items-center left-[-2px] top-[176px]" data-node-id="7300:48542">
             <div ref={pillGateRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
@@ -1078,7 +1116,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Aircraft insights pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[725px] top-[56px]" data-node-id="7300:48547">
+          <div className="hero-badge badge-aircraft absolute flex gap-[8px] items-center left-[725px] top-[56px]" data-node-id="7300:48547">
             <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
@@ -1092,7 +1130,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Real-time flight tracking pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[41px] top-[56px]" data-node-id="7300:48552">
+          <div className="hero-badge badge-real absolute flex gap-[8px] items-center left-[41px] top-[56px]" data-node-id="7300:48552">
             <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[248px]" data-name="Real-time flight tracking" data-node-id="7300:48553" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
@@ -1110,7 +1148,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Personal flight history pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[725px] top-[296px]" data-node-id="7300:48557">
+          <div className="hero-badge badge-hist absolute flex gap-[8px] items-center left-[725px] top-[296px]" data-node-id="7300:48557">
             <div ref={lineHistRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
@@ -1124,7 +1162,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Delay predictions pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[97px] top-[296px]" data-node-id="7300:48562">
+          <div className="hero-badge badge-delay absolute flex gap-[8px] items-center left-[97px] top-[296px]" data-node-id="7300:48562">
             <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-fit" data-name="Delay predictions" data-node-id="7300:48562" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
@@ -3035,6 +3073,10 @@ function LiveActivities() {
           .la-cards-grid { grid-template-columns: 1fr; gap: 20px; max-width: 370px !important; }
           /* Disable float animation on mobile — saves battery, avoids jitter */
           .la-card { animation: none !important; }
+          /* Show only 3 cards on mobile: Boarding (1), Gate Arrival in air (3), Connection at risk (4) */
+          .la-card:nth-child(2),
+          .la-card:nth-child(5),
+          .la-card:nth-child(6) { display: none !important; }
         }
       `}</style>
       <section id="live-activities" className="la-section">

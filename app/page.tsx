@@ -714,10 +714,8 @@ function FigmaHeroSection() {
       if (startRef.current === null) startRef.current = now;
       const progress = ((now - startRef.current) % CYCLE_MS) / CYCLE_MS;
       const x = progress * TRAVEL_PX;
-      // Fade out near end, fade in at start — smooth loop transition
-      let opacity = 1;
-      if (progress > 1 - FADE)      opacity = (1 - progress) / FADE;
-      else if (progress < FADE)     opacity = progress / FADE;
+      // Fade out near end only — plane always starts at full opacity
+      const opacity = progress > 1 - FADE ? (1 - progress) / FADE : 1;
       if (planeElRef.current) {
         planeElRef.current.style.transform = `translateX(${x}px)`;
         planeElRef.current.style.opacity = String(opacity);
@@ -732,7 +730,7 @@ function FigmaHeroSection() {
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, []);
 
-  // Counter — synced every 1s for tight sync with plane position
+  // Counter — synced every 4.5s, reads actual plane phase
   const [landingMins, setLandingMins] = useState(TOTAL_MINS);
   useEffect(() => {
     const id = setInterval(() => {
@@ -740,7 +738,7 @@ function FigmaHeroSection() {
         ? ((performance.now() - startRef.current) % CYCLE_MS) / CYCLE_MS
         : 0;
       setLandingMins(Math.round((1 - progress) * TOTAL_MINS));
-    }, 1000);
+    }, 4500);
     return () => clearInterval(id);
   }, []);
 

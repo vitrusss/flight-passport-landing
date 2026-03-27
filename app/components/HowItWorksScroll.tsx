@@ -1,71 +1,73 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+// ── Step data — exact text from Figma ────────────────────────────────────────
 const STEPS = [
   {
-    num: '01',
+    num:     '01',
     regular: 'Find any flight ',
     italic:  'in seconds',
     desc:    'Search by flight number or route. We instantly retrieve real operational data — schedules, aircraft, and route details.',
-    image:   '/Images/asset-6d585e68-0d7f-496f-b018-4e5caf21dcec.png',
+    image:   '/Images/hiw-step01.png',
   },
   {
-    num: '02',
+    num:     '02',
     regular: 'Understand ',
     italic:  'what to expect',
     desc:    'See delay history, reliability, turbulence, and aircraft details before your trip begins.',
-    image:   '/Images/asset-e7f0beef-9438-42ea-8d9c-bf615f9c17d2.png',
+    image:   '/Images/hiw-step02.png',
   },
   {
-    num: '03',
+    num:     '03',
     regular: 'Stay ahead ',
     italic:  'of every change',
     desc:    'We monitor your flight continuously and notify you when something important happens.',
-    image:   '/Images/asset-60c1185f-d58c-4975-aa4f-d446835553c6.png',
+    image:   '/Images/hiw-step03.png',
   },
   {
-    num: '04',
+    num:     '04',
     regular: 'Build your ',
     italic:  'travel history',
     desc:    'A complete record of your travels, flights, and destinations — built automatically.',
-    image:   '/Images/asset-60c1185f-d58c-4975-aa4f-d446835553c6.png', // TODO: replace
+    image:   '/Images/hiw-step04.png',
   },
 ];
 
 const AUTO_MS = 4000;
 
-// Phone card dimensions (238px display width, chrome SVG 364×756.789)
-const CARD_W  = 238;
-const CARD_H  = Math.round(756.789 / 364 * CARD_W); // 495
-const SCR_L   = Math.round(12   / 364     * CARD_W); // 8
-const SCR_T   = Math.round(10   / 756.789 * CARD_H); // 7
-const SCR_W   = Math.round(340  / 364     * CARD_W); // 222
-const SCR_H   = Math.round(747  / 756.789 * CARD_H); // 489
-const SCR_R   = 30; // border-radius of screen (matches Figma ~29.8px)
-const CARD_R  = Math.round(55.09 / 364 * CARD_W);   // 36 — matches chrome outer radius
+// ── Phone dimensions — from Figma (scaled to 238px card width) ────────────────
+// Figma phone container: 242.667 × 504.526 px  →  scale = 238/242.667 = 0.9808
+const CARD_W = 238;
+const CARD_H = 495;   // 504.526 × 0.9808
+const SCR_L  = 6;     // 5.66  × 0.9808
+const SCR_W  = 222;   // 226.355 × 0.9808
+const SCR_H  = 481;   // 490.708 × 0.9808
+const SCR_T  = Math.round((CARD_H - SCR_H) / 2); // vertically centered = 7px
+const SCR_R  = 29;    // 29.817 × 0.9808
 
 export default function HowItWorksScroll() {
   const [active,  setActive]  = useState(0);
   const [display, setDisplay] = useState(0);
   const [fading,  setFading]  = useState(false);
-  // key forces CSS animation restart on active change
-  const [dotKey, setDotKey]   = useState(0);
+  const [dotKey,  setDotKey]  = useState(0); // increment to restart CSS animation
 
   const sectionRef = useRef<HTMLElement>(null);
   const activeRef  = useRef(0);
   const fadingRef  = useRef(false);
   const inViewRef  = useRef(false);
-  const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoTimer  = useRef<ReturnType<typeof setInterval> | null>(null);
   const fadeTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchX     = useRef(0);
 
+  // ── Core navigation ──────────────────────────────────────────────────────────
   const goTo = useCallback((next: number) => {
     if (fadingRef.current) return;
     if (next === activeRef.current) return;
 
     activeRef.current = next;
     setActive(next);
-    setDotKey(k => k + 1);
+    setDotKey(k => k + 1); // restart dot progress animation
+
     fadingRef.current = true;
     setFading(true);
 
@@ -73,25 +75,29 @@ export default function HowItWorksScroll() {
       setDisplay(next);
       fadingRef.current = false;
       setFading(false);
-    }, 220);
+    }, 240);
   }, []);
 
   const stopAuto = useCallback(() => {
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    if (autoTimer.current) { clearInterval(autoTimer.current); autoTimer.current = null; }
   }, []);
 
   const startAuto = useCallback(() => {
     stopAuto();
-    timerRef.current = setInterval(() => {
+    autoTimer.current = setInterval(() => {
       if (!inViewRef.current) return;
       goTo((activeRef.current + 1) % STEPS.length);
     }, AUTO_MS);
   }, [stopAuto, goTo]);
 
+  // ── Intersection observer — start/stop auto ──────────────────────────────────
   useEffect(() => {
     const obs = new IntersectionObserver(
-      ([e]) => { inViewRef.current = e.isIntersecting; e.isIntersecting ? startAuto() : stopAuto(); },
-      { threshold: 0.2 }
+      ([entry]) => {
+        inViewRef.current = entry.isIntersecting;
+        entry.isIntersecting ? startAuto() : stopAuto();
+      },
+      { threshold: 0.25 }
     );
     if (sectionRef.current) obs.observe(sectionRef.current);
     return () => {
@@ -101,21 +107,23 @@ export default function HowItWorksScroll() {
     };
   }, [startAuto, stopAuto]);
 
+  // ── Touch swipe ──────────────────────────────────────────────────────────────
   const onTouchStart = (e: React.TouchEvent) => { touchX.current = e.touches[0].clientX; };
   const onTouchEnd   = (e: React.TouchEvent) => {
     const d = touchX.current - e.changedTouches[0].clientX;
-    if (Math.abs(d) > 48) {
-      stopAuto();
-      goTo(d > 0 ? Math.min(3, activeRef.current + 1) : Math.max(0, activeRef.current - 1));
-    }
+    if (Math.abs(d) > 48) { stopAuto(); goTo(d > 0 ? Math.min(3, activeRef.current + 1) : Math.max(0, activeRef.current - 1)); }
   };
 
+  // ── Keyboard ─────────────────────────────────────────────────────────────────
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); stopAuto(); goTo(Math.min(3, activeRef.current + 1)); }
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); stopAuto(); goTo(Math.max(0, activeRef.current - 1)); }
-    if (e.key === 'Home') { e.preventDefault(); stopAuto(); goTo(0); }
-    if (e.key === 'End')  { e.preventDefault(); stopAuto(); goTo(3); }
+    const k = e.key;
+    if (k === 'ArrowRight' || k === 'ArrowDown') { e.preventDefault(); stopAuto(); goTo(Math.min(3, activeRef.current + 1)); }
+    if (k === 'ArrowLeft'  || k === 'ArrowUp')   { e.preventDefault(); stopAuto(); goTo(Math.max(0, activeRef.current - 1)); }
+    if (k === 'Home') { e.preventDefault(); stopAuto(); goTo(0); }
+    if (k === 'End')  { e.preventDefault(); stopAuto(); goTo(3); }
   };
+
+  const step = STEPS[display];
 
   return (
     <section
@@ -126,13 +134,13 @@ export default function HowItWorksScroll() {
       aria-label="How FlightPassport works"
     >
       <style>{`
-        /* ── Section ─────────────────────────────────────────────────── */
+        /* ── Section shell ──────────────────────────────────────────── */
         .hiw {
           min-height: 100svh;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 80px 24px;
+          padding: 120px 24px;
           box-sizing: border-box;
           outline: none;
           border-top: 1px solid #e7e5e4;
@@ -140,7 +148,7 @@ export default function HowItWorksScroll() {
           background: linear-gradient(261.64deg, #e6e6e6 6.85%, #ffffff 83.93%);
         }
 
-        /* ── Inner layout ─────────────────────────────────────────────── */
+        /* ── Inner — 1020px, 2 cols, 80px gap ─────────────────────── */
         .hiw-inner {
           display: flex;
           align-items: center;
@@ -149,8 +157,8 @@ export default function HowItWorksScroll() {
           width: 100%;
         }
 
-        /* ── Text column ─────────────────────────────────────────────── */
-        .hiw-text-col {
+        /* ── Text column — 384px, centered ─────────────────────────── */
+        .hiw-text {
           width: 384px;
           flex-shrink: 0;
           display: flex;
@@ -158,20 +166,25 @@ export default function HowItWorksScroll() {
           align-items: center;
           gap: 16px;
           text-align: center;
-          transition: opacity 220ms ease, transform 220ms ease;
+          transition: opacity 240ms ease, transform 240ms ease;
         }
-        .hiw-text-col.fading {
+        .hiw-text.fading {
           opacity: 0;
-          transform: translateY(8px);
+          transform: translateY(10px);
         }
-        .hiw-label {
+
+        /* step label — "STEP 01" */
+        .hiw-step-label {
           font-size: 18px;
           font-weight: 600;
           letter-spacing: -0.01em;
           text-transform: uppercase;
           color: #a8a29e;
           margin: 0;
+          line-height: 1.4;
         }
+
+        /* heading — 48px bold + italic blue */
         .hiw-heading {
           font-size: 48px;
           font-weight: 700;
@@ -180,11 +193,13 @@ export default function HowItWorksScroll() {
           color: #1c1917;
           margin: 0;
         }
-        .hiw-accent {
+        .hiw-heading em {
           font-style: italic;
           font-weight: 400;
           color: #0284c7;
         }
+
+        /* description */
         .hiw-desc {
           font-size: 17px;
           font-weight: 400;
@@ -194,7 +209,7 @@ export default function HowItWorksScroll() {
           max-width: 342px;
         }
 
-        /* ── Dot indicators ──────────────────────────────────────────── */
+        /* ── Dot indicators ─────────────────────────────────────────── */
         .hiw-dots {
           display: flex;
           align-items: center;
@@ -207,36 +222,39 @@ export default function HowItWorksScroll() {
           border: none;
           cursor: pointer;
           line-height: 0;
+          flex-shrink: 0;
         }
+        /* track — pill for active, circle for inactive */
         .hiw-dot-track {
+          display: block;
           height: 10px;
           border-radius: 999px;
           background: #d6d3d1;
           overflow: hidden;
           position: relative;
-          transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
           width: 10px;
+          transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1);
         }
         .hiw-dot-btn.active .hiw-dot-track {
           width: 32px;
         }
-        /* progress fill — CSS animation driven by dotKey to reset on step change */
-        .hiw-dot-fill {
+        /* progress fill — animates over AUTO_MS */
+        .hiw-dot-progress {
           position: absolute;
-          left: 0; top: 0; bottom: 0;
+          inset: 0 auto 0 0;
+          width: 0%;
           border-radius: 999px;
           background: #1c1917;
-          width: 0%;
         }
-        .hiw-dot-btn.active .hiw-dot-fill {
-          animation: hiw-dot-progress ${AUTO_MS}ms linear forwards;
+        .hiw-dot-btn.active .hiw-dot-progress {
+          animation: hiw-progress ${AUTO_MS}ms linear forwards;
         }
-        @keyframes hiw-dot-progress {
+        @keyframes hiw-progress {
           from { width: 0%; }
           to   { width: 100%; }
         }
 
-        /* ── Phone card ──────────────────────────────────────────────── */
+        /* ── Phone column ───────────────────────────────────────────── */
         .hiw-phone-col {
           flex: 1;
           display: flex;
@@ -244,21 +262,26 @@ export default function HowItWorksScroll() {
           align-items: center;
           touch-action: pan-y;
         }
-        .hiw-phone-card {
+
+        /* white card — Figma: bg-white, rounded-[48px], shadow */
+        .hiw-card {
           position: relative;
           width: ${CARD_W}px;
           height: ${CARD_H}px;
-          background: white;
-          border-radius: ${CARD_R}px;
+          background: #ffffff;
+          border-radius: 48px;
           box-shadow:
-            0px 4px 12px rgba(0, 0, 0, 0.05),
-            32px 32px 64px rgba(23, 29, 46, 0.12);
-          transition: opacity 220ms ease, transform 220ms ease;
+            0px 4px 12px 0px rgba(0, 0, 0, 0.05),
+            32px 32px 64px 0px rgba(23, 29, 46, 0.12);
+          overflow: hidden;
+          transition: opacity 240ms ease, transform 240ms ease;
         }
-        .hiw-phone-card.fading {
+        .hiw-card.fading {
           opacity: 0;
-          transform: scale(0.97);
+          transform: scale(0.975);
         }
+
+        /* screen — Figma: left 5.66, vertically centered, rounded 29.8 */
         .hiw-screen {
           position: absolute;
           left: ${SCR_L}px;
@@ -267,6 +290,7 @@ export default function HowItWorksScroll() {
           height: ${SCR_H}px;
           border-radius: ${SCR_R}px;
           overflow: hidden;
+          background: #f0f0f0;
         }
         .hiw-screen img {
           width: 100%;
@@ -274,6 +298,8 @@ export default function HowItWorksScroll() {
           object-fit: cover;
           display: block;
         }
+
+        /* chrome overlay — on top of screen */
         .hiw-chrome {
           position: absolute;
           inset: 0;
@@ -284,94 +310,97 @@ export default function HowItWorksScroll() {
           display: block;
         }
 
-        /* ── Tablet ──────────────────────────────────────────────────── */
+        /* ── Tablet (768–1099px) ────────────────────────────────────── */
         @media (min-width: 768px) and (max-width: 1099px) {
-          .hiw-inner { gap: 48px; }
-          .hiw-text-col { width: 320px; }
+          .hiw { padding: 80px 24px; }
+          .hiw-inner { gap: 48px; max-width: 860px; }
+          .hiw-text { width: 320px; }
           .hiw-heading { font-size: 38px; }
-          .hiw-label { font-size: 15px; }
-          .hiw-desc { font-size: 15px; }
+          .hiw-step-label { font-size: 15px; }
+          .hiw-desc { font-size: 15px; max-width: 280px; }
         }
 
-        /* ── Mobile (<768px) — vertical stack ───────────────────────── */
+        /* ── Mobile (<768px) ────────────────────────────────────────── */
         @media (max-width: 767px) {
-          .hiw {
-            padding: 64px 24px 72px;
-            min-height: unset;
-          }
-          .hiw-inner {
-            flex-direction: column;
-            gap: 40px;
-            align-items: center;
-          }
-          .hiw-text-col {
-            width: 100%;
-            max-width: 360px;
-            order: 2;
-          }
+          .hiw { padding: 64px 24px 72px; min-height: unset; }
+          .hiw-inner { flex-direction: column; gap: 40px; }
+          .hiw-text { width: 100%; max-width: 360px; order: 2; }
           .hiw-phone-col { order: 1; }
           .hiw-heading { font-size: 34px; }
-          .hiw-label { font-size: 14px; }
+          .hiw-step-label { font-size: 14px; }
           .hiw-desc { font-size: 15px; }
         }
 
-        /* ── Reduced motion ──────────────────────────────────────────── */
+        /* ── Reduced motion ─────────────────────────────────────────── */
         @media (prefers-reduced-motion: reduce) {
-          .hiw-text-col, .hiw-phone-card { transition: none !important; }
-          .hiw-dot-fill { animation: none !important; }
+          .hiw-text, .hiw-card { transition: none !important; }
+          .hiw-dot-progress { animation: none !important; width: 100% !important; }
           .hiw-dot-track { transition: none !important; }
         }
       `}</style>
 
-      {/* sr live region */}
+      {/* Accessibility live region */}
       <div aria-live="polite" aria-atomic="true" style={{ position:'absolute', width:1, height:1, overflow:'hidden', clip:'rect(0,0,0,0)', whiteSpace:'nowrap' }}>
-        Step {display + 1} of {STEPS.length}: {STEPS[display].regular}{STEPS[display].italic}
+        Step {display + 1} of {STEPS.length}: {step.regular}{step.italic}
       </div>
 
       <div className="hiw-inner">
 
-        {/* ── Text column ─────────────────────────────────────────────── */}
-        <div className={`hiw-text-col${fading ? ' fading' : ''}`}>
-          <p className="hiw-label">Step {STEPS[display].num}</p>
-          <h2 className="hiw-heading">
-            {STEPS[display].regular}
-            <em className="hiw-accent">{STEPS[display].italic}</em>
-          </h2>
-          <p className="hiw-desc">{STEPS[display].desc}</p>
+        {/* ── Left: text ──────────────────────────────────────────────── */}
+        <div className={`hiw-text${fading ? ' fading' : ''}`}>
 
-          {/* Dot navigation */}
+          {/* "STEP 01" */}
+          <p className="hiw-step-label">Step {step.num}</p>
+
+          {/* "Find any flight in seconds" */}
+          <h2 className="hiw-heading">
+            {step.regular}<em>{step.italic}</em>
+          </h2>
+
+          {/* description */}
+          <p className="hiw-desc">{step.desc}</p>
+
+          {/* dot progress indicators */}
           <div className="hiw-dots" role="tablist" aria-label="Steps">
-            {STEPS.map((step, i) => (
+            {STEPS.map((s, i) => (
               <button
                 key={i}
                 role="tab"
                 aria-selected={i === active}
-                aria-label={`Step ${i + 1}: ${step.regular}${step.italic}`}
+                aria-label={`Step ${i + 1}: ${s.regular}${s.italic}`}
                 className={`hiw-dot-btn${i === active ? ' active' : ''}`}
                 onClick={() => { stopAuto(); goTo(i); }}
               >
                 <span className="hiw-dot-track">
-                  {i === active && <span key={dotKey} className="hiw-dot-fill" />}
+                  {/* key forces animation restart when active step changes */}
+                  {i === active && (
+                    <span key={`${i}-${dotKey}`} className="hiw-dot-progress" />
+                  )}
                 </span>
               </button>
             ))}
           </div>
+
         </div>
 
-        {/* ── Phone column ────────────────────────────────────────────── */}
+        {/* ── Right: phone ────────────────────────────────────────────── */}
         <div
           className="hiw-phone-col"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
-          <div className={`hiw-phone-card${fading ? ' fading' : ''}`}>
+          <div className={`hiw-card${fading ? ' fading' : ''}`}>
+
+            {/* app screenshot */}
             <div className="hiw-screen">
               <img
-                src={STEPS[display].image}
-                alt={`App screen — ${STEPS[display].regular}${STEPS[display].italic}`}
+                src={step.image}
+                alt={`Step ${display + 1}: ${step.regular}${step.italic}`}
                 draggable={false}
               />
             </div>
+
+            {/* phone chrome frame on top */}
             <img
               src="/Images/hero-phone-chrome.svg"
               className="hiw-chrome"
@@ -379,6 +408,7 @@ export default function HowItWorksScroll() {
               aria-hidden="true"
               draggable={false}
             />
+
           </div>
         </div>
 

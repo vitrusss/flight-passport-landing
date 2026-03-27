@@ -2118,11 +2118,11 @@ function MiddleSection() {
                   color: "#6c6760",
                   lineHeight: "24px",
                   textAlign: "center",
-                  width: 328,
+                  width: 380,
                   margin: 0,
                 }}
               >
-                Review delay history, aircraft info,<br />and turbulence before you reach the airport.
+                Review delay history, aircraft info, and<br />turbulence before you reach the airport.
               </p>
             </div>
           </div>

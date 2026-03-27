@@ -1422,7 +1422,7 @@ function Intelligence() {
           <span style={{fontWeight: 400, fontStyle: 'italic', color: '#0ea5e9'}}>During.</span>
           <span style={{fontWeight: 700}}> After</span>
         </p>
-        <p className="intel-section-sub" style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '15px', color: '#6c6760', lineHeight: 1.4, maxWidth: '510px', width: '100%', textAlign: 'center'}}>
+        <p className="intel-section-sub" style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: '#6c6760', lineHeight: 1.4, maxWidth: '510px', width: '100%', textAlign: 'center'}}>
           Most apps only track flights you&#39;ve already booked. Flight Passport stays with you across the entire journey lifecycle.
         </p>
       </div>
@@ -2915,7 +2915,7 @@ function LiveActivities() {
                 <span style={{fontWeight: 400, fontStyle: 'italic', color: '#0ea5e9', letterSpacing: '-1.44px'}}>before</span>
                 <span style={{fontWeight: 700}}> they become yours.</span>
               </p>
-              <p className="la-desc" style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '15px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.4, width: '366px', maxWidth: '100%', textAlign: 'center', margin: 0}}>
+              <p className="la-desc" style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.4, width: '366px', maxWidth: '100%', textAlign: 'center', margin: 0}}>
                 Flight Passport reads every phase of your journey and surfaces only what matters at that moment.
               </p>
             </div>
@@ -3179,7 +3179,7 @@ function Passport() {
                 <span style={{fontWeight:700}}>Every flight becomes part of </span>
                 <span style={{fontWeight:400,fontStyle:'italic',color:'#a7f3d0',letterSpacing:'-1.44px'}}>your story.</span>
               </p>
-              <p style={{fontFamily:'Inter',fontWeight:400,fontSize:'15px',color:'rgba(255,255,255,0.72)',lineHeight:1.4,width:'566px',maxWidth:'100%',textAlign:'center',margin:0}}>
+              <p style={{fontFamily:'Inter',fontWeight:400,fontSize:'17px',color:'rgba(255,255,255,0.72)',lineHeight:1.4,width:'566px',maxWidth:'100%',textAlign:'center',margin:0}}>
                 Flight Passport automatically creates a living timeline and archive of where you&#39;ve been and what happened on each trip. Meaningful, portable, and safe.
               </p>
             </div>

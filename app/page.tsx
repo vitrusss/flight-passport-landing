@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import HowItWorksScroll from './components/HowItWorksScroll';
 
 // ── Figma Hero asset URLs (node 7300:48506) ───────────────────────────────────
 const imgCloud1 = "/Images/asset-81419f0d-f299-4d1e-a3f5-1f41ab41cf92.png";
@@ -80,54 +81,6 @@ const imgNavApple  = "/Images/asset-ae0b76f7-15b2-4a17-ad03-611555e2e9da.svg";
 const imgIntelIcon  = "/Images/asset-0d27bc45-intel-search.svg";
 const imgIntelIcon1 = "/Images/asset-f795357a-intel-location.svg";
 const imgIntelIcon2 = "/Images/asset-447d565c-intel-policy.svg";
-
-// ── How It Works Step 01 asset URLs (node 7300:48957) ─────────────────────────
-const imgHiwTopImage    = "/Images/asset-6d585e68-0d7f-496f-b018-4e5caf21dcec.png";
-const imgHiwCameraImage = "/Images/asset-49ef7b55-4973-4b48-a834-5bd8b06c49c5.png";
-const imgHiwEllipse1    = "/Images/asset-5b89eaa9-2c63-4bdc-b764-58e5120d7974.svg";
-const imgHiwFlattened   = "/Images/asset-86b895c0-a5f5-4a8b-9e32-263a0e68f3ce.svg";
-const imgHiwRectangle1  = "/Images/asset-aafac9b6-51e8-4dce-90ec-e33c5c266600.svg";
-const imgHiwVector      = "/Images/asset-a9fba400-bc77-420d-9de0-4da39c0394cf.svg";
-const imgHiwVector1     = "/Images/asset-d8920231-1efa-4db9-b77a-6ef32b757dfb.svg";
-const imgHiwVector2     = "/Images/asset-45fae47c-d437-4da1-b971-3a16255445ac.svg";
-const imgHiwVector3     = "/Images/asset-f88c0c1f-631b-4f69-ad76-8b0f6fa8c05d.svg";
-const imgHiwVector4     = "/Images/asset-c2d10e38-14b8-4db6-a401-eb9cf66c19af.svg";
-
-// ── How It Works Step 04 asset URLs ───────────────────────────────────────────
-const imgBotMainContentImage = "/Images/asset-step04-passport-screen.png";
-const imgBotUserImage        = "/Images/asset-3d5ed216-a1ee-4902-9fd2-cedadd00dfd8.png";
-const imgBotFlattened        = "/Images/asset-e7582851-6534-4316-bffb-6af67ae77949.svg";
-const imgBotRectangle1       = "/Images/asset-59e8a425-6ea2-47cc-ac21-fb6ccb85ea17.svg";
-const imgBotVector           = "/Images/asset-77143b6b-0db1-47ca-8e18-2e5dcdd8b0b7.svg";
-const imgBotVector1          = "/Images/asset-790accc2-b7fd-4c40-bc54-92cee0dda7c5.svg";
-const imgBotVector2          = "/Images/asset-55ea1d8a-f488-4034-a0ca-22aec953ac57.svg";
-const imgBotVector3          = "/Images/asset-d866a98c-a997-4865-9c78-99f1835dc853.svg";
-const imgBotVector4          = "/Images/asset-e8f3a0dd-a920-4b77-a1f4-85c12ed26ee9.svg";
-const imgBotEllipse1         = "/Images/asset-a77210d8-91c8-4cf5-9588-f4b2ee3c3dd7.svg";
-
-// ── How It Works Step 03 asset URLs ───────────────────────────────────────────
-const imgLowLowerImage  = "/Images/asset-60c1185f-d58c-4975-aa4f-d446835553c6.png";
-const imgLowCameraImage = "/Images/asset-0f8ffc66-707f-48d6-8c5e-0d4686678c97.png";
-const imgLowEllipse1    = "/Images/asset-f8a82626-b0df-4801-9bf1-9b21fed61e7d.svg";
-const imgLowFlattened   = "/Images/asset-1eb4e9b5-50ae-4737-b860-f8defb3251a3.svg";
-const imgLowRectangle1  = "/Images/asset-29a95fd9-b1ab-49ae-8de9-fe47886689de.svg";
-const imgLowVector      = "/Images/asset-f1517653-33ba-40ee-9ed3-fac439550375.svg";
-const imgLowVector1     = "/Images/asset-76609896-3674-4262-be50-e4606de0da67.svg";
-const imgLowVector2     = "/Images/asset-f08ece90-1cf7-4ee1-8254-28b1dadbf618.svg";
-const imgLowVector3     = "/Images/asset-f0c5b442-5145-4c0c-b9d4-8f7f451c46ca.svg";
-const imgLowVector4     = "/Images/asset-ede3a099-214e-4d60-b4b3-a2a67c0cea75.svg";
-
-// ── How It Works Step 02 asset URLs ───────────────────────────────────────────
-const imgMidMiddleImage = "/Images/asset-e7f0beef-9438-42ea-8d9c-bf615f9c17d2.png";
-const imgMidRectangle   = "/Images/asset-be971278-376f-466e-bb3e-c9cd34f5b501.png";
-const imgMidFlattened   = "/Images/asset-c48ac6d9-3d7d-4d10-85b3-3c9906085eac.svg";
-const imgMidRectangle1  = "/Images/asset-6d489c3b-2eb6-4bf8-a1ab-aff3f3c3f943.svg";
-const imgMidVector      = "/Images/asset-f4763a5a-33c1-43c3-a2ab-a84624c380e3.svg";
-const imgMidVector1     = "/Images/asset-cb2a9c22-24e5-44e1-871b-62d0170427ad.svg";
-const imgMidVector2     = "/Images/asset-957f7264-1684-41d6-9d6a-6520da8833e5.svg";
-const imgMidVector3     = "/Images/asset-19981006-88f3-4b0d-8191-fb62bcbacbf5.svg";
-const imgMidVector4     = "/Images/asset-de680cb4-0130-41b3-971d-e4a86b594b75.svg";
-const imgMidEllipse1    = "/Images/asset-5b15af98-de30-4735-ae96-ada6186e4938.svg";
 
 // ── Scroll reveal hook ────────────────────────────────────────────────────────
 function useReveal() {
@@ -746,14 +699,51 @@ function FigmaHeroSection() {
   const [phoneVisible, setPhoneVisible] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
 
-  // Landing countdown — starts at 6h 25m, ticks down every 8s by 2 min, synced with plane
-  const [landingMins, setLandingMins] = useState(385);
+  // Smooth plane movement via rAF — direct DOM, no React re-render per frame
+  const CYCLE_MS   = 140_000; // full lap in 140s → 2px/s (280px ÷ 2)
+  const TOTAL_MINS = 565;     // 9h 25m total flight
+  const TRAVEL_PX  = 280;     // plane travels full track 0 → 280px
+  const startRef   = useRef<number | null>(null);
+  const planeElRef = useRef<HTMLDivElement>(null);
+  const fillElRef  = useRef<HTMLDivElement>(null);
+  const rafRef     = useRef<number | null>(null);
+
+  useEffect(() => {
+    const FADE = 0.06; // fade zone = 6% of cycle at each end
+    function tick(now: number) {
+      if (startRef.current === null) startRef.current = now;
+      const progress = ((now - startRef.current) % CYCLE_MS) / CYCLE_MS;
+      const x = progress * TRAVEL_PX;
+      // Fade out near end, fade in at start — smooth loop transition
+      let opacity = 1;
+      if (progress > 1 - FADE)      opacity = (1 - progress) / FADE;
+      else if (progress < FADE)     opacity = progress / FADE;
+      if (planeElRef.current) {
+        planeElRef.current.style.transform = `translateX(${x}px)`;
+        planeElRef.current.style.opacity = String(opacity);
+      }
+      if (fillElRef.current) {
+        fillElRef.current.style.width   = `${x + 14}px`;
+        fillElRef.current.style.opacity = String(opacity);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    }
+    rafRef.current = requestAnimationFrame(tick);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, []);
+
+  // Counter — synced every 1s for tight sync with plane position
+  const [landingMins, setLandingMins] = useState(TOTAL_MINS);
   useEffect(() => {
     const id = setInterval(() => {
-      setLandingMins(prev => (prev <= 10 ? 385 : prev - 2));
-    }, 8000);
+      const progress = startRef.current !== null
+        ? ((performance.now() - startRef.current) % CYCLE_MS) / CYCLE_MS
+        : 0;
+      setLandingMins(Math.round((1 - progress) * TOTAL_MINS));
+    }, 1000);
     return () => clearInterval(id);
   }, []);
+
   const formatLanding = (m: number) => {
     const h = Math.floor(m / 60);
     const rem = m % 60;
@@ -761,8 +751,6 @@ function FigmaHeroSection() {
     if (rem === 0) return `${h}h`;
     return `${h}h ${rem}m`;
   };
-  // Plane position 0→235px as flight progresses (385 min remaining → 0)
-  const planeX = Math.round(((385 - landingMins) / 385) * 235);
 
   // Badge refs — line elements (clip-path animation) and pill elements (badge-pop animation)
   const lineConnRef     = useRef<HTMLDivElement>(null);
@@ -881,6 +869,38 @@ function FigmaHeroSection() {
             0%   { opacity: 0; transform: scale(0.78); filter: blur(5px); }
             65%  { opacity: 1; transform: scale(1.05); filter: blur(0px); }
             100% { opacity: 1; transform: scale(1);    filter: blur(0px); }
+          }
+
+          /* ── Plane pulse ring ── */
+          @keyframes planeRing {
+            0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.55; }
+            100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0; }
+          }
+          .plane-ring {
+            position: absolute;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation: planeRing 2.2s ease-out infinite;
+            pointer-events: none;
+          }
+
+          /* ── Track shimmer ── */
+          @keyframes trackShimmer {
+            0%   { left: -60%; opacity: 0; }
+            15%  { opacity: 1; }
+            85%  { opacity: 1; }
+            100% { left: 110%; opacity: 0; }
+          }
+          .track-shimmer {
+            position: absolute;
+            top: 0; height: 100%;
+            width: 45%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+            animation: trackShimmer 3.5s ease-in-out infinite;
+            pointer-events: none;
           }
 
           /* ── Hero Responsive ── */
@@ -1242,7 +1262,7 @@ function FigmaHeroSection() {
               <div className="absolute h-[755px] left-[0.36px] top-[-4px] w-[341px]" data-name="image 44" data-node-id="7379:46772">
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgPhoneApp} />
               </div>
-              <div className="absolute left-0 right-0 top-[140px] flex flex-col items-center gap-[3.5px] pointer-events-none">
+              <div className="absolute left-0 right-0 top-[132px] flex flex-col items-center gap-[3.5px] pointer-events-none">
                 <p className="text-[11.5px] font-medium text-white/70 text-center leading-[1.38]">Leg 1 of 2</p>
                 <p className="text-[24px] font-bold text-white text-center tracking-[-0.5px]" style={{ textShadow: '0px 3px 3px rgba(0,0,0,0.09)' }}>In Air</p>
               </div>
@@ -1256,10 +1276,11 @@ function FigmaHeroSection() {
               </div>
               <div className="absolute h-[30.848px] left-[15.36px] top-[187px] w-[74.331px]" data-node-id="7379:46773">
                 <div className="absolute bg-[#97d0ef] h-[6px] left-0 rounded-[929.555px] top-[15px] w-[309px]" />
-                <div className="absolute bg-gradient-to-l from-white h-[6px] left-0 rounded-[929.555px] to-[rgba(255,255,255,0.04)] top-[15px] w-[65px]"
-                  style={{ transform: `translateX(${planeX}px)`, transition: 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }} />
-                <div className="absolute h-[30.848px] left-[45.88px] top-[2px] w-[27.806px]" data-name="Plane Model" data-node-id="7379:46775"
-                  style={{ transform: `translateX(${planeX}px)`, transition: 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}>
+                <div ref={fillElRef} className="absolute bg-gradient-to-l from-white h-[6px] left-0 rounded-[929.555px] to-[rgba(255,255,255,0.04)] top-[15px] overflow-hidden" style={{width: 0}}>
+                  <div className="track-shimmer" />
+                </div>
+                <div ref={planeElRef} className="absolute h-[30.848px] left-[0px] top-[2px] w-[27.806px]" data-name="Plane Model" data-node-id="7379:46775">
+                  <div className="plane-ring" />
                   <div className="absolute flex items-center justify-center left-[1.18px] size-[25.412px] top-[2.97px]">
                     <div className="flex-none rotate-[2.91deg]">
                       <div className="relative size-[24.214px]">
@@ -1700,7 +1721,7 @@ function Intelligence() {
           <p style={{fontFamily: 'Inter', fontWeight: 700, fontSize: '12px', color: '#a8a29e', letterSpacing: '0.48px', textTransform: 'uppercase', lineHeight: 1, width: '100%', textAlign: 'center'}}>After you land</p>
           <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%'}}>
             <p style={{fontFamily: 'Inter', fontWeight: 600, fontSize: '24px', color: '#1c1917', letterSpacing: '-0.24px', lineHeight: 1.2, width: '244px', textAlign: 'center'}}>Build your passport</p>
-            <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: '#78716c', lineHeight: '24px', width: '286px', textAlign: 'center'}}>Every completed journey is recorded automatically — countries, airlines, distance, aircraft types.</p>
+            <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: '#78716c', lineHeight: '24px', width: '308px', textAlign: 'center'}}>Every completed journey is recorded automatically — countries, airlines, distance, aircraft types.</p>
           </div>
         </div>
       </div>
@@ -1709,1206 +1730,6 @@ function Intelligence() {
   </div>
 </section>
 </>
-  );
-}
-
-// ── How it works ──────────────────────────────────────────────────────────────
-function HowItWorks() {
-  const textRef  = useRef<HTMLDivElement>(null);
-  const phoneRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const items = [
-      { el: textRef.current,  delay: 0,   fromX: "translateY(24px)", toX: "translateY(0)",  duration: 500 },
-      { el: phoneRef.current, delay: 100, fromX: "scale(0.96)", toX: "scale(1)", duration: 600, easing: "ease" as const },
-    ];
-    const observers: IntersectionObserver[] = [];
-    items.forEach(({ el, delay, fromX, toX, duration, easing = "cubic-bezier(0.25,0.46,0.45,0.94)" }) => {
-      if (!el) return;
-      el.style.opacity = "0";
-      el.style.transform = fromX;
-      el.style.transition = `opacity ${duration}ms ${easing}, transform ${duration}ms ${easing}`;
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => { el.style.opacity = "1"; el.style.transform = toX; }, delay);
-            obs.disconnect();
-          }
-        },
-        { threshold: 0.15 }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach(o => o.disconnect());
-  }, []);
-
-  return (
-    <>
-      <style>{`
-        .hiw-section {
-          background-image: linear-gradient(261.66deg, #e6e6e6 6.85%, #ffffff 83.93%);
-          border-top: 1px solid #e7e5e4;
-          border-bottom: 1px solid #e7e5e4;
-          padding: 120px 24px;
-          width: 100%;
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-        .hiw-content {
-          display: flex;
-          flex-direction: row;
-          gap: 80px;
-          align-items: center;
-          justify-content: center;
-          width: 1020px;
-          max-width: 100%;
-        }
-        .hiw-text-block {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          border-radius: 24px;
-          flex-shrink: 0;
-          width: 384px;
-        }
-        .hiw-phone-wrap {
-          display: flex;
-          align-items: center;
-          width: 238px;
-          flex-shrink: 0;
-        }
-        @media (max-width: 1023px) {
-          .hiw-content {
-            flex-direction: column;
-            width: 100%;
-            gap: 48px;
-          }
-          .hiw-phone-wrap {
-            width: 70vw;
-            max-width: 260px;
-          }
-          .hiw-text-block {
-            width: 100%;
-            max-width: 384px;
-          }
-        }
-        @media (max-width: 767px) {
-          .hiw-section { padding: 64px 20px; }
-          .hiw-content { flex-direction: column !important; gap: 32px !important; }
-          .hiw-phone-wrap { width: 320px !important; max-width: 320px !important; margin: 0 auto !important; justify-content: center !important; }
-          .hiw-title  { font-size: clamp(24px, 6vw, 30px) !important; letter-spacing: -0.5px !important; }
-          .hiw-desc   { font-size: 15px !important; }
-        }
-      `}</style>
-      <section
-        id="how-it-works"
-        className="hiw-section"
-        data-name="Top Section"
-        data-node-id="7300-48957"
-      >
-        <div className="hiw-content" data-name="Top Content" data-node-id="7300-48958">
-
-          {/* LEFT — Text block */}
-          <div
-            ref={textRef}
-            className="hiw-text-block"
-            data-name="Top Text Container"
-            data-node-id="7300-48959"
-          >
-            <div
-              data-name="Top Text Box"
-              data-node-id="7300-48960"
-              style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}
-            >
-              {/* Step label pill */}
-              <div
-                data-name="Step Label"
-                data-node-id="7300-48961"
-                style={{
-                  backgroundImage: "linear-gradient(to bottom, #ffffff 38.5%, #f5f5f4)",
-                  border: "1px solid #e7e5e4",
-                  borderRadius: 24,
-                  padding: "12px 16px",
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: 12,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <div
-                  data-node-id="7300-48962"
-                  style={{ position: "relative", flexShrink: 0, width: 8, height: 8 }}
-                >
-                  <img
-                    alt=""
-                    src={imgHiwEllipse1}
-                    style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                  />
-                </div>
-                <p
-                  data-node-id="7300-48963"
-                  style={{
-                    fontFamily: "var(--font-inter), sans-serif",
-                    fontWeight: 600,
-                    fontSize: 16,
-                    color: "#a8a29e",
-                    letterSpacing: "-0.16px",
-                    textTransform: "uppercase",
-                    whiteSpace: "nowrap",
-                    margin: 0,
-                    lineHeight: 1.4,
-                  }}
-                >
-                  Step 01
-                </p>
-              </div>
-
-              {/* Title */}
-              <p
-                className="hiw-title"
-                data-node-id="7300-48964"
-                style={{
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontWeight: 700,
-                  fontSize: 32,
-                  color: "#1c1917",
-                  letterSpacing: "-0.64px",
-                  lineHeight: 1.2,
-                  textAlign: "center",
-                  margin: 0,
-                  width: "100%",
-                }}
-              >
-                Search your flight
-              </p>
-
-              {/* Body */}
-              <p
-                className="hiw-desc"
-                data-node-id="7300-48965"
-                style={{
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontWeight: 400,
-                  fontSize: 17,
-                  color: "#6c6760",
-                  lineHeight: "24px",
-                  textAlign: "center",
-                  width: 370,
-                  margin: 0,
-                }}
-              >
-                Enter a flight number or search by route.<br />Full operational data loads instantly.
-              </p>
-            </div>
-          </div>
-
-          {/* RIGHT — Phone */}
-          <div
-            className="hiw-phone-wrap"
-            data-name="Screen Container"
-            data-node-id="7300-48966"
-          >
-            <div
-              ref={phoneRef}
-              data-name="Top Image Container"
-              data-node-id="7300-48967"
-              style={{
-                background: "white",
-                borderRadius: 48,
-                boxShadow: "0px 4px 12px 0px rgba(0,0,0,0.05), 32px 32px 64px 0px rgba(23,29,46,0.12)",
-                flexShrink: 0,
-                width: 233,
-              }}
-            >
-              {/* Phone Frame */}
-              <div
-                data-name="Phone Frame"
-                data-node-id="7300-48968"
-                style={{ height: 504.526, position: "relative", flexShrink: 0, width: 242.667 }}
-              >
-                {/* Screen Frame */}
-                <div
-                  data-name="Screen Frame"
-                  data-node-id="7300-48969"
-                  style={{
-                    position: "absolute",
-                    background: "white",
-                    height: 490.708,
-                    left: 5.32,
-                    overflow: "hidden",
-                    borderRadius: 29.817,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    width: 226.355,
-                  }}
-                >
-                  <div
-                    data-name="Top Image"
-                    data-node-id="7300-48970"
-                    style={{ position: "absolute", height: 490.667, left: -0.16, top: -0.24, width: 226.667 }}
-                  >
-                    <img
-                      alt=""
-                      src={imgHiwTopImage}
-                      style={{ position: "absolute", inset: 0, maxWidth: "none", objectFit: "cover", pointerEvents: "none", width: "100%", height: "100%" }}
-                    />
-                  </div>
-                </div>
-
-                {/* Flattened overlay — phone chrome */}
-                <div
-                  data-name="Flattened"
-                  data-node-id="7300-48971"
-                  style={{ position: "absolute", height: 504.526, left: -2.83, top: 0, width: 242.667 }}
-                >
-                  <img
-                    alt=""
-                    src={imgHiwFlattened}
-                    style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                  />
-                </div>
-
-                {/* Top notch group */}
-                <div
-                  data-name="Top Group Container"
-                  data-node-id="7300-48972"
-                  style={{ position: "absolute", height: 21.455, left: 82.26, top: 14.29, width: 72.483 }}
-                >
-                  {/* Notch background */}
-                  <div
-                    data-node-id="7300-48973"
-                    style={{ position: "absolute", height: 21.455, left: 0, top: 0, width: 72.483 }}
-                  >
-                    <img
-                      alt=""
-                      src={imgHiwRectangle1}
-                      style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                    />
-                  </div>
-
-                  {/* Camera detail — Vector */}
-                  <div
-                    data-name="Vector"
-                    data-node-id="7300-48975"
-                    style={{ position: "absolute", inset: "28.68% 12.22% 28.7% 75.16%" }}
-                  >
-                    <img alt="" src={imgHiwVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Camera lens image */}
-                  <div
-                    data-name="Camera Image"
-                    data-node-id="7300-48976"
-                    aria-hidden="true"
-                    style={{ position: "absolute", inset: "28.65% 12.21% 28.71% 75.17%" }}
-                  >
-                    <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-                      <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-                        <img alt="" src={imgHiwCameraImage} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
-                      </div>
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
-                    </div>
-                  </div>
-
-                  {/* Vector1 */}
-                  <div
-                    data-name="Vector"
-                    data-node-id="7300-48977"
-                    style={{ position: "absolute", inset: "37.82% 14.93% 37.83% 77.86%" }}
-                  >
-                    <img alt="" src={imgHiwVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector2 */}
-                  <div
-                    data-name="Vector"
-                    data-node-id="7300-48979"
-                    style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%" }}
-                  >
-                    <img alt="" src={imgHiwVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector3 — mix-blend-multiply */}
-                  <div
-                    data-name="Vector"
-                    data-node-id="7300-48980"
-                    style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%", mixBlendMode: "multiply" }}
-                  >
-                    <img alt="" src={imgHiwVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector4 — mix-blend-screen */}
-                  <div
-                    data-name="Vector"
-                    data-node-id="7300-48981"
-                    style={{ position: "absolute", inset: "51.75% 15.67% 40.64% 82.07%", mixBlendMode: "screen" }}
-                  >
-                    <img alt="" src={imgHiwVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-    </>
-  );
-}
-
-// ── How it works — Step 02 ────────────────────────────────────────────────────
-function MiddleSection() {
-  const textRef  = useRef<HTMLDivElement>(null);
-  const phoneRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const items = [
-      { el: textRef.current,  delay: 0,   fromX: "translateY(24px)", toX: "translateY(0)", duration: 500 },
-      { el: phoneRef.current, delay: 100, fromX: "scale(0.96)", toX: "scale(1)", duration: 600, easing: "ease" as const },
-    ];
-    const observers: IntersectionObserver[] = [];
-    items.forEach(({ el, delay, fromX, toX, duration, easing = "cubic-bezier(0.25,0.46,0.45,0.94)" }) => {
-      if (!el) return;
-      el.style.opacity = "0";
-      el.style.transform = fromX;
-      el.style.transition = `opacity ${duration}ms ${easing}, transform ${duration}ms ${easing}`;
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => { el.style.opacity = "1"; el.style.transform = toX; }, delay);
-            obs.disconnect();
-          }
-        },
-        { threshold: 0.15 }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach(o => o.disconnect());
-  }, []);
-
-  return (
-    <>
-      <style>{`
-        .mid-section {
-          background: #ffffff;
-          padding: 120px 24px;
-          width: 100%;
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-        .mid-content {
-          display: flex;
-          flex-direction: row;
-          gap: 80px;
-          align-items: center;
-          justify-content: center;
-          width: 1020px;
-          max-width: 100%;
-        }
-        .mid-phone-wrap {
-          display: flex;
-          align-items: center;
-          width: 237px;
-          flex-shrink: 0;
-        }
-        .mid-text-block {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          border-radius: 24px;
-          flex-shrink: 0;
-          width: 384px;
-        }
-        @media (max-width: 1023px) {
-          .mid-content {
-            flex-direction: column-reverse;
-            width: 100%;
-            gap: 48px;
-          }
-          .mid-phone-wrap {
-            width: 70vw;
-            max-width: 260px;
-          }
-          .mid-text-block {
-            width: 100%;
-            max-width: 384px;
-          }
-        }
-        @media (max-width: 767px) {
-          .mid-section { padding: 64px 20px; }
-          .mid-content { flex-direction: column-reverse !important; gap: 32px !important; }
-          .mid-phone-wrap { max-width: 240px !important; }
-        }
-      `}</style>
-      <section
-        className="mid-section"
-        data-name="Middle Section"
-      >
-        <div className="mid-content">
-
-          {/* LEFT — Phone */}
-          <div className="mid-phone-wrap">
-            <div
-              ref={phoneRef}
-              style={{
-                background: "white",
-                borderRadius: 48,
-                boxShadow: "0px 4px 12px 0px rgba(0,0,0,0.05), 32px 32px 64px 0px rgba(23,29,46,0.12)",
-                flexShrink: 0,
-                width: 237,
-              }}
-            >
-              {/* Phone Frame */}
-              <div
-                style={{ height: 504.526, position: "relative", flexShrink: 0, width: 242.667 }}
-              >
-                {/* Screen Frame */}
-                <div
-                  style={{
-                    position: "absolute",
-                    background: "white",
-                    height: 490.708,
-                    left: 5.16,
-                    overflow: "hidden",
-                    borderRadius: 29.817,
-                    top: "50%",
-                    transform: "translateY(-50%) translateY(-0.47px)",
-                    width: 226.355,
-                  }}
-                >
-                  <div
-                    style={{ position: "absolute", height: 490.667, left: -0.16, top: -0.24, width: 226.667 }}
-                  >
-                    <img
-                      alt=""
-                      src={imgMidMiddleImage}
-                      style={{ position: "absolute", inset: 0, maxWidth: "none", objectFit: "cover", pointerEvents: "none", width: "100%", height: "100%" }}
-                    />
-                  </div>
-                </div>
-
-                {/* Flattened — phone chrome */}
-                <div
-                  style={{ position: "absolute", left: -3, top: -0.47, width: 242.667, height: 504.526 }}
-                >
-                  <img
-                    alt=""
-                    src={imgMidFlattened}
-                    style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                  />
-                </div>
-
-                {/* Notch group */}
-                <div
-                  style={{ position: "absolute", height: 21.455, left: 82.09, top: 13.82, width: 72.483 }}
-                >
-                  {/* Notch background */}
-                  <div
-                    style={{ position: "absolute", height: 21.455, left: 0, top: 0, width: 72.483 }}
-                  >
-                    <img
-                      alt=""
-                      src={imgMidRectangle1}
-                      style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                    />
-                  </div>
-
-                  {/* Camera detail — Vector */}
-                  <div style={{ position: "absolute", inset: "28.68% 12.22% 28.7% 75.16%" }}>
-                    <img alt="" src={imgMidVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Camera lens image — imgRectangle with dark overlay */}
-                  <div
-                    aria-hidden="true"
-                    style={{ position: "absolute", inset: "28.65% 12.21% 28.71% 75.17%" }}
-                  >
-                    <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-                      <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-                        <img alt="" src={imgMidRectangle} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
-                      </div>
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
-                    </div>
-                  </div>
-
-                  {/* Vector1 */}
-                  <div style={{ position: "absolute", inset: "37.82% 14.93% 37.83% 77.86%" }}>
-                    <img alt="" src={imgMidVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector2 */}
-                  <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%" }}>
-                    <img alt="" src={imgMidVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector3 — mix-blend-multiply */}
-                  <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%", mixBlendMode: "multiply" }}>
-                    <img alt="" src={imgMidVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector4 — mix-blend-screen */}
-                  <div style={{ position: "absolute", inset: "51.75% 15.67% 40.64% 82.07%", mixBlendMode: "screen" }}>
-                    <img alt="" src={imgMidVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT — Text block */}
-          <div
-            ref={textRef}
-            className="mid-text-block"
-          >
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}
-            >
-              {/* Step label pill */}
-              <div
-                style={{
-                  backgroundImage: "linear-gradient(to bottom, #ffffff 38.5%, #f5f5f4)",
-                  border: "1px solid #e7e5e4",
-                  borderRadius: 24,
-                  padding: "12px 16px",
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: 12,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <div style={{ position: "relative", flexShrink: 0, width: 8, height: 8 }}>
-                  <img
-                    alt=""
-                    src={imgMidEllipse1}
-                    style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                  />
-                </div>
-                <p
-                  style={{
-                    fontFamily: "var(--font-inter), sans-serif",
-                    fontWeight: 600,
-                    fontSize: 16,
-                    color: "#a8a29e",
-                    letterSpacing: "-0.16px",
-                    textTransform: "uppercase",
-                    whiteSpace: "nowrap",
-                    margin: 0,
-                    lineHeight: 1.4,
-                  }}
-                >
-                  Step 02
-                </p>
-              </div>
-
-              {/* Title */}
-              <p
-                className="hiw-title"
-                style={{
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontWeight: 700,
-                  fontSize: 32,
-                  color: "#1c1917",
-                  letterSpacing: "-0.64px",
-                  lineHeight: 1.2,
-                  textAlign: "center",
-                  margin: 0,
-                  width: "100%",
-                }}
-              >
-                Understand it
-              </p>
-
-              {/* Body */}
-              <p
-                className="hiw-desc"
-                style={{
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontWeight: 400,
-                  fontSize: 17,
-                  color: "#6c6760",
-                  lineHeight: "24px",
-                  textAlign: "center",
-                  width: 380,
-                  margin: 0,
-                }}
-              >
-                Review delay history, aircraft info, and<br />turbulence before you reach the airport.
-              </p>
-            </div>
-          </div>
-
-        </div>
-      </section>
-    </>
-  );
-}
-
-// ── How it works — Step 03 ────────────────────────────────────────────────────
-function LowerSection() {
-  const textRef  = useRef<HTMLDivElement>(null);
-  const phoneRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const items = [
-      { el: textRef.current,  delay: 0,   fromX: "translateY(24px)", toX: "translateY(0)", duration: 500 },
-      { el: phoneRef.current, delay: 100, fromX: "scale(0.96)", toX: "scale(1)", duration: 600, easing: "ease" as const },
-    ];
-    const observers: IntersectionObserver[] = [];
-    items.forEach(({ el, delay, fromX, toX, duration, easing = "cubic-bezier(0.25,0.46,0.45,0.94)" }) => {
-      if (!el) return;
-      el.style.opacity = "0";
-      el.style.transform = fromX;
-      el.style.transition = `opacity ${duration}ms ${easing}, transform ${duration}ms ${easing}`;
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => { el.style.opacity = "1"; el.style.transform = toX; }, delay);
-            obs.disconnect();
-          }
-        },
-        { threshold: 0.15 }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach(o => o.disconnect());
-  }, []);
-
-  return (
-    <>
-      <style>{`
-        .low-section {
-          background-image: linear-gradient(261.66deg, #e6e6e6 6.85%, #ffffff 83.93%);
-          border-top: 1px solid #e7e5e4;
-          border-bottom: 1px solid #e7e5e4;
-          padding: 120px 24px;
-          width: 100%;
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-        .low-content {
-          display: flex;
-          flex-direction: row;
-          gap: 80px;
-          align-items: center;
-          justify-content: center;
-          width: 1020px;
-          max-width: 100%;
-        }
-        .low-text-block {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          border-radius: 24px;
-          flex-shrink: 0;
-          width: 384px;
-        }
-        .low-phone-wrap {
-          display: flex;
-          align-items: center;
-          width: 238px;
-          flex-shrink: 0;
-        }
-        @media (max-width: 1023px) {
-          .low-content {
-            flex-direction: column;
-            width: 100%;
-            gap: 48px;
-          }
-          .low-phone-wrap {
-            width: 70vw;
-            max-width: 260px;
-          }
-          .low-text-block {
-            width: 100%;
-            max-width: 384px;
-          }
-        }
-        @media (max-width: 767px) {
-          .low-section { padding: 64px 20px; }
-          .low-content { flex-direction: column !important; gap: 32px !important; }
-          .low-phone-wrap { max-width: 240px !important; }
-        }
-      `}</style>
-      <section
-        className="low-section"
-        data-name="Lower Section"
-      >
-        <div className="low-content">
-
-          {/* LEFT — Text block */}
-          <div ref={textRef} className="low-text-block">
-            <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}>
-
-              {/* Step label pill */}
-              <div
-                style={{
-                  backgroundImage: "linear-gradient(to bottom, #ffffff 38.5%, #f5f5f4)",
-                  border: "1px solid #e7e5e4",
-                  borderRadius: 24,
-                  padding: "12px 16px",
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: 12,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <div style={{ position: "relative", flexShrink: 0, width: 8, height: 8 }}>
-                  <img
-                    alt=""
-                    src={imgLowEllipse1}
-                    style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                  />
-                </div>
-                <p
-                  style={{
-                    fontFamily: "var(--font-inter), sans-serif",
-                    fontWeight: 600,
-                    fontSize: 16,
-                    color: "#a8a29e",
-                    letterSpacing: "-0.16px",
-                    textTransform: "uppercase",
-                    whiteSpace: "nowrap",
-                    margin: 0,
-                    lineHeight: 1.4,
-                  }}
-                >
-                  Step 03
-                </p>
-              </div>
-
-              {/* Title */}
-              <p
-                className="hiw-title"
-                style={{
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontWeight: 700,
-                  fontSize: 32,
-                  color: "#1c1917",
-                  letterSpacing: "-0.64px",
-                  lineHeight: 1.2,
-                  textAlign: "center",
-                  margin: 0,
-                  width: "100%",
-                }}
-              >
-                Track in real time
-              </p>
-
-              {/* Body */}
-              <p
-                className="hiw-desc"
-                style={{
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontWeight: 400,
-                  fontSize: 17,
-                  color: "#6c6760",
-                  lineHeight: "24px",
-                  textAlign: "center",
-                  margin: 0,
-                }}
-              >
-                Live updates on every leg — boarding, gate changes, connection windows, arrival.
-              </p>
-            </div>
-          </div>
-
-          {/* RIGHT — Phone */}
-          <div className="low-phone-wrap">
-            <div
-              ref={phoneRef}
-              style={{
-                background: "white",
-                borderRadius: 48,
-                boxShadow: "0px 4px 12px 0px rgba(0,0,0,0.05), 32px 32px 64px 0px rgba(23,29,46,0.12)",
-                flexShrink: 0,
-                width: 238,
-              }}
-            >
-              {/* Phone Frame */}
-              <div style={{ height: 504.526, position: "relative", flexShrink: 0, width: 242.667 }}>
-
-                {/* Screen Frame */}
-                <div
-                  style={{
-                    position: "absolute",
-                    background: "white",
-                    height: 490.708,
-                    left: 5.66,
-                    overflow: "hidden",
-                    borderRadius: 29.817,
-                    top: "50%",
-                    transform: "translateY(-50%) translateY(0.05px)",
-                    width: 226.355,
-                  }}
-                >
-                  <div style={{ position: "absolute", height: 490.667, left: -0.16, top: -0.24, width: 226.667 }}>
-                    <img
-                      alt=""
-                      src={imgLowLowerImage}
-                      style={{ position: "absolute", inset: 0, maxWidth: "none", objectFit: "cover", pointerEvents: "none", width: "100%", height: "100%" }}
-                    />
-                  </div>
-                </div>
-
-                {/* Flattened — phone chrome */}
-                <div style={{ position: "absolute", left: -2.5, top: 0.05, width: 242.667, height: 504.526 }}>
-                  <img
-                    alt=""
-                    src={imgLowFlattened}
-                    style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                  />
-                </div>
-
-                {/* Notch group */}
-                <div style={{ position: "absolute", height: 21.455, left: 82.59, top: 14.34, width: 72.483 }}>
-
-                  {/* Notch background */}
-                  <div style={{ position: "absolute", height: 21.455, left: 0, top: 0, width: 72.483 }}>
-                    <img
-                      alt=""
-                      src={imgLowRectangle1}
-                      style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                    />
-                  </div>
-
-                  {/* Camera detail — Vector */}
-                  <div style={{ position: "absolute", inset: "28.68% 12.22% 28.7% 75.16%" }}>
-                    <img alt="" src={imgLowVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Camera lens — imgCameraImage with dark overlay */}
-                  <div aria-hidden="true" style={{ position: "absolute", inset: "28.65% 12.21% 28.71% 75.17%" }}>
-                    <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-                      <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-                        <img alt="" src={imgLowCameraImage} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
-                      </div>
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
-                    </div>
-                  </div>
-
-                  {/* Vector1 */}
-                  <div style={{ position: "absolute", inset: "37.82% 14.93% 37.83% 77.86%" }}>
-                    <img alt="" src={imgLowVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector2 */}
-                  <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%" }}>
-                    <img alt="" src={imgLowVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector3 — mix-blend-multiply */}
-                  <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%", mixBlendMode: "multiply" }}>
-                    <img alt="" src={imgLowVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector4 — mix-blend-screen */}
-                  <div style={{ position: "absolute", inset: "51.75% 15.67% 40.64% 82.07%", mixBlendMode: "screen" }}>
-                    <img alt="" src={imgLowVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-    </>
-  );
-}
-
-// ── How it works — Step 04 ────────────────────────────────────────────────────
-function BottomSection() {
-  const textRef  = useRef<HTMLDivElement>(null);
-  const phoneRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const items = [
-      { el: textRef.current,  delay: 0,   fromX: "translateY(24px)", toX: "translateY(0)", duration: 500 },
-      { el: phoneRef.current, delay: 100, fromX: "scale(0.96)", toX: "scale(1)", duration: 600, easing: "ease" as const },
-    ];
-    const observers: IntersectionObserver[] = [];
-    items.forEach(({ el, delay, fromX, toX, duration, easing = "cubic-bezier(0.25,0.46,0.45,0.94)" }) => {
-      if (!el) return;
-      el.style.opacity = "0";
-      el.style.transform = fromX;
-      el.style.transition = `opacity ${duration}ms ${easing}, transform ${duration}ms ${easing}`;
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => { el.style.opacity = "1"; el.style.transform = toX; }, delay);
-            obs.disconnect();
-          }
-        },
-        { threshold: 0.15 }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach(o => o.disconnect());
-  }, []);
-
-  return (
-    <>
-      <style>{`
-        .bot-section {
-          background: #ffffff;
-          padding: 120px 24px;
-          width: 100%;
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-        .bot-content {
-          display: flex;
-          flex-direction: row;
-          gap: 80px;
-          align-items: center;
-          justify-content: center;
-          width: 1020px;
-          max-width: 100%;
-        }
-        .bot-phone-wrap {
-          display: flex;
-          align-items: center;
-          flex-shrink: 0;
-        }
-        .bot-text-block {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          border-radius: 24px;
-          flex-shrink: 0;
-          width: 384px;
-        }
-        @media (max-width: 1023px) {
-          .bot-content {
-            flex-direction: column-reverse;
-            width: 100%;
-            gap: 48px;
-          }
-          .bot-phone-wrap {
-            width: 70vw;
-            max-width: 260px;
-          }
-          .bot-text-block {
-            width: 100%;
-            max-width: 384px;
-          }
-        }
-        @media (max-width: 767px) {
-          .bot-section { padding: 64px 20px; }
-          .bot-content { flex-direction: column-reverse !important; gap: 32px !important; }
-          .bot-phone-wrap { max-width: 240px !important; }
-        }
-      `}</style>
-      <section className="bot-section" data-name="Bottom Section">
-        <div className="bot-content">
-
-          {/* LEFT — Phone */}
-          <div className="bot-phone-wrap">
-            <div
-              ref={phoneRef}
-              style={{
-                background: "white",
-                borderRadius: 48,
-                boxShadow: "0px 4px 12px 0px rgba(0,0,0,0.05), 32px 32px 64px 0px rgba(23,29,46,0.12)",
-                flexShrink: 0,
-                width: 242.667,
-              }}
-            >
-              {/* Phone Frame */}
-              <div style={{ height: 504.526, position: "relative", flexShrink: 0, width: 242.667 }}>
-
-                {/* Screen Frame */}
-                <div
-                  style={{
-                    position: "absolute",
-                    background: "white",
-                    height: 490.708,
-                    left: 8.16,
-                    overflow: "hidden",
-                    borderRadius: 29.817,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    width: 226.355,
-                  }}
-                >
-                  <div style={{ position: "absolute", height: "126.52%", left: -0.16, top: "-0.22%", width: 226.667 }}>
-                    <img
-                      alt=""
-                      src={imgBotMainContentImage}
-                      style={{ position: "absolute", inset: 0, maxWidth: "none", pointerEvents: "none", width: "100%", height: "100%" }}
-                    />
-                  </div>
-                </div>
-
-                {/* Flattened — phone chrome */}
-                <div style={{ position: "absolute", left: 0, top: 0, width: 242.667, height: 504.526 }}>
-                  <img
-                    alt=""
-                    src={imgBotFlattened}
-                    style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                  />
-                </div>
-
-                {/* Notch group */}
-                <div style={{ position: "absolute", height: 21.455, left: 85.09, top: 14.29, width: 72.483 }}>
-
-                  {/* Notch background */}
-                  <div style={{ position: "absolute", height: 21.455, left: 0, top: 0, width: 72.483 }}>
-                    <img
-                      alt=""
-                      src={imgBotRectangle1}
-                      style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                    />
-                  </div>
-
-                  {/* Camera detail — Vector */}
-                  <div style={{ position: "absolute", inset: "28.68% 12.22% 28.7% 75.16%" }}>
-                    <img alt="" src={imgBotVector} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Camera lens — imgUserImage with dark overlay */}
-                  <div aria-hidden="true" style={{ position: "absolute", inset: "28.65% 12.21% 28.71% 75.17%" }}>
-                    <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-                      <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-                        <img alt="" src={imgBotUserImage} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none", width: "100%", height: "100%" }} />
-                      </div>
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
-                    </div>
-                  </div>
-
-                  {/* Vector1 */}
-                  <div style={{ position: "absolute", inset: "37.82% 14.93% 37.83% 77.86%" }}>
-                    <img alt="" src={imgBotVector1} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector2 */}
-                  <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%" }}>
-                    <img alt="" src={imgBotVector2} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector3 — mix-blend-multiply */}
-                  <div style={{ position: "absolute", inset: "39.34% 15.38% 39.35% 78.31%", mixBlendMode: "multiply" }}>
-                    <img alt="" src={imgBotVector3} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-
-                  {/* Vector4 — mix-blend-screen */}
-                  <div style={{ position: "absolute", inset: "51.75% 15.67% 40.64% 82.07%", mixBlendMode: "screen" }}>
-                    <img alt="" src={imgBotVector4} style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT — Text block */}
-          <div ref={textRef} className="bot-text-block">
-            <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}>
-
-              {/* Step label pill */}
-              <div
-                style={{
-                  backgroundImage: "linear-gradient(to bottom, #ffffff 38.5%, #f5f5f4)",
-                  border: "1px solid #e7e5e4",
-                  borderRadius: 24,
-                  padding: "12px 16px",
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: 12,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <div style={{ position: "relative", flexShrink: 0, width: 8, height: 8 }}>
-                  <img
-                    alt=""
-                    src={imgBotEllipse1}
-                    style={{ position: "absolute", display: "block", maxWidth: "none", width: "100%", height: "100%" }}
-                  />
-                </div>
-                <p
-                  style={{
-                    fontFamily: "var(--font-inter), sans-serif",
-                    fontWeight: 600,
-                    fontSize: 16,
-                    color: "#a8a29e",
-                    letterSpacing: "-0.16px",
-                    textTransform: "uppercase",
-                    whiteSpace: "nowrap",
-                    margin: 0,
-                    lineHeight: 1.4,
-                  }}
-                >
-                  Step 04
-                </p>
-              </div>
-
-              {/* Title */}
-              <p
-                className="hiw-title"
-                style={{
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontWeight: 700,
-                  fontSize: 32,
-                  color: "#1c1917",
-                  letterSpacing: "-0.64px",
-                  lineHeight: 1.2,
-                  textAlign: "center",
-                  margin: 0,
-                  width: "100%",
-                }}
-              >
-                Save to passport
-              </p>
-
-              {/* Body */}
-              <p
-                className="hiw-desc"
-                style={{
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontWeight: 400,
-                  fontSize: 17,
-                  color: "#6c6760",
-                  lineHeight: "24px",
-                  textAlign: "center",
-                  width: 357,
-                  margin: 0,
-                }}
-              >
-                Completed journeys are recorded automatically to your personal travel history.
-              </p>
-            </div>
-          </div>
-
-        </div>
-      </section>
-    </>
   );
 }
 
@@ -4011,10 +2832,7 @@ export default function Page() {
       <main>
         <FigmaHeroSection />
         <Intelligence />
-        <HowItWorks />
-        <MiddleSection />
-        <LowerSection />
-        <BottomSection />
+        <HowItWorksScroll />
         <LiveActivities />
         <Passport />
         <FAQ />

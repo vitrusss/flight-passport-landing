@@ -1963,7 +1963,7 @@ function LiveActivities() {
                 <span style={{fontWeight: 700}}> they become yours.</span>
               </p>
               <p className="la-desc" style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.4, width: '540px', maxWidth: '100%', textAlign: 'center', margin: 0}}>
-                Flight Passport reads every phase of your journey<br />and surfaces only what matters at that moment.
+                Flight Passport reads every phase of your journey and surfaces only what matters at that moment.
               </p>
             </div>
           </div>

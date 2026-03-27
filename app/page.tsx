@@ -911,7 +911,7 @@ function FigmaHeroSection() {
         <div className="max-w-[1200px] mx-auto px-5">
         <div className="hero-content-container relative w-[1046px] h-[434px] mx-auto" data-name="Content container" data-node-id="7300:48532">
           {/* Connection awareness pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[704px] top-[176px]" data-node-id="7300:48537">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[710px] top-[176px]" data-node-id="7300:48537">
             <div ref={lineConnRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
             </div>
@@ -939,7 +939,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Aircraft insights pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[704px] top-[56px]" data-node-id="7300:48547">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[710px] top-[56px]" data-node-id="7300:48547">
             <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
             </div>
@@ -967,7 +967,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Personal flight history pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[704px] top-[296px]" data-node-id="7300:48557">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[710px] top-[296px]" data-node-id="7300:48557">
             <div ref={lineHistRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
             </div>
@@ -1680,7 +1680,7 @@ function HowItWorks() {
                   margin: 0,
                 }}
               >
-                Enter a flight number or search by route. Full operational data loads instantly.
+                Enter a flight number or search by route.<br />Full operational data loads instantly.
               </p>
             </div>
           </div>

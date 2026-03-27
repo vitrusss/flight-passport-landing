@@ -35,7 +35,11 @@ export default function RootLayout({
         <link rel="preload" as="image" href="/Images/asset-28ac99e6-1e5b-405d-842f-3140b8f96b46.png" />
         <script dangerouslySetInnerHTML={{__html: `
           if (history.scrollRestoration) { history.scrollRestoration = 'manual'; }
-          window.scrollTo(0, 0);
+          if (window.location.hash) { history.replaceState(null, '', window.location.pathname); }
+          window.scrollTo({ top: 0, behavior: 'instant' });
+          window.addEventListener('load', function() {
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          }, { once: true });
         `}} />
       </head>
       <body className="antialiased">{children}</body>

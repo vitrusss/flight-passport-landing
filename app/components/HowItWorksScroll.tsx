@@ -765,8 +765,117 @@ export default function HowItWorksScroll() {
         }
       `}</style>
 
-      {/* Placeholder — JSX added in Tasks 3 & 4 */}
-      <p style={{ padding: '40px', color: '#999' }}>CSS loaded — JSX coming in Task 3</p>
+      {/* ── Accessibility live region ────────────────────────────────────── */}
+      <div aria-live="polite" aria-atomic="true" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}>
+        Step {displayStep + 1} of {STEPS.length}: {STEPS[displayStep].title}
+      </div>
+
+      {/* ── Section heading (scrolls away before sticky kicks in) ────────── */}
+      <div className="hiw-section-header">
+        <p className="hiw-overline">How it works</p>
+        <h2 className="hiw-heading">Four steps.<br />Zero confusion.</h2>
+      </div>
+
+      {/* ── Desktop/Tablet: 500vh scroll container ───────────────────────── */}
+      {!isMobile && (
+        <div
+          ref={outerRef}
+          className="hiw-scroll-outer"
+          style={{ height: '500vh', position: 'relative' }}
+        >
+          <div className={`hiw-scroll-sticky phase-${phase}`}>
+            <div className="hiw-inner">
+
+              {/* ── Phone (left column) ─────────────────────────────────── */}
+              <div className="hiw-phone-col">
+                <div className="hiw-phone-glow" />
+                <div className="hiw-phone-frame">
+                  <div className="hiw-screen-wrap">
+                    <img
+                      src={STEPS[displayStep].image}
+                      alt={`Step ${displayStep + 1}: ${STEPS[displayStep].title}`}
+                      className="hiw-screen-img"
+                      draggable={false}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Text column (right) ─────────────────────────────────── */}
+              <div className="hiw-text-col" style={{ position: 'relative' }}>
+
+                {/* Step indicator track — positioned left of text col */}
+                <div className="hiw-indicator-track">
+                  <div className="hiw-track-line-bg" />
+                  <div
+                    className="hiw-track-line-fill"
+                    style={{ height: active > 0 ? `${active * 40}px` : '0px' }}
+                  />
+                  {STEPS.map((step, i) => {
+                    const dotState = i < active ? 'completed' : i === active ? 'active-dot' : 'upcoming';
+                    return (
+                      <div
+                        key={i}
+                        className="hiw-indicator-slot"
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Go to step ${i + 1}: ${step.title}`}
+                        onClick={() => goTo(i)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goTo(i); } }}
+                      >
+                        <div className={`hiw-dot ${dotState}`}>
+                          {dotState === 'completed' && (
+                            <svg width="7" height="6" viewBox="0 0 7 6" fill="none" aria-hidden="true">
+                              <path d="M1 3L2.8 5L6 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Step text blocks */}
+                {STEPS.map((step, i) => (
+                  <div
+                    key={i}
+                    className={`hiw-step-item${i === active ? ' active' : ''}`}
+                    onClick={() => i !== active && goTo(i)}
+                    role={i !== active ? 'button' : undefined}
+                    tabIndex={i !== active ? 0 : undefined}
+                    aria-label={i !== active ? `Jump to step ${i + 1}: ${step.title}` : undefined}
+                    onKeyDown={(e) => { if (i !== active && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); goTo(i); } }}
+                  >
+                    <p className="hiw-step-label">Step {step.num}</p>
+                    <h3 className="hiw-step-title">{step.title}</h3>
+                    {i === active && <p className="hiw-step-desc">{step.desc}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Fixed progress bar (desktop only, visible when in view) ─────── */}
+      <div className={`hiw-progress-bar${inView && !isMobile ? '' : ' hidden'}`}>
+        <div
+          className="hiw-progress-fill"
+          style={{ height: `${(active / (STEPS.length - 1)) * 100}%` }}
+        />
+        {STEPS.map((_, i) => (
+          <div
+            key={i}
+            className={`hiw-progress-dot ${i <= active ? 'active-dot' : 'inactive-dot'}`}
+            style={{ top: `${(i / (STEPS.length - 1)) * 100}%` }}
+          />
+        ))}
+      </div>
+
+      {/* ── Mobile carousel — added in Task 4 ───────────────────────────── */}
+      {isMobile && (
+        <p style={{ padding: '40px', color: '#999', textAlign: 'center' }}>Mobile carousel — Task 4</p>
+      )}
     </section>
   );
 }

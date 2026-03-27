@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 // ── Figma Hero asset URLs (node 7300:48506) ───────────────────────────────────
 const imgCloud1 = "/Images/asset-81419f0d-f299-4d1e-a3f5-1f41ab41cf92.png";
@@ -183,184 +184,272 @@ function useCounter(target: number, duration = 1200) {
 // ── Mobile Nav overlay + burger trigger ───────────────────────────────────────
 function MobileNav({ links }: { links: typeof NAV_LINKS }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setIsOpen(false); };
     window.addEventListener("keydown", onKey);
+    // iOS-safe scroll lock
+    const scrollY = window.scrollY;
     document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      window.scrollTo({ top: scrollY, behavior: "instant" });
     };
   }, [isOpen]);
 
   return (
     <>
       <style>{`
-        .mobile-burger {
+        /* ── Burger button — mobile only */
+        .mnav-burger {
           display: none;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+          flex-shrink: 0;
+          border-radius: 10px;
+          transition: background 140ms ease;
         }
+        .mnav-burger:active { background: rgba(28, 25, 23, 0.07); }
         @media (max-width: 767px) {
-          .mobile-burger {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 5.5px;
-            width: 44px;
-            height: 44px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            flex-shrink: 0;
-            position: relative;
-            z-index: 201;
-          }
+          .mnav-burger { display: flex; }
           .nav-download-btn { display: none !important; }
+          .nav-logo-btn { width: auto !important; }
         }
-        .mobile-burger-line {
-          display: block;
+
+        /* ── Animated 3-line icon → X */
+        .mnav-icon {
+          position: relative;
+          width: 22px;
+          height: 14px;
+          flex-shrink: 0;
+        }
+        .mnav-line {
+          position: absolute;
+          left: 0;
           width: 22px;
           height: 1.5px;
           background: #1c1917;
           border-radius: 2px;
-          transform-origin: center;
-          transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1),
-                      opacity  200ms ease,
-                      width    250ms ease;
+          transition:
+            top 280ms cubic-bezier(0.4, 0, 0.2, 1),
+            transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 180ms ease;
         }
-        .mobile-burger[aria-expanded="true"] .mobile-burger-line:nth-child(1) {
-          transform: translateY(7px) rotate(45deg);
+        .mnav-line-1 { top: 0; }
+        .mnav-line-2 { top: 6px; }
+        .mnav-line-3 { top: 12px; }
+
+        .mnav-burger.is-open .mnav-line-1 {
+          top: 6px;
+          transform: rotate(45deg);
         }
-        .mobile-burger[aria-expanded="true"] .mobile-burger-line:nth-child(2) {
+        .mnav-burger.is-open .mnav-line-2 {
           opacity: 0;
-          width: 0;
+          transform: scaleX(0);
         }
-        .mobile-burger[aria-expanded="true"] .mobile-burger-line:nth-child(3) {
-          transform: translateY(-7px) rotate(-45deg);
+        .mnav-burger.is-open .mnav-line-3 {
+          top: 6px;
+          transform: rotate(-45deg);
         }
-        .mobile-nav-overlay {
+
+        /* ── Full-screen overlay (z-95; nav header z-100 stays on top) */
+        .mnav-overlay {
           position: fixed;
           inset: 0;
-          z-index: 200;
-          background: rgba(255, 255, 255, 0.97);
-          backdrop-filter: blur(24px) saturate(180%);
-          -webkit-backdrop-filter: blur(24px) saturate(180%);
+          z-index: 95;
+          background: rgba(249, 248, 246, 0.97);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
           display: flex;
           flex-direction: column;
-          padding: 80px 24px 40px;
           box-sizing: border-box;
           pointer-events: none;
           opacity: 0;
-          transform: scale(0.98) translateY(-6px);
-          transition: opacity 280ms cubic-bezier(0.4, 0, 0.2, 1),
-                      transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+          visibility: hidden;
+          overscroll-behavior: none;
+          transition: opacity 280ms ease, visibility 0ms linear 280ms;
         }
-        .mobile-nav-overlay.mobile-nav-open {
+        .mnav-overlay.mnav-open {
           pointer-events: all;
           opacity: 1;
-          transform: scale(1) translateY(0);
+          visibility: visible;
+          transition: opacity 280ms ease, visibility 0ms linear 0ms;
         }
-        .mobile-nav-links {
+
+        /* Spacer pushes links below the nav bar */
+        .mnav-spacer {
+          height: calc(48px + env(safe-area-inset-top));
+          flex-shrink: 0;
+        }
+
+        /* Links — vertically centered */
+        .mnav-body {
+          flex: 1;
           display: flex;
           flex-direction: column;
-          align-items: stretch;
+          align-items: center;
           justify-content: center;
-          flex: 1;
+          padding: 0 24px;
+        }
+        .mnav-links {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+          max-width: 400px;
           gap: 4px;
         }
-        .mobile-nav-link {
+        .mnav-link {
           display: flex;
           align-items: center;
           justify-content: center;
+          width: 100%;
           height: 60px;
           text-decoration: none;
           font-family: var(--font-inter), sans-serif;
-          font-size: 20px;
-          font-weight: 400;
+          font-size: 24px;
+          font-weight: 500;
           color: #1c1917;
-          letter-spacing: -0.3px;
+          letter-spacing: -0.5px;
           border-radius: 14px;
           opacity: 0;
-          transform: translateY(14px);
-          transition: opacity 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                      transform 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                      background 140ms ease;
+          transform: translateY(18px);
+          transition: opacity 300ms ease, transform 300ms ease, background 120ms ease;
         }
-        .mobile-nav-overlay.mobile-nav-open .mobile-nav-link {
+        .mnav-overlay.mnav-open .mnav-link {
           opacity: 1;
           transform: translateY(0);
         }
-        .mobile-nav-link:hover  { background: rgba(28, 25, 23, 0.05); }
-        .mobile-nav-link:active { background: rgba(28, 25, 23, 0.09); }
-        .mobile-nav-cta {
+        .mnav-link:hover  { background: rgba(28, 25, 23, 0.05); }
+        .mnav-link:active { background: rgba(28, 25, 23, 0.09); }
+
+        /* ── Footer: thin divider + CTA */
+        .mnav-footer {
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 0 24px calc(48px + env(safe-area-inset-bottom));
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .mnav-divider {
+          width: 100%;
+          max-width: 360px;
+          height: 1px;
+          background: rgba(28, 25, 23, 0.1);
+          margin-bottom: 24px;
+          opacity: 0;
+          transition: opacity 300ms ease;
+        }
+        .mnav-overlay.mnav-open .mnav-divider { opacity: 1; }
+
+        .mnav-cta {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
-          height: 52px;
+          height: 56px;
+          width: 100%;
+          max-width: 360px;
           border-radius: 999px;
           background: #1c1917;
           border: none;
           cursor: pointer;
-          width: 100%;
           flex-shrink: 0;
           opacity: 0;
-          transform: translateY(14px);
-          transition: opacity 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                      transform 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          transform: translateY(12px);
+          transition: opacity 300ms ease, transform 300ms ease, background 140ms ease;
         }
-        .mobile-nav-overlay.mobile-nav-open .mobile-nav-cta {
+        .mnav-overlay.mnav-open .mnav-cta {
           opacity: 1;
           transform: translateY(0);
         }
-        .mobile-nav-cta:active { opacity: 0.85; }
+        .mnav-cta:active { background: #292524; }
       `}</style>
 
-      {/* Burger trigger */}
+      {/* ── Burger — 3 CSS lines that morph to X */}
       <button
-        className="mobile-burger"
-        aria-label={isOpen ? "Close navigation" : "Open navigation"}
+        className={`mnav-burger${isOpen ? " is-open" : ""}`}
+        aria-label={isOpen ? "Close menu" : "Open menu"}
         aria-expanded={isOpen}
         onClick={() => setIsOpen(o => !o)}
       >
-        <span className="mobile-burger-line" />
-        <span className="mobile-burger-line" />
-        <span className="mobile-burger-line" />
+        <span className="mnav-icon" aria-hidden="true">
+          <span className="mnav-line mnav-line-1" />
+          <span className="mnav-line mnav-line-2" />
+          <span className="mnav-line mnav-line-3" />
+        </span>
       </button>
 
-      {/* Overlay */}
-      <nav
-        className={`mobile-nav-overlay${isOpen ? " mobile-nav-open" : ""}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Site navigation"
-      >
-        <div className="mobile-nav-links">
-          {links.map(({ label, href }, i) => (
-            <a
-              key={href}
-              href={href}
-              className="mobile-nav-link"
-              style={{ transitionDelay: isOpen ? `${40 + i * 45}ms` : "0ms" }}
+      {/* ── Full-screen overlay via portal */}
+      {mounted && createPortal(
+        <div
+          className={`mnav-overlay${isOpen ? " mnav-open" : ""}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site navigation"
+          aria-hidden={!isOpen}
+        >
+          {/* Pushes content below the nav bar */}
+          <div className="mnav-spacer" />
+
+          {/* Nav links — vertically centered */}
+          <div className="mnav-body">
+            <nav className="mnav-links">
+              {links.map(({ label, href }, i) => (
+                <a
+                  key={href}
+                  href={href}
+                  className="mnav-link"
+                  style={{ transitionDelay: isOpen ? `${50 + i * 55}ms` : "0ms" }}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
+          </div>
+
+          {/* Divider + App Store CTA */}
+          <div className="mnav-footer">
+            <div
+              className="mnav-divider"
+              style={{ transitionDelay: isOpen ? `${50 + links.length * 55}ms` : "0ms" }}
+            />
+            <button
+              className="mnav-cta"
+              style={{ transitionDelay: isOpen ? `${50 + links.length * 55 + 40}ms` : "0ms" }}
               onClick={() => setIsOpen(false)}
             >
-              {label}
-            </a>
-          ))}
-        </div>
-        <button
-          className="mobile-nav-cta"
-          style={{ transitionDelay: isOpen ? `${40 + links.length * 45 + 30}ms` : "0ms" }}
-          onClick={() => setIsOpen(false)}
-        >
-          <span style={{ fontSize: 15, fontWeight: 600, color: "white", lineHeight: "20px" }}>
-            Download on the App Store
-          </span>
-        </button>
-      </nav>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+                <path d="M15.5 10.5c0-2.5 2-3.5 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.6.9s-1.9-.8-3.1-.8c-1.6 0-3 .9-3.9 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.4 1.2 0 1.6-.7 3-.7s1.9.7 3.1.7c1.3 0 2-1.2 2.8-2.3.9-1.3 1.3-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.7zM13 4.5c.7-.8 1.1-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.1 1.9-1 3 1.1.1 2.2-.5 2.9-1.4z"/>
+              </svg>
+              <span style={{ fontSize: 15, fontWeight: 600, color: "white", lineHeight: "20px" }}>
+                Download on App Store
+              </span>
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }
@@ -446,6 +535,7 @@ function Nav() {
         @media (max-width: 767px) {
           .nav-links-container { display: none !important; }
           .nav-header { padding: 0 20px !important; }
+          .nav-logo-btn { width: auto !important; }
         }
 
         /* Reserve bold width so layout never shifts on weight change */
@@ -494,31 +584,31 @@ function Nav() {
         data-node-id="7300:48867"
         className="nav-header"
         style={{
-          position: "sticky",
+          position: "fixed",
           top: 0,
-          zIndex: 50,
-          height: 48,
+          left: 0,
+          right: 0,
+          zIndex: 9999,
           width: "100%",
+          height: "calc(48px + env(safe-area-inset-top, 0px))",
+          paddingTop: "env(safe-area-inset-top, 0px)",
+          boxSizing: "border-box",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 max(24px, calc((100% - 1200px) / 2))",
-          backgroundColor: scrolled ? "rgba(255, 255, 255, 0.75)" : "#ffffff",
-          backgroundImage: "none",
-          backdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(0, 0, 0, 0.08)" : "1px solid #E9EAEF",
-          boxShadow: scrolled
-            ? "0 0.5px 0 rgba(255,255,255,0.9) inset, 0 1px 12px rgba(0,0,0,0.06)"
-            : "none",
-          transition: "background 350ms ease, backdrop-filter 350ms ease, border-color 350ms ease, box-shadow 350ms ease",
-          boxSizing: "border-box",
+          padding: "0 max(16px, calc((100% - 1200px) / 2))",
+          backgroundColor: scrolled ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.8)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          borderBottom: scrolled ? "1px solid #E9EAEF" : "1px solid rgba(233,234,239,0.6)",
+          boxShadow: scrolled ? "0px 1px 12px rgba(0,0,0,0.06)" : "none",
         }}
       >
         {/* Left — Logo + wordmark */}
         <button
           onClick={() => window.location.reload()}
           aria-label="Reload page"
+          className="nav-logo-btn"
           style={{ display: "flex", gap: 8, alignItems: "center", width: 349, flexShrink: 0, background: "none", border: "none", padding: 0, cursor: "pointer" }}
         >
           <img
@@ -758,20 +848,27 @@ function FigmaHeroSection() {
           }
 
           /* ── Hero Responsive ── */
+          @media (max-width: 1023px) {
+            .hero-badge { display: none !important; }
+          }
           @media (max-width: 1100px) {
-            .hero-card, .hero-badge { display: none !important; }
-            /* When cards hidden — center just the 364px phone */
-            .hero-phone-row {
-              left: calc(50vw - 182px) !important;
-              width: 364px !important;
-            }
+            .hero-card { display: none !important; }
+            .hero-phone-row { left: calc(50vw - 182px) !important; width: 364px !important; }
             .hero-content-container {
               width: 100% !important;
               height: auto !important;
-              min-height: 540px !important;
+              min-height: 350px !important;
               display: flex !important;
               align-items: center !important;
               justify-content: center !important;
+            }
+            /* Tablet phone: scale to ~300px (300/364 = 0.824) */
+            .hero-phone-mockup {
+              transform: scale(0.824) !important;
+              transform-origin: top center !important;
+            }
+            .airlines-strip-wrapper {
+              padding-top: 0 !important;
             }
           }
           @media (max-width: 767px) {
@@ -779,6 +876,11 @@ function FigmaHeroSection() {
             .hero-sky-section {
               height: 100svh !important;
               min-height: 620px !important;
+            }
+            /* Push content down from header */
+            .hero-sky-content {
+              padding-top: 80px !important;
+              padding-bottom: 420px !important;
             }
             /* Title */
             .hero-title span { font-size: 36px !important; line-height: 1.12 !important; letter-spacing: -0.72px !important; }
@@ -789,12 +891,15 @@ function FigmaHeroSection() {
               max-width: 300px !important;
               margin: 0 auto !important;
             }
-            /* Buttons: full width, stacked */
+            /* Buttons: stacked, max-width constrained */
             .hero-buttons-row {
               flex-direction: column !important;
               width: 100% !important;
+              max-width: 360px !important;
               padding: 0 20px !important;
               box-sizing: border-box !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
             }
             .hero-buttons-row > * { width: 100% !important; justify-content: center !important; }
             /* Phone: in-flow, centered */
@@ -809,15 +914,30 @@ function FigmaHeroSection() {
             }
             /* Airlines text wraps */
             .hero-airlines-text { white-space: normal !important; padding: 0 24px !important; }
+            /* Mobile phone: scale to ~280px (280/364 = 0.769) */
+            .hero-phone-mockup {
+              transform: scale(0.769) !important;
+              transform-origin: top center !important;
+            }
+            /* Airlines strip — push down to clear scaled phone
+               Phone visual bottom = -346 + 764*0.769 ≈ 242px, add gap */
+            .airlines-strip-wrapper {
+              padding-top: 210px !important;
+            }
           }
           @media (max-width: 390px) {
             .hero-title span { font-size: 32px !important; letter-spacing: -0.5px !important; }
+          }
+          /* Mobile-only clouds — hidden on desktop */
+          .mobile-cloud { display: none; }
+          @media (max-width: 767px) {
+            .mobile-cloud { display: block; }
           }
         `}</style>
         {/* CLOUDS — all left-0, horizontal position set via negative animation-delay */}
 
         {/* ── Upper sky: distant, faded, slow — z-10 so they fly over the text layer ── */}
-        <div className="absolute z-[10] left-0 top-[-50px] w-[280px] h-[140px] opacity-[0.13] pointer-events-none" style={{ animation: "cloudFlight 250s linear -28s infinite", willChange: "translate" }}>
+        <div className="absolute z-[10] left-0 top-[-50px] w-[280px] h-[140px] opacity-[0.13] pointer-events-none" style={{ animation: "cloudFlight 250s linear -90s infinite", willChange: "translate" }}>
           <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
         </div>
         <div className="absolute z-[10] left-0 top-[20px] w-[340px] h-[150px] opacity-[0.15] pointer-events-none" style={{ animation: "cloudFlight 270s linear -145s infinite", willChange: "translate" }}>
@@ -831,7 +951,7 @@ function FigmaHeroSection() {
         </div>
 
         {/* ── Mid sky: medium depth, medium speed ── */}
-        <div className="absolute left-0 top-[180px] w-[393px] h-[252px] rotate-[173.23deg] opacity-[0.30] pointer-events-none" style={{ animation: "cloudFlight 185s linear -14s infinite", willChange: "translate" }}>
+        <div className="absolute left-0 top-[180px] w-[393px] h-[252px] rotate-[173.23deg] opacity-[0.30] pointer-events-none" style={{ animation: "cloudFlight 185s linear -60s infinite", willChange: "translate" }}>
           <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
         </div>
         <div className="absolute left-0 top-[250px] w-[387px] h-[310px] opacity-[0.36] pointer-events-none" style={{ animation: "cloudFlight 175s linear -88s infinite", willChange: "translate" }}>
@@ -842,10 +962,10 @@ function FigmaHeroSection() {
         </div>
 
         {/* ── Lower sky: foreground, denser, faster ── */}
-        <div className="absolute left-0 top-[450px] w-[445px] h-[224px] opacity-[0.50] pointer-events-none" style={{ animation: "cloudFlight 120s linear -5s infinite", willChange: "translate" }}>
+        <div className="absolute left-0 top-[450px] w-[445px] h-[224px] opacity-[0.50] pointer-events-none" style={{ animation: "cloudFlight 120s linear -35s infinite", willChange: "translate" }}>
           <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
         </div>
-        <div className="absolute left-0 top-[490px] w-[257px] h-[183px] opacity-[0.22] pointer-events-none" style={{ animation: "cloudFlight 125s linear -31s infinite", willChange: "translate" }}>
+        <div className="absolute left-0 top-[490px] w-[257px] h-[183px] opacity-[0.22] pointer-events-none" style={{ animation: "cloudFlight 125s linear -50s infinite", willChange: "translate" }}>
           <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
         </div>
         <div className="absolute left-0 top-[520px] w-[478px] h-[433px] rotate-[-173.07deg] opacity-[0.38] pointer-events-none" style={{ animation: "cloudFlight 135s linear -55s infinite", willChange: "translate" }}>
@@ -861,6 +981,20 @@ function FigmaHeroSection() {
           <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
         </div>
 
+
+        {/* ── Mobile-only clouds — pre-positioned in viewport at load ── */}
+        {/* top-[80px]: target x≈100px → delay=(1700-100)*160/2600≈98s */}
+        <div className="mobile-cloud absolute left-0 top-[80px] w-[300px] h-[150px] opacity-[0.20] pointer-events-none" style={{ animation: "cloudFlight 160s linear -99s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud4} />
+        </div>
+        {/* top-[280px]: target x≈180px → delay=(1700-180)*130/2600≈76s */}
+        <div className="mobile-cloud absolute left-0 top-[280px] w-[340px] h-[190px] opacity-[0.32] pointer-events-none" style={{ animation: "cloudFlight 130s linear -76s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud2} />
+        </div>
+        {/* top-[480px]: target x≈120px → delay=(1700-120)*100/2600≈61s */}
+        <div className="mobile-cloud absolute left-0 top-[480px] w-[280px] h-[140px] opacity-[0.45] pointer-events-none" style={{ animation: "cloudFlight 100s linear -61s infinite", willChange: "translate" }}>
+          <img alt="" className="block max-w-none w-full h-full" src={imgCloud1} />
+        </div>
 
         {/* Sky-to-white fade — eliminates sharp horizon where sky meets page background */}
         <div
@@ -908,83 +1042,94 @@ function FigmaHeroSection() {
 
       {/* MAIN CONTAINER — proportional: phone starts at 54.4% of sky height (matches Figma ratio 384/706) */}
       <div className="hero-main-container relative w-full z-[10]" style={{ marginTop: 'calc(322px - 45.6vh)' }} data-name="Main container">
+        {/* Badge pills — absolutely positioned inside content container */}
         <div className="max-w-[1200px] mx-auto px-5">
         <div className="hero-content-container relative w-[1046px] h-[434px] mx-auto" data-name="Content container" data-node-id="7300:48532">
           {/* Connection awareness pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[720px] top-[176px]" data-node-id="7300:48537">
-            <div ref={lineConnRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
-              <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
+          <div className="hero-badge absolute flex gap-[14px] items-center left-[725px] top-[176px]" data-node-id="7300:48537">
+            <div ref={lineConnRef} className="h-0 relative shrink-0 w-[74px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+              <div className="absolute inset-[-1px_0_0_0]">
+                <img alt="" className="block max-w-none size-full" src={imgLine207} />
+              </div>
             </div>
-            <div ref={pillConnRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Connection awareness" data-node-id="7300:48539" style={{ opacity: 0 }}>
+            <div ref={pillConnRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[239px]" data-name="Connection awareness" data-node-id="7300:48539" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
               </div>
-              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Connection awareness</span>
+              <span className="font-medium text-[15px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Connection awareness</span>
             </div>
           </div>
           {/* Gate & terminal changes pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[27px] top-[176px]" data-node-id="7300:48542">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[-2px] top-[176px]" data-node-id="7300:48542">
             <div ref={pillGateRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
               </div>
-              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">{`Gate & terminal changes`}</span>
+              <span className="font-medium text-[15px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">{`Gate & terminal changes`}</span>
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineGateRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px -2px -2px 100%)' }}>
-                  <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
+                <div ref={lineGateRef} className="h-0 relative w-[80px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+                  <div className="absolute inset-[-1px_0_0_0]">
+                    <img alt="" className="block max-w-none size-full" src={imgLine210} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           {/* Aircraft insights pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[720px] top-[56px]" data-node-id="7300:48547">
-            <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
-              <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[725px] top-[56px]" data-node-id="7300:48547">
+            <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+              <div className="absolute inset-[-1px_0_0_0]">
+                <img alt="" className="block max-w-none size-full" src={imgLine208} />
+              </div>
             </div>
-            <div ref={pillAircraftRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Aircraft insights" data-node-id="7300:48549" style={{ opacity: 0 }}>
+            <div ref={pillAircraftRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[182px]" data-name="Aircraft insights" data-node-id="7300:48549" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse4} />
               </div>
-              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Aircraft insights</span>
+              <span className="font-medium text-[15px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Aircraft insights</span>
             </div>
           </div>
           {/* Real-time flight tracking pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[27px] top-[56px]" data-node-id="7300:48552">
-            <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Real-time flight tracking" data-node-id="7300:48553" style={{ opacity: 0 }}>
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[41px] top-[56px]" data-node-id="7300:48552">
+            <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[248px]" data-name="Real-time flight tracking" data-node-id="7300:48553" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
               </div>
-              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Real-time flight tracking</span>
+              <span className="font-medium text-[15px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Real-time flight tracking</span>
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineRealRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px -2px -2px 100%)' }}>
-                  <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
+                <div ref={lineRealRef} className="h-0 relative w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+                  <div className="absolute inset-[-1px_0_0_0]">
+                    <img alt="" className="block max-w-none size-full" src={imgLine211} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           {/* Personal flight history pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[720px] top-[296px]" data-node-id="7300:48557">
-            <div ref={lineHistRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
-              <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[725px] top-[296px]" data-node-id="7300:48557">
+            <div ref={lineHistRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+              <div className="absolute inset-[-1px_0_0_0]">
+                <img alt="" className="block max-w-none size-full" src={imgLine208} />
+              </div>
             </div>
-            <div ref={pillHistRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Personal flight history" data-node-id="7300:48559" style={{ opacity: 0 }}>
+            <div ref={pillHistRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[230px]" data-name="Personal flight history" data-node-id="7300:48559" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse5} />
               </div>
-              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Personal flight history</span>
+              <span className="font-medium text-[15px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Personal flight history</span>
             </div>
           </div>
           {/* Delay predictions pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[27px] top-[296px]" data-node-id="7300:48562">
-            <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Delay predictions" data-node-id="7300:48563" style={{ opacity: 0 }}>
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[97px] top-[296px]" data-node-id="7300:48562">
+            <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-fit" data-name="Delay predictions" data-node-id="7300:48562" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
               </div>
-              <span className="font-medium text-[17px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Delay predictions</span>
+              <span className="font-medium text-[15px] text-[#1c1917] text-center whitespace-nowrap leading-[1.4]">Delay predictions</span>
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
@@ -994,11 +1139,10 @@ function FigmaHeroSection() {
               </div>
             </div>
           </div>
-
         </div>
         </div>
         {/* ── Figma node 7379:46095: flex row [left card | phone | right card] ── */}
-        {/* Direct child of hero-main-container (relative w-full, x=0) — 50vw centers correctly */}
+        {/* Direct child of hero-main-container (relative w-full) — 50vw centers correctly */}
         <div
           className="hero-phone-row absolute flex gap-[34px] items-start top-[-346px] w-[1016px] pointer-events-none"
           style={{
@@ -1012,7 +1156,7 @@ function FigmaHeroSection() {
             willChange: 'transform, opacity',
           }}
         >
-          {/* Left card — Connection card (Paris to Bangkok) */}
+          {/* Left float card */}
           <div className="hero-card flex flex-col items-start pt-[120px] relative self-stretch shrink-0 w-[291px]">
             <div className="flex items-center justify-center relative shrink-0 w-full">
               <div className="flex-none" style={{
@@ -1026,25 +1170,22 @@ function FigmaHeroSection() {
             </div>
           </div>
 
-          {/* Phone — Figma node 7379:46770 */}
-          <div className="h-[764px] overflow-clip relative shrink-0 w-[364px]" data-name="iphone 18" data-node-id="7379:46770">
+          {/* Phone mockup */}
+          <div className="hero-phone-mockup h-[764px] overflow-clip relative shrink-0 w-[364px]" data-name="iphone 18" data-node-id="7379:46770">
             <div className="absolute h-[747px] left-[12px] top-[10px] w-[340px]" data-node-id="7379:46771">
               <div className="absolute h-[755px] left-[0.36px] top-[-4px] w-[341px]" data-name="image 44" data-node-id="7379:46772">
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgPhoneApp} />
               </div>
-              {/* In Air text — Figma node 7300:40934 */}
               <div className="absolute left-0 right-0 top-[140px] flex flex-col items-center gap-[3.5px] pointer-events-none">
                 <p className="text-[11.5px] font-medium text-white/70 text-center leading-[1.38]">Leg 1 of 2</p>
                 <p className="text-[24px] font-bold text-white text-center tracking-[-0.5px]" style={{ textShadow: '0px 3px 3px rgba(0,0,0,0.09)' }}>In Air</p>
               </div>
-              {/* Landing time — below progress bar */}
-              <div className="absolute left-0 right-0 top-[218px] flex flex-col items-center pointer-events-none">
+              <div className="absolute left-0 right-0 top-[226px] flex flex-col items-center pointer-events-none">
                 <div className="flex items-center justify-center gap-[3.5px]">
                   <p className="text-[13px] font-semibold text-white/70 leading-[1.4]">Landing in</p>
                   <p className="text-[13px] font-semibold text-white leading-[1.4]">6h 25m</p>
                 </div>
               </div>
-
               <div className="absolute h-[30.848px] left-[15.36px] top-[187px] w-[74.331px]" data-node-id="7379:46773">
                 <div className="absolute bg-[#97d0ef] h-[6px] left-0 rounded-[929.555px] top-[15px] w-[309px]" />
                 <div className="absolute bg-gradient-to-l from-white h-[6px] left-0 rounded-[929.555px] to-[rgba(255,255,255,0.04)] top-[15px] w-[65px]" style={{animation:'plane-progress 90s linear infinite'}} />
@@ -1069,7 +1210,7 @@ function FigmaHeroSection() {
             </div>
           </div>
 
-          {/* Right card — Journey card (San Francisco to Tokyo) */}
+          {/* Right float card */}
           <div className="hero-card flex flex-col items-start pt-[120px] relative self-stretch shrink-0 w-[292px]">
             <div className="flex items-center justify-center relative shrink-0 w-full">
               <div className="flex-none" style={{
@@ -1084,7 +1225,7 @@ function FigmaHeroSection() {
           </div>
         </div>
         {/* AIRLINES STRIP */}
-        <div className="w-full bg-[#f9f8f6] mt-[64px]">
+        <div className="airlines-strip-wrapper w-full bg-[#f9f8f6] mt-[64px]">
         <div className="flex flex-col gap-[40px] items-center overflow-hidden py-[40px]" data-name="airlines-strip" data-node-id="7300:48567">
           <p className="hero-airlines-text font-normal leading-[1.4] text-[18px] text-[#a8a29e] text-center tracking-[-0.18px] whitespace-nowrap" data-node-id="7300:48569">
             Tracks flights across 1200+ airlines and airports worldwide
@@ -1410,7 +1551,7 @@ function Intelligence() {
     .intelligence-section { padding-top: 72px !important; padding-bottom: 72px !important; }
     .intelligence-inner { padding: 0 20px !important; box-sizing: border-box !important; gap: 48px !important; }
     .intelligence-panels { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; }
-    .intel-panel { flex: none !important; min-width: unset !important; }
+    .intel-panel { flex: none !important; min-width: unset !important; width: 100% !important; max-width: 400px !important; margin-left: auto !important; margin-right: auto !important; }
     .intel-section-title { font-size: clamp(28px, 7vw, 36px) !important; letter-spacing: -0.6px !important; }
     .intel-section-sub { font-size: 15px !important; }
   }
@@ -1573,7 +1714,7 @@ function HowItWorks() {
         }
         @media (max-width: 1023px) {
           .hiw-content {
-            flex-direction: column-reverse;
+            flex-direction: column;
             width: 100%;
             gap: 48px;
           }
@@ -1922,7 +2063,7 @@ function MiddleSection() {
         }
         @media (max-width: 1023px) {
           .mid-content {
-            flex-direction: column;
+            flex-direction: column-reverse;
             width: 100%;
             gap: 48px;
           }
@@ -2218,7 +2359,7 @@ function LowerSection() {
         }
         @media (max-width: 1023px) {
           .low-content {
-            flex-direction: column-reverse;
+            flex-direction: column;
             width: 100%;
             gap: 48px;
           }
@@ -2495,7 +2636,7 @@ function BottomSection() {
         }
         @media (max-width: 1023px) {
           .bot-content {
-            flex-direction: column;
+            flex-direction: column-reverse;
             width: 100%;
             gap: 48px;
           }
@@ -2891,7 +3032,7 @@ function LiveActivities() {
           .la-container { gap: 40px !important; }
           .la-title { font-size: 32px !important; letter-spacing: -0.64px !important; }
           .la-desc { font-size: 15px !important; width: 100% !important; max-width: 100% !important; }
-          .la-cards-grid { grid-template-columns: 1fr; gap: 20px; }
+          .la-cards-grid { grid-template-columns: 1fr; gap: 20px; max-width: 370px !important; }
           /* Disable float animation on mobile — saves battery, avoids jitter */
           .la-card { animation: none !important; }
         }
@@ -2928,7 +3069,7 @@ function LiveActivities() {
                 <span style={{fontWeight: 400, fontStyle: 'italic', color: '#0ea5e9', letterSpacing: '-1.44px'}}>before</span>
                 <span style={{fontWeight: 700}}> they become yours.</span>
               </p>
-              <p className="la-desc" style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.4, width: '366px', maxWidth: '100%', textAlign: 'center', margin: 0}}>
+              <p className="la-desc" style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.4, width: '540px', maxWidth: '100%', textAlign: 'center', margin: 0}}>
                 Flight Passport reads every phase of your journey<br />and surfaces only what matters at that moment.
               </p>
             </div>
@@ -3079,6 +3220,10 @@ function Passport() {
         .passport-grid-row {
           display: flex;
           gap: 24px;
+          justify-content: center;
+        }
+        @media (max-width: 1439px) {
+          .passport-grid { padding: 0 40px; }
         }
         @media (max-width: 1023px) {
           .passport-grid { padding: 0 80px; }
@@ -3087,6 +3232,8 @@ function Passport() {
         .passport-stat-card {
           position: relative;
           overflow: hidden;
+          flex: 1 1 280px;
+          max-width: 350px;
         }
         /* Shimmer sweep — diagonal light beam that crosses each card */
         .passport-shimmer {
@@ -3126,10 +3273,11 @@ function Passport() {
           }
           .passport-title { font-size: 32px !important; width: 100% !important; max-width: 100% !important; }
           .passport-grid { padding: 40px 20px 64px !important; gap: 24px !important; width: 100% !important; }
-          .passport-grid-row { flex-direction: column !important; gap: 24px !important; }
+          .passport-grid-row { flex-direction: column !important; gap: 24px !important; align-items: center !important; }
           .passport-stat-card {
             flex: none !important;
             width: 100% !important;
+            max-width: 350px !important;
             height: auto !important;
             border: 1px solid rgba(255,255,255,0.6) !important;
           }
@@ -3536,6 +3684,9 @@ function FinalCTA() {
           gap: 16px;
           align-items: center;
         }
+        @media (min-width: 1024px) and (max-width: 1439px) {
+          .cta-section { padding: 80px 120px; }
+        }
         @media (max-width: 1023px) {
           .cta-section { padding: 80px 80px; }
         }
@@ -3781,6 +3932,7 @@ export default function Page() {
   return (
     <>
       <Nav />
+      <div style={{ height: "calc(48px + env(safe-area-inset-top, 0px))", flexShrink: 0 }} aria-hidden="true" />
       <main>
         <FigmaHeroSection />
         <Intelligence />

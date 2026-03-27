@@ -502,7 +502,7 @@ function Nav() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 120px",
+          padding: "0 max(24px, calc((100% - 1200px) / 2))",
           backgroundColor: scrolled ? "rgba(255, 255, 255, 0.75)" : "#ffffff",
           backgroundImage: "none",
           backdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
@@ -740,12 +740,8 @@ function FigmaHeroSection() {
             50%       { transform: translateY(-10px); }
           }
 @keyframes plane-progress {
-            0%   { transform: translateX(0px);    opacity: 1; }
-            75%  { transform: translateX(235px);  opacity: 1; }
-            83%  { transform: translateX(235px);  opacity: 0; }
-            84%  { transform: translateX(0px);    opacity: 0; }
-            93%  { transform: translateX(0px);    opacity: 1; }
-            100% { transform: translateX(0px);    opacity: 1; }
+            from { transform: translateX(0px); }
+            to   { transform: translateX(235px); }
           }
           @keyframes line-reveal {
             from { clip-path: inset(-2px 100% -2px -2px); }
@@ -3652,7 +3648,7 @@ function Footer() {
         .footer-root {
           background: linear-gradient(to bottom, #1c1917, #3f3731);
           width: 100%;
-          padding: 12px 120px 16px;
+          padding: 12px max(24px, calc((100% - 1200px) / 2)) 16px;
           box-sizing: border-box;
           display: flex;
           flex-direction: column;

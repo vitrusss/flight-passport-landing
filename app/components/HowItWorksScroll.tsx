@@ -173,63 +173,80 @@ export default function HowItWorksScroll() {
           letter-spacing: -0.025em;
           line-height: 1.1;
           color: #1c1917;
-          margin: 0 0 48px;
+          margin: 0 0 28px;
         }
 
         /* ── Vertical step list ──────────────────────────────────────── */
+        .hiw-list-wrap {
+          position: relative;
+        }
+        /* static connector line */
+        .hiw-list-wrap::before {
+          content: '';
+          position: absolute;
+          left: 10px;
+          top: 20px;
+          bottom: 20px;
+          width: 1.5px;
+          background: #e9eaec;
+          z-index: 0;
+        }
         .hiw-list {
           display: flex;
           flex-direction: column;
           list-style: none;
           margin: 0;
           padding: 0;
-          gap: 2px;
+          gap: 0;
+          position: relative;
         }
         .hiw-item {
           display: flex;
           align-items: flex-start;
-          gap: 16px;
-          padding: 10px 10px 10px 0;
+          gap: 14px;
+          padding: 7px 8px 7px 0;
           cursor: pointer;
           background: none;
           border: none;
           text-align: left;
           width: 100%;
-          border-radius: 12px;
+          border-radius: 10px;
           transition: background 180ms ease;
         }
         .hiw-item:hover {
-          background: rgba(28, 25, 23, 0.04);
+          background: rgba(28, 25, 23, 0.03);
         }
         .hiw-dot {
           flex-shrink: 0;
-          width: 32px;
-          height: 32px;
+          width: 22px;
+          height: 22px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 11px;
+          font-size: 9px;
           font-weight: 700;
           letter-spacing: 0.02em;
           background: white;
-          border: 2px solid #e5e7eb;
-          color: #c4c9d1;
+          border: 1.5px solid #dde0e5;
+          color: #bcc1ca;
           transition: background 300ms ease, border-color 300ms ease,
                       color 300ms ease, transform 300ms ease, box-shadow 300ms ease;
-          margin-top: 1px;
+          margin-top: 2px;
+          position: relative;
+          z-index: 1;
         }
         .hiw-item.completed .hiw-dot {
-          background: #10B981;
-          border-color: #10B981;
+          background: #d1d5db;
+          border-color: #d1d5db;
           color: white;
         }
         .hiw-item.active .hiw-dot {
           background: #1c1917;
           border-color: #1c1917;
           color: white;
-          transform: scale(1.1);
-          box-shadow: 0 0 0 5px rgba(28, 25, 23, 0.09);
+          transform: scale(1.18);
+          box-shadow: 0 0 0 4px rgba(28, 25, 23, 0.08);
         }
         .hiw-item:not(.active):not(.completed):hover .hiw-dot {
           border-color: #9ca3af;
@@ -237,13 +254,13 @@ export default function HowItWorksScroll() {
         .hiw-item-texts {
           display: flex;
           flex-direction: column;
-          padding-top: 5px;
+          padding-top: 2px;
         }
         .hiw-item-name {
           font-size: 15px;
           font-weight: 500;
           line-height: 1.3;
-          color: #c4c9d1;
+          color: #bcc1ca;
           transition: color 300ms ease, font-weight 200ms ease;
         }
         .hiw-item.active .hiw-item-name {
@@ -266,10 +283,10 @@ export default function HowItWorksScroll() {
         .hiw-item.active .hiw-item-desc {
           max-height: 100px;
           opacity: 1;
-          margin-top: 6px;
+          margin-top: 5px;
         }
         .hiw-item-desc-text {
-          font-size: 14px;
+          font-size: 13.5px;
           font-weight: 400;
           line-height: 1.65;
           color: #6B7280;
@@ -327,7 +344,7 @@ export default function HowItWorksScroll() {
         @media (min-width: 768px) and (max-width: 1023px) {
           .hiw-section { padding: 60px 40px; }
           .hiw-grid { gap: 48px; }
-          .hiw-h2 { font-size: 32px; margin-bottom: 36px; }
+          .hiw-h2 { font-size: 32px; margin-bottom: 20px; }
           .hiw-phone { height: min(460px, calc(100svh - 160px)); }
         }
 
@@ -436,36 +453,32 @@ export default function HowItWorksScroll() {
           <h2 className="hiw-h2">Four steps.<br />Zero confusion.</h2>
 
           {/* Desktop/tablet: vertical step list */}
-          <ul className="hiw-list" role="tablist" aria-label="Steps">
-            {STEPS.map((step, i) => {
-              const cls = i < active ? 'completed' : i === active ? 'active' : '';
-              return (
-                <li key={i} style={{ listStyle: 'none' }}>
-                  <button
-                    role="tab"
-                    aria-selected={i === active}
-                    aria-label={`Step ${step.num}: ${step.title}`}
-                    className={`hiw-item${cls ? ` ${cls}` : ''}`}
-                    onClick={() => { stopAuto(); goTo(i); }}
-                  >
-                    <span className="hiw-dot" aria-hidden="true">
-                      {i < active ? (
-                        <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
-                          <path d="M1 4.5L3.8 7.5L10 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      ) : step.num}
-                    </span>
-                    <span className="hiw-item-texts">
-                      <span className="hiw-item-name">{step.title}</span>
-                      <span className="hiw-item-desc" aria-hidden={i !== active}>
-                        <p className="hiw-item-desc-text">{step.desc}</p>
+          <div className="hiw-list-wrap">
+            <ul className="hiw-list" role="tablist" aria-label="Steps">
+              {STEPS.map((step, i) => {
+                const cls = i < active ? 'completed' : i === active ? 'active' : '';
+                return (
+                  <li key={i} style={{ listStyle: 'none' }}>
+                    <button
+                      role="tab"
+                      aria-selected={i === active}
+                      aria-label={`Step ${step.num}: ${step.title}`}
+                      className={`hiw-item${cls ? ` ${cls}` : ''}`}
+                      onClick={() => { stopAuto(); goTo(i); }}
+                    >
+                      <span className="hiw-dot" aria-hidden="true">{step.num}</span>
+                      <span className="hiw-item-texts">
+                        <span className="hiw-item-name">{step.title}</span>
+                        <span className="hiw-item-desc" aria-hidden={i !== active}>
+                          <p className="hiw-item-desc-text">{step.desc}</p>
+                        </span>
                       </span>
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
 
           {/* Mobile: dots + text + prev/next */}
           <div className="hiw-mobile-nav">

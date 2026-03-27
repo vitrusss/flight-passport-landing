@@ -2122,7 +2122,7 @@ function MiddleSection() {
                   margin: 0,
                 }}
               >
-                Review delay history, aircraft info, and turbulence before you reach the airport.
+                Review delay history, aircraft info,<br />and turbulence before you reach the airport.
               </p>
             </div>
           </div>

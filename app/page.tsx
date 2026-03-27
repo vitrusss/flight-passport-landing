@@ -2788,7 +2788,7 @@ function Footer() {
         {/* Row 1 — logo (absolute left) + centered nav links */}
         <div className="footer-links-row">
           <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="footer-logo-block">
-            <img src={imgFooterLogo} alt="Flight Passport" style={{ width: 32, height: 32, flexShrink: 0, display: "block" }} />
+            <img src={imgFooterLogo} alt="Flight Passport" style={{ width: 32, height: 32, flexShrink: 0, display: "block", borderRadius: 7, imageRendering: "-webkit-optimize-contrast" }} />
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
               <span style={{ fontSize: 15, fontWeight: 600, color: "white", whiteSpace: "nowrap", lineHeight: 1.4 }}>
                 FlightPassport

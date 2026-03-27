@@ -876,9 +876,74 @@ export default function HowItWorksScroll() {
         ))}
       </div>
 
-      {/* ── Mobile carousel — added in Task 4 ───────────────────────────── */}
+      {/* ── Mobile carousel (<768px) ────────────────────────────────────── */}
       {isMobile && (
-        <p style={{ padding: '40px', color: '#999', textAlign: 'center' }}>Mobile carousel — Task 4</p>
+        <div className="hiw-mobile">
+          {/* Tab dots */}
+          <div className="hiw-mobile-dots" role="tablist" aria-label="Steps">
+            {STEPS.map((_, i) => (
+              <button
+                key={i}
+                role="tab"
+                aria-selected={i === active}
+                aria-label={`Step ${i + 1}: ${STEPS[i].title}`}
+                className={`hiw-mobile-tab${i === active ? ' active' : ''}`}
+                onClick={() => goTo(i)}
+              />
+            ))}
+          </div>
+
+          {/* Phone with swipe detection */}
+          <div
+            className="hiw-mobile-phone-wrap"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            <div className="hiw-mobile-phone-frame">
+              <div className={`hiw-mobile-screen-wrap phase-${phase}`}>
+                <img
+                  src={STEPS[displayStep].image}
+                  alt={`Step ${displayStep + 1}: ${STEPS[displayStep].title}`}
+                  className="hiw-mobile-screen-img"
+                  draggable={false}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Step text */}
+          <div className={`hiw-mobile-content${phase === 'exiting' ? ' exiting' : phase === 'entering' ? ' entering' : ''}`}>
+            <p className="hiw-mobile-label">Step {STEPS[displayStep].num}</p>
+            <h3 className="hiw-mobile-title">{STEPS[displayStep].title}</h3>
+            <p className="hiw-mobile-desc">{STEPS[displayStep].desc}</p>
+          </div>
+
+          {/* Prev / Next buttons */}
+          <div className="hiw-mobile-nav">
+            <button
+              className="hiw-mobile-btn"
+              onClick={() => goTo(Math.max(0, active - 1))}
+              disabled={active === 0}
+              aria-label="Previous step"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Prev
+            </button>
+            <button
+              className="hiw-mobile-btn"
+              onClick={() => goTo(Math.min(STEPS.length - 1, active + 1))}
+              disabled={active === STEPS.length - 1}
+              aria-label="Next step"
+            >
+              Next
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
       )}
     </section>
   );

@@ -72,7 +72,7 @@ const imgPaths9 = "/Images/asset-ed458cbf-490b-474a-acfb-95bf5d6e3a4e.svg";
 const imgPaths10 = "/Images/asset-b6674836-1ac5-4c76-b33c-cb8de474dce8.svg";
 
 // ── Nav asset URLs (node 7300-48867) ──────────────────────────────────────────
-const imgNavLogo   = "/Images/asset-77e23190-18e8-44ee-a291-2afd60b71878.svg";
+const imgNavLogo   = "/Favicon.png";
 const imgNavFi     = "/Images/asset-ced73d69-cb1b-4ed2-a9ff-08b795fd1549.svg";
 const imgNavApple  = "/Images/asset-ae0b76f7-15b2-4a17-ad03-611555e2e9da.svg";
 

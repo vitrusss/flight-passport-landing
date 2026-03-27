@@ -148,12 +148,12 @@ export default function HowItWorksScroll() {
           background: linear-gradient(261.64deg, #e6e6e6 6.85%, #ffffff 83.93%);
         }
 
-        /* ── Inner — 1020px, 2 cols, 80px gap ─────────────────────── */
+        /* ── Inner — justify-content:center, exact Figma gap ─────── */
         .hiw-inner {
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 80px;
-          max-width: 1020px;
           width: 100%;
         }
 
@@ -254,26 +254,24 @@ export default function HowItWorksScroll() {
           to   { width: 100%; }
         }
 
-        /* ── Phone column ───────────────────────────────────────────── */
+        /* ── Phone column — fixed width, no flex growth ────────────── */
         .hiw-phone-col {
-          flex: 1;
-          display: flex;
-          justify-content: center;
-          align-items: center;
+          flex-shrink: 0;
           touch-action: pan-y;
         }
 
-        /* white card — Figma: bg-white, rounded-[48px], shadow */
+        /* white card — Figma: bg-white, rounded-[48px], shadow
+           NO overflow:hidden — it clips the chrome SVG corners.
+           Chrome SVG outer radius at 238px ≈ 36px, card matches. */
         .hiw-card {
           position: relative;
           width: ${CARD_W}px;
           height: ${CARD_H}px;
           background: #ffffff;
-          border-radius: 48px;
+          border-radius: 36px;
           box-shadow:
             0px 4px 12px 0px rgba(0, 0, 0, 0.05),
             32px 32px 64px 0px rgba(23, 29, 46, 0.12);
-          overflow: hidden;
           transition: opacity 240ms ease, transform 240ms ease;
         }
         .hiw-card.fading {

@@ -874,7 +874,7 @@ function FigmaHeroSection() {
             <div className="flex flex-col gap-[16px] items-center">
               {/* Title + subtitle */}
               <div className="flex flex-col gap-[16px] items-center relative" data-name="Description Container" data-node-id="7300:48515">
-                <div className="hero-description-bg absolute left-[23px] size-[625px] top-[-67px]">
+                <div className="hero-description-bg absolute left-1/2 -translate-x-1/2 size-[625px] top-[-142px]">
                   <div className="absolute inset-[-22.4%]">
                     <img alt="" className="block max-w-none size-full" src={imgEllipse1889} />
                   </div>
@@ -1442,7 +1442,7 @@ function Intelligence() {
           <p style={{fontFamily: 'Inter', fontWeight: 700, fontSize: '12px', color: '#a8a29e', letterSpacing: '0.48px', textTransform: 'uppercase', lineHeight: 1, width: '100%', textAlign: 'center'}}>Before you book</p>
           <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%'}}>
             <p style={{fontFamily: 'Inter', fontWeight: 600, fontSize: '24px', color: '#1c1917', letterSpacing: '-0.24px', lineHeight: 1.2, width: '267px', textAlign: 'center'}}>Explore before booking</p>
-            <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', color: '#78716c', lineHeight: '24px', width: '308px', textAlign: 'center'}}>Delay history, reliability scores, aircraft details, and turbulence forecasts before you choose a flight.</p>
+            <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: '#78716c', lineHeight: '24px', width: '308px', textAlign: 'center'}}>Delay history, reliability scores, aircraft details, and turbulence forecasts before you choose a flight.</p>
           </div>
         </div>
       </div>
@@ -1460,7 +1460,7 @@ function Intelligence() {
           </p>
           <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%'}}>
             <p style={{fontFamily: 'Inter', fontWeight: 600, fontSize: '24px', color: '#1c1917', letterSpacing: '-0.24px', lineHeight: 1.2, width: '273px', textAlign: 'center'}}>Track every leg live</p>
-            <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', color: '#78716c', lineHeight: '24px', textAlign: 'center'}}>Boarding alerts, gate changes, connection timing, and live progress — across multi-leg journeys.</p>
+            <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: '#78716c', lineHeight: '24px', textAlign: 'center'}}>Boarding alerts, gate changes, connection timing, and live progress — across multi-leg journeys.</p>
           </div>
         </div>
       </div>
@@ -1476,7 +1476,7 @@ function Intelligence() {
           <p style={{fontFamily: 'Inter', fontWeight: 700, fontSize: '12px', color: '#a8a29e', letterSpacing: '0.48px', textTransform: 'uppercase', lineHeight: 1, width: '100%', textAlign: 'center'}}>After you land</p>
           <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%'}}>
             <p style={{fontFamily: 'Inter', fontWeight: 600, fontSize: '24px', color: '#1c1917', letterSpacing: '-0.24px', lineHeight: 1.2, width: '244px', textAlign: 'center'}}>Build your passport</p>
-            <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', color: '#78716c', lineHeight: '24px', width: '286px', textAlign: 'center'}}>Every completed journey is recorded automatically — countries, airlines, distance, aircraft types.</p>
+            <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: '#78716c', lineHeight: '24px', width: '286px', textAlign: 'center'}}>Every completed journey is recorded automatically — countries, airlines, distance, aircraft types.</p>
           </div>
         </div>
       </div>
@@ -1672,7 +1672,7 @@ function HowItWorks() {
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
                   fontWeight: 400,
-                  fontSize: 16,
+                  fontSize: 17,
                   color: "#6c6760",
                   lineHeight: "24px",
                   textAlign: "center",
@@ -2114,7 +2114,7 @@ function MiddleSection() {
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
                   fontWeight: 400,
-                  fontSize: 16,
+                  fontSize: 17,
                   color: "#6c6760",
                   lineHeight: "24px",
                   textAlign: "center",
@@ -2297,7 +2297,7 @@ function LowerSection() {
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
                   fontWeight: 400,
-                  fontSize: 16,
+                  fontSize: 17,
                   color: "#6c6760",
                   lineHeight: "24px",
                   textAlign: "center",
@@ -2669,7 +2669,7 @@ function BottomSection() {
                 style={{
                   fontFamily: "var(--font-inter), sans-serif",
                   fontWeight: 400,
-                  fontSize: 16,
+                  fontSize: 17,
                   color: "#6c6760",
                   lineHeight: "24px",
                   textAlign: "center",
@@ -3033,7 +3033,7 @@ function PassportStatCard({ stat, delay }: { stat: typeof PASSPORT_STATS[0]; del
       <p className="passport-stat-number" style={{fontFamily: 'Inter', fontWeight: 700, fontSize: '48px', color: 'white', letterSpacing: '-0.96px', lineHeight: 1.1, textAlign: 'center', width: '100%', margin: 0}}>
         {count}{stat.suffix}
       </p>
-      <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', color: 'rgba(255,255,255,0.72)', lineHeight: '24px', textAlign: 'center', width: '100%', margin: 0}}>
+      <p style={{fontFamily: 'Inter', fontWeight: 400, fontSize: '17px', color: 'rgba(255,255,255,0.72)', lineHeight: '24px', textAlign: 'center', width: '100%', margin: 0}}>
         {stat.label}
       </p>
       {/* Shimmer sweep — staggered per card via animationDelay */}

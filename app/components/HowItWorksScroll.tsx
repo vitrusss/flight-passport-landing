@@ -37,7 +37,7 @@ const STEPS: Step[] = [
     num: '04',
     title: 'Your flight passport',
     desc: 'A complete record of every flight — searchable, shareable, always in your pocket.',
-    image: '/Images/asset-7ca5fa0f-d9dc-4e3e-a4b3-4a7dc5a9f6e1.png',
+    image: '/Images/asset-60c1185f-d58c-4975-aa4f-d446835553c6.png', // TODO: replace with actual step 4 screenshot
   },
 ];
 
@@ -303,21 +303,11 @@ export default function HowItWorksScroll() {
           position: relative;
         }
         .hiw-phone-frame {
+          /* Chrome SVG is 364×756.789px; scale to 280px wide */
           width: 280px;
+          height: 582px; /* 756.789 × (280/364) */
           position: relative;
-          border-radius: 36px;
-          overflow: hidden;
           box-shadow: 0 32px 80px rgba(0, 0, 0, 0.18), 0 8px 24px rgba(0, 0, 0, 0.12);
-          background: #000;
-        }
-        .hiw-phone-frame::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          border-radius: 36px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          pointer-events: none;
-          z-index: 2;
         }
         /* ambient glow behind phone */
         .hiw-phone-glow {
@@ -330,17 +320,31 @@ export default function HowItWorksScroll() {
           transition: opacity 600ms ease;
         }
 
-        /* ── Screen image wrapper (handles transition animations) ────── */
+        /* ── Screen image (positioned inside chrome safe area) ──────── */
+        /* Hero screen area: left:12 top:10 w:340 h:747 in 364-wide chrome */
+        /* Scaled to 280px: ×0.7692 */
         .hiw-screen-wrap {
-          width: 100%;
-          aspect-ratio: 390 / 844;
-          position: relative;
+          position: absolute;
+          left: 9px;
+          top: 8px;
+          width: 261px;
+          height: 575px;
           overflow: hidden;
         }
         .hiw-screen-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          display: block;
+        }
+        /* Chrome SVG overlay — draws the phone bezel on top of screen */
+        .hiw-chrome-overlay {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 1;
           display: block;
         }
 
@@ -567,6 +571,13 @@ export default function HowItWorksScroll() {
           }
           .hiw-phone-frame {
             width: 220px;
+            height: 457px; /* 756.789 × (220/364) */
+          }
+          .hiw-screen-wrap {
+            left: 7px;
+            top: 6px;
+            width: 205px;
+            height: 451px;
           }
           .hiw-text-col {
             align-items: center;
@@ -637,15 +648,18 @@ export default function HowItWorksScroll() {
             touch-action: pan-y;
           }
           .hiw-mobile-phone-frame {
+            /* Chrome scaled to 200px wide: 200/364 = 0.5495 */
             width: 200px;
-            border-radius: 28px;
-            overflow: hidden;
+            height: 416px; /* 756.789 × 0.5495 */
+            position: relative;
             box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
-            background: #000;
           }
           .hiw-mobile-screen-wrap {
-            width: 100%;
-            aspect-ratio: 390 / 844;
+            position: absolute;
+            left: 7px;
+            top: 5px;
+            width: 187px;
+            height: 411px;
             overflow: hidden;
           }
           /* Mobile screen — reuse desktop phase classes */
@@ -802,6 +816,13 @@ export default function HowItWorksScroll() {
                       draggable={false}
                     />
                   </div>
+                  <img
+                    src="/Images/hero-phone-chrome.svg"
+                    alt=""
+                    className="hiw-chrome-overlay"
+                    aria-hidden="true"
+                    draggable={false}
+                  />
                 </div>
               </div>
 
@@ -908,6 +929,13 @@ export default function HowItWorksScroll() {
                   draggable={false}
                 />
               </div>
+              <img
+                src="/Images/hero-phone-chrome.svg"
+                alt=""
+                className="hiw-chrome-overlay"
+                aria-hidden="true"
+                draggable={false}
+              />
             </div>
           </div>
 

@@ -2693,7 +2693,7 @@ function FinalCTA() {
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 // ── Footer asset URLs (node 7300-49765) ──────────────────────────────────────
-const imgFooterLogo    = "/Images/asset-3446d39b-7772-4f4f-8ec6-c08df549325c.svg";
+const imgFooterLogo    = "/Favicon.png";
 const imgFiFooter      = "/Images/asset-63c22fa0-1773-4419-952c-5ed5bb51d114.svg";
 
 const FOOTER_LINKS = [

@@ -911,7 +911,7 @@ function FigmaHeroSection() {
         <div className="max-w-[1200px] mx-auto px-5">
         <div className="hero-content-container relative w-[1046px] h-[434px] mx-auto" data-name="Content container" data-node-id="7300:48532">
           {/* Connection awareness pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[710px] top-[176px]" data-node-id="7300:48537">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[720px] top-[176px]" data-node-id="7300:48537">
             <div ref={lineConnRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
             </div>
@@ -923,7 +923,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Gate & terminal changes pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[29px] top-[176px]" data-node-id="7300:48542">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[13px] top-[176px]" data-node-id="7300:48542">
             <div ref={pillGateRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
@@ -939,7 +939,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Aircraft insights pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[710px] top-[56px]" data-node-id="7300:48547">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[720px] top-[56px]" data-node-id="7300:48547">
             <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
             </div>
@@ -951,7 +951,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Real-time flight tracking pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[29px] top-[56px]" data-node-id="7300:48552">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[13px] top-[56px]" data-node-id="7300:48552">
             <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Real-time flight tracking" data-node-id="7300:48553" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
@@ -967,7 +967,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Personal flight history pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[710px] top-[296px]" data-node-id="7300:48557">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[720px] top-[296px]" data-node-id="7300:48557">
             <div ref={lineHistRef} className="h-0 relative shrink-0 w-[52px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
               <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
             </div>
@@ -979,7 +979,7 @@ function FigmaHeroSection() {
             </div>
           </div>
           {/* Delay predictions pill */}
-          <div className="hero-badge absolute flex gap-[8px] items-center left-[29px] top-[296px]" data-node-id="7300:48562">
+          <div className="hero-badge absolute flex gap-[8px] items-center left-[13px] top-[296px]" data-node-id="7300:48562">
             <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Delay predictions" data-node-id="7300:48563" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
@@ -1676,7 +1676,7 @@ function HowItWorks() {
                   color: "#6c6760",
                   lineHeight: "24px",
                   textAlign: "center",
-                  width: 323,
+                  width: 370,
                   margin: 0,
                 }}
               >

@@ -3,14 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 type Phase = 'idle' | 'out' | 'in';
 
-interface Step {
-  num: string;
-  title: string;
-  desc: string;
-  image: string;
-}
-
-const STEPS: Step[] = [
+const STEPS = [
   {
     num: '01',
     title: 'Add your flight',
@@ -37,40 +30,27 @@ const STEPS: Step[] = [
   },
 ];
 
-const AUTO_MS = 4000;
+const AUTO_MS = 4500;
 
-// Chrome SVG is 364 × 756.789 px
-// Scale factors: desktop 280/364, tablet 240/364, mobile 200/364
-const CHROME_W = 364;
-const CHROME_H = 756.789;
-const SCREEN_L = 12;   // screen area left in native chrome coords
-const SCREEN_T = 10;   // screen area top
-const SCREEN_W = 340;  // screen area width
-const SCREEN_H = 747;  // screen area height
-
-function phoneMetrics(displayW: number) {
-  const s = displayW / CHROME_W;
-  return {
-    frameH: Math.round(CHROME_H * s),
-    screenL: Math.round(SCREEN_L * s),
-    screenT: Math.round(SCREEN_T * s),
-    screenW: Math.round(SCREEN_W * s),
-    screenH: Math.round(SCREEN_H * s),
-  };
-}
+// Chrome SVG native size: 364 × 756.789 px
+// Screen area (percentage of frame):
+const SCR_L = `${(12 / 364 * 100).toFixed(3)}%`;
+const SCR_T = `${(10 / 756.789 * 100).toFixed(3)}%`;
+const SCR_W = `${(340 / 364 * 100).toFixed(3)}%`;
+const SCR_H = `${(747 / 756.789 * 100).toFixed(3)}%`;
 
 export default function HowItWorksScroll() {
-  const [active, setActive] = useState(0);
+  const [active, setActive]   = useState(0);
   const [display, setDisplay] = useState(0);
-  const [phase, setPhase] = useState<Phase>('idle');
+  const [phase, setPhase]     = useState<Phase>('idle');
 
-  const sectionRef = useRef<HTMLElement>(null);
-  const activeRef = useRef(0);
-  const phaseRef = useRef<Phase>('idle');
-  const inViewRef = useRef(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const transRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const touchStartX = useRef(0);
+  const sectionRef   = useRef<HTMLElement>(null);
+  const activeRef    = useRef(0);
+  const phaseRef     = useRef<Phase>('idle');
+  const inViewRef    = useRef(false);
+  const timerRef     = useRef<ReturnType<typeof setInterval> | null>(null);
+  const transRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touchStartX  = useRef(0);
 
   const goTo = useCallback((next: number) => {
     if (phaseRef.current !== 'idle') return;
@@ -89,8 +69,8 @@ export default function HowItWorksScroll() {
       transRef.current = setTimeout(() => {
         phaseRef.current = 'idle';
         setPhase('idle');
-      }, 300);
-    }, 250);
+      }, 350);
+    }, 200);
   }, []);
 
   const stopAuto = useCallback(() => {
@@ -112,17 +92,19 @@ export default function HowItWorksScroll() {
   const onTouchEnd = useCallback((e: React.TouchEvent) => {
     const delta = touchStartX.current - e.changedTouches[0].clientX;
     if (Math.abs(delta) > 50) {
-      if (delta > 0) goTo(Math.min(STEPS.length - 1, activeRef.current + 1));
-      else           goTo(Math.max(0, activeRef.current - 1));
+      stopAuto();
+      goTo(delta > 0
+        ? Math.min(STEPS.length - 1, activeRef.current + 1)
+        : Math.max(0, activeRef.current - 1));
     }
-  }, [goTo]);
+  }, [goTo, stopAuto]);
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(Math.min(STEPS.length - 1, activeRef.current + 1));
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(Math.max(0, activeRef.current - 1));
-    if (e.key === 'Home') goTo(0);
-    if (e.key === 'End')  goTo(STEPS.length - 1);
-  }, [goTo]);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); stopAuto(); goTo(Math.min(STEPS.length - 1, activeRef.current + 1)); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); stopAuto(); goTo(Math.max(0, activeRef.current - 1)); }
+    if (e.key === 'Home') { e.preventDefault(); stopAuto(); goTo(0); }
+    if (e.key === 'End')  { e.preventDefault(); stopAuto(); goTo(STEPS.length - 1); }
+  }, [goTo, stopAuto]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -131,7 +113,7 @@ export default function HowItWorksScroll() {
         if (entry.isIntersecting) startAuto();
         else stopAuto();
       },
-      { threshold: 0.25 }
+      { threshold: 0.2 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => {
@@ -140,11 +122,6 @@ export default function HowItWorksScroll() {
       if (transRef.current) clearTimeout(transRef.current);
     };
   }, [startAuto, stopAuto]);
-
-  const fillPct = (active / (STEPS.length - 1)) * 100;
-  const d = phoneMetrics(280);
-  const dt = phoneMetrics(240); // tablet
-  const dm = phoneMetrics(200); // mobile
 
   return (
     <section
@@ -155,161 +132,188 @@ export default function HowItWorksScroll() {
       onKeyDown={onKeyDown}
     >
       <style>{`
-        /* ── Section ─────────────────────────────────────────────────── */
+        /* ── Section shell ────────────────────────────────────────────── */
         .hiw-section {
-          padding: 120px 24px 128px;
-          text-align: center;
+          min-height: 100svh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 80px 60px;
+          box-sizing: border-box;
           outline: none;
+          background: #fafaf9;
         }
 
-        /* ── Heading ─────────────────────────────────────────────────── */
-        .hiw-header {
-          margin-bottom: 72px;
+        /* ── Two-column grid ─────────────────────────────────────────── */
+        .hiw-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 80px;
+          align-items: center;
+          max-width: 1080px;
+          width: 100%;
+        }
+
+        /* ── Left column ─────────────────────────────────────────────── */
+        .hiw-left {
+          display: flex;
+          flex-direction: column;
         }
         .hiw-overline {
           font-size: 11px;
           font-weight: 600;
-          letter-spacing: 0.12em;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
           color: #a8a29e;
           margin: 0 0 14px;
         }
         .hiw-h2 {
-          font-size: 56px;
+          font-size: 40px;
           font-weight: 700;
           letter-spacing: -0.025em;
-          line-height: 1.08;
+          line-height: 1.1;
           color: #1c1917;
-          margin: 0;
+          margin: 0 0 48px;
         }
 
-        /* ── Stepper ─────────────────────────────────────────────────── */
-        .hiw-stepper {
-          position: relative;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          max-width: 540px;
-          margin: 0 auto 60px;
-        }
-        /* connecting track */
-        .hiw-track {
-          position: absolute;
-          top: 17px;   /* vertically center on 36px circles */
-          left: 18px;  /* half of circle */
-          right: 18px;
-          height: 2px;
-          background: #e5e7eb;
-          border-radius: 2px;
-          z-index: 0;
-          overflow: hidden;
-        }
-        .hiw-track-fill {
-          position: absolute;
-          inset: 0 auto 0 0;
-          background: linear-gradient(90deg, #10B981, #1c1917 80%);
-          transition: width 700ms cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        /* step button */
-        .hiw-step-btn {
-          position: relative;
-          z-index: 1;
+        /* ── Vertical step list ──────────────────────────────────────── */
+        .hiw-list {
           display: flex;
           flex-direction: column;
-          align-items: center;
-          gap: 10px;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          gap: 2px;
+        }
+        .hiw-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 16px;
+          padding: 10px 10px 10px 0;
+          cursor: pointer;
           background: none;
           border: none;
-          cursor: pointer;
-          padding: 0;
-          text-align: center;
+          text-align: left;
+          width: 100%;
+          border-radius: 12px;
+          transition: background 180ms ease;
         }
-        .hiw-circle {
-          width: 36px;
-          height: 36px;
+        .hiw-item:hover {
+          background: rgba(28, 25, 23, 0.04);
+        }
+        .hiw-dot {
+          flex-shrink: 0;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.02em;
-          /* default: upcoming */
           background: white;
           border: 2px solid #e5e7eb;
-          color: #b0b7c3;
-          transition: background 350ms ease, border-color 350ms ease, color 350ms ease,
-                      box-shadow 350ms ease, transform 350ms ease;
+          color: #c4c9d1;
+          transition: background 300ms ease, border-color 300ms ease,
+                      color 300ms ease, transform 300ms ease, box-shadow 300ms ease;
+          margin-top: 1px;
         }
-        .hiw-step-btn.completed .hiw-circle {
+        .hiw-item.completed .hiw-dot {
           background: #10B981;
           border-color: #10B981;
           color: white;
         }
-        .hiw-step-btn.active .hiw-circle {
+        .hiw-item.active .hiw-dot {
           background: #1c1917;
           border-color: #1c1917;
           color: white;
-          box-shadow: 0 0 0 5px rgba(28, 25, 23, 0.08);
-          transform: scale(1.12);
+          transform: scale(1.1);
+          box-shadow: 0 0 0 5px rgba(28, 25, 23, 0.09);
         }
-        .hiw-step-btn:not(.active):not(.completed):hover .hiw-circle {
+        .hiw-item:not(.active):not(.completed):hover .hiw-dot {
           border-color: #9ca3af;
-          transform: scale(1.06);
         }
-        .hiw-step-lbl {
-          font-size: 11px;
+        .hiw-item-texts {
+          display: flex;
+          flex-direction: column;
+          padding-top: 5px;
+        }
+        .hiw-item-name {
+          font-size: 15px;
           font-weight: 500;
-          line-height: 1.35;
-          max-width: 88px;
-          color: #b0b7c3;
-          transition: color 350ms ease, font-weight 250ms ease;
+          line-height: 1.3;
+          color: #c4c9d1;
+          transition: color 300ms ease, font-weight 200ms ease;
         }
-        .hiw-step-btn.active .hiw-step-lbl {
-          color: #1c1917;
-          font-weight: 600;
+        .hiw-item.active .hiw-item-name {
+          color: #111827;
+          font-weight: 700;
         }
-        .hiw-step-btn.completed .hiw-step-lbl {
+        .hiw-item.completed .hiw-item-name {
           color: #9ca3af;
         }
+        /* expandable description */
+        .hiw-item-desc {
+          overflow: hidden;
+          max-height: 0;
+          opacity: 0;
+          margin-top: 0;
+          transition: max-height 400ms cubic-bezier(0.4, 0, 0.2, 1),
+                      opacity 350ms ease,
+                      margin-top 300ms ease;
+        }
+        .hiw-item.active .hiw-item-desc {
+          max-height: 100px;
+          opacity: 1;
+          margin-top: 6px;
+        }
+        .hiw-item-desc-text {
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 1.65;
+          color: #6B7280;
+          margin: 0;
+        }
 
-        /* ── Phone ───────────────────────────────────────────────────── */
-        .hiw-phone-col {
+        /* ── Right column — phone ────────────────────────────────────── */
+        .hiw-right {
           display: flex;
           justify-content: center;
-          margin-bottom: 52px;
+          align-items: center;
           touch-action: pan-y;
         }
         .hiw-phone {
-          width: ${d.frameH === 0 ? 280 : d.frameH ? d.frameH : 280}px;
-          width: 280px;
-          height: ${d.frameH}px;
           position: relative;
-          /* drop-shadow follows the chrome SVG shape */
+          /* height drives the size; width follows aspect ratio */
+          height: min(560px, calc(100svh - 160px));
+          aspect-ratio: 364 / 756.789;
           filter:
-            drop-shadow(0 2px 4px rgba(0,0,0,0.06))
-            drop-shadow(0 12px 32px rgba(0,0,0,0.14))
-            drop-shadow(0 32px 64px rgba(0,0,0,0.10));
+            drop-shadow(0 2px 8px rgba(0,0,0,0.06))
+            drop-shadow(0 16px 40px rgba(0,0,0,0.14))
+            drop-shadow(0 32px 72px rgba(0,0,0,0.08));
+          transition: filter 300ms ease;
         }
         .hiw-screen {
           position: absolute;
-          left: ${d.screenL}px;
-          top: ${d.screenT}px;
-          width: ${d.screenW}px;
-          height: ${d.screenH}px;
+          left: ${SCR_L};
+          top: ${SCR_T};
+          width: ${SCR_W};
+          height: ${SCR_H};
           overflow: hidden;
+          border-radius: 12%;
         }
         .hiw-screen-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           display: block;
-          transition: opacity 250ms ease;
+          transition: opacity 200ms ease;
         }
         .hiw-phase-out .hiw-screen-img {
           opacity: 0;
         }
-        .hiw-chrome {
+        .hiw-chrome-svg {
           position: absolute;
           inset: 0;
           width: 100%;
@@ -319,82 +323,99 @@ export default function HowItWorksScroll() {
           display: block;
         }
 
-        /* ── Step content ────────────────────────────────────────────── */
-        .hiw-content {
-          max-width: 440px;
-          margin: 0 auto;
+        /* ── Tablet (768–1023px) ─────────────────────────────────────── */
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .hiw-section { padding: 60px 40px; }
+          .hiw-grid { gap: 48px; }
+          .hiw-h2 { font-size: 32px; margin-bottom: 36px; }
+          .hiw-phone { height: min(460px, calc(100svh - 160px)); }
         }
-        .hiw-content.hiw-phase-out {
-          opacity: 0;
-          transform: translateY(-10px);
-          transition: opacity 250ms ease, transform 250ms ease;
+
+        /* ── Mobile (<768px) — vertical, compact ────────────────────── */
+        @media (max-width: 767px) {
+          .hiw-section {
+            min-height: unset;
+            padding: 72px 24px 80px;
+            align-items: flex-start;
+          }
+          .hiw-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+          }
+          /* on mobile: right (phone) floats above, left (text) below */
+          .hiw-left { order: 2; margin-top: 36px; }
+          .hiw-right { order: 1; }
+
+          .hiw-h2 { font-size: 28px; margin-bottom: 0; }
+          .hiw-phone { height: min(420px, 52svh); }
+
+          /* hide desktop step list, show mobile nav */
+          .hiw-list { display: none; }
+          .hiw-mobile-nav { display: flex; flex-direction: column; gap: 24px; margin-top: 28px; }
+          .hiw-mobile-dots {
+            display: flex; gap: 8px; justify-content: center;
+          }
+          .hiw-mobile-dot {
+            height: 6px; border-radius: 3px;
+            border: none; cursor: pointer; padding: 0;
+            background: #e5e7eb;
+            transition: background 300ms ease, width 300ms cubic-bezier(0.4,0,0.2,1);
+            width: 6px;
+          }
+          .hiw-mobile-dot.active {
+            background: #1c1917;
+            width: 22px;
+          }
+          .hiw-mobile-text { text-align: center; }
+          .hiw-mobile-label {
+            font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+            text-transform: uppercase; color: #9ca3af; margin: 0 0 8px;
+          }
+          .hiw-mobile-title {
+            font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+            line-height: 1.2; color: #111827; margin: 0 0 10px;
+          }
+          .hiw-mobile-desc {
+            font-size: 15px; line-height: 1.65; color: #6B7280; margin: 0;
+          }
+          .hiw-mobile-btns {
+            display: flex; gap: 12px; justify-content: center;
+          }
+          .hiw-mobile-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            border: 1.5px solid #e5e7eb; background: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: #1c1917;
+            transition: background 200ms ease, border-color 200ms ease;
+          }
+          .hiw-mobile-btn:hover { background: #f5f5f4; border-color: #d1d5db; }
+          .hiw-mobile-btn:disabled { opacity: 0.28; cursor: default; }
+          .hiw-mobile-text.hiw-phase-out {
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: opacity 200ms ease, transform 200ms ease;
+          }
+          .hiw-mobile-text.hiw-phase-in {
+            animation: hiw-rise 350ms cubic-bezier(0.22, 1, 0.36, 1) both;
+          }
         }
-        .hiw-content.hiw-phase-in {
-          animation: hiw-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+
+        @media (min-width: 768px) {
+          .hiw-mobile-nav { display: none; }
         }
+
+        /* ── Shared animation ────────────────────────────────────────── */
         @keyframes hiw-rise {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .hiw-step-num {
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: #9ca3af;
-          margin: 0 0 12px;
-        }
-        .hiw-step-title {
-          font-size: 36px;
-          font-weight: 700;
-          letter-spacing: -0.02em;
-          line-height: 1.15;
-          color: #111827;
-          margin: 0 0 16px;
-        }
-        .hiw-step-desc {
-          font-size: 18px;
-          font-weight: 400;
-          line-height: 1.7;
-          color: #6B7280;
-          margin: 0;
-        }
-
-        /* ── Tablet (768–1023px) ─────────────────────────────────────── */
-        @media (min-width: 768px) and (max-width: 1023px) {
-          .hiw-h2 { font-size: 44px; }
-          .hiw-phone { width: 240px; height: ${dt.frameH}px; }
-          .hiw-screen {
-            left: ${dt.screenL}px; top: ${dt.screenT}px;
-            width: ${dt.screenW}px; height: ${dt.screenH}px;
-          }
-          .hiw-step-title { font-size: 30px; }
-        }
-
-        /* ── Mobile (<768px) ─────────────────────────────────────────── */
-        @media (max-width: 767px) {
-          .hiw-section { padding: 80px 20px 96px; }
-          .hiw-h2 { font-size: 32px; }
-          .hiw-header { margin-bottom: 48px; }
-          .hiw-stepper { max-width: 320px; margin-bottom: 44px; }
-          .hiw-circle { width: 28px; height: 28px; font-size: 10px; }
-          .hiw-track { top: 13px; }
-          .hiw-step-lbl { display: none; }
-          .hiw-phone { width: 200px; height: ${dm.frameH}px; }
-          .hiw-screen {
-            left: ${dm.screenL}px; top: ${dm.screenT}px;
-            width: ${dm.screenW}px; height: ${dm.screenH}px;
-          }
-          .hiw-step-title { font-size: 26px; }
-          .hiw-step-desc { font-size: 16px; }
-          .hiw-content { max-width: 320px; }
-        }
 
         /* ── Reduced motion ──────────────────────────────────────────── */
         @media (prefers-reduced-motion: reduce) {
-          .hiw-screen-img { transition: none !important; }
-          .hiw-content.hiw-phase-out { transition: none !important; }
-          .hiw-content.hiw-phase-in  { animation: none !important; }
+          .hiw-screen-img,
+          .hiw-item-desc,
+          .hiw-item-name,
+          .hiw-dot { transition: none !important; animation: none !important; }
         }
       `}</style>
 
@@ -407,73 +428,114 @@ export default function HowItWorksScroll() {
         Step {display + 1} of {STEPS.length}: {STEPS[display].title}
       </div>
 
-      {/* Heading */}
-      <div className="hiw-header">
-        <p className="hiw-overline">How it works</p>
-        <h2 className="hiw-h2">Four steps.<br />Zero confusion.</h2>
-      </div>
+      <div className="hiw-grid">
 
-      {/* Stepper */}
-      <div className="hiw-stepper" role="tablist" aria-label="Steps">
-        <div className="hiw-track">
-          <div className="hiw-track-fill" style={{ width: `${fillPct}%` }} />
+        {/* ── Left: heading + step list ───────────────────────────────── */}
+        <div className="hiw-left">
+          <p className="hiw-overline">How it works</p>
+          <h2 className="hiw-h2">Four steps.<br />Zero confusion.</h2>
+
+          {/* Desktop/tablet: vertical step list */}
+          <ul className="hiw-list" role="tablist" aria-label="Steps">
+            {STEPS.map((step, i) => {
+              const cls = i < active ? 'completed' : i === active ? 'active' : '';
+              return (
+                <li key={i} style={{ listStyle: 'none' }}>
+                  <button
+                    role="tab"
+                    aria-selected={i === active}
+                    aria-label={`Step ${step.num}: ${step.title}`}
+                    className={`hiw-item${cls ? ` ${cls}` : ''}`}
+                    onClick={() => { stopAuto(); goTo(i); }}
+                  >
+                    <span className="hiw-dot" aria-hidden="true">
+                      {i < active ? (
+                        <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                          <path d="M1 4.5L3.8 7.5L10 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      ) : step.num}
+                    </span>
+                    <span className="hiw-item-texts">
+                      <span className="hiw-item-name">{step.title}</span>
+                      <span className="hiw-item-desc" aria-hidden={i !== active}>
+                        <p className="hiw-item-desc-text">{step.desc}</p>
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Mobile: dots + text + prev/next */}
+          <div className="hiw-mobile-nav">
+            <div className="hiw-mobile-dots" role="tablist">
+              {STEPS.map((_, i) => (
+                <button
+                  key={i}
+                  role="tab"
+                  aria-selected={i === active}
+                  aria-label={`Step ${i + 1}`}
+                  className={`hiw-mobile-dot${i === active ? ' active' : ''}`}
+                  onClick={() => { stopAuto(); goTo(i); }}
+                />
+              ))}
+            </div>
+            <div className={`hiw-mobile-text${phase !== 'idle' ? ` hiw-phase-${phase}` : ''}`}>
+              <p className="hiw-mobile-label">Step {STEPS[display].num}</p>
+              <h3 className="hiw-mobile-title">{STEPS[display].title}</h3>
+              <p className="hiw-mobile-desc">{STEPS[display].desc}</p>
+            </div>
+            <div className="hiw-mobile-btns">
+              <button
+                className="hiw-mobile-btn"
+                onClick={() => { stopAuto(); goTo(Math.max(0, active - 1)); }}
+                disabled={active === 0}
+                aria-label="Previous step"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <button
+                className="hiw-mobile-btn"
+                onClick={() => { stopAuto(); goTo(Math.min(STEPS.length - 1, active + 1)); }}
+                disabled={active === STEPS.length - 1}
+                aria-label="Next step"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
-        {STEPS.map((step, i) => {
-          const cls = i < active ? 'completed' : i === active ? 'active' : '';
-          return (
-            <button
-              key={i}
-              role="tab"
-              aria-selected={i === active}
-              aria-label={`Step ${step.num}: ${step.title}`}
-              className={`hiw-step-btn${cls ? ` ${cls}` : ''}`}
-              onClick={() => goTo(i)}
-            >
-              <span className="hiw-circle">
-                {i < active ? (
-                  <svg width="12" height="10" viewBox="0 0 12 10" fill="none" aria-hidden="true">
-                    <path d="M1.5 5L4.5 8L10.5 1.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                ) : (
-                  step.num
-                )}
-              </span>
-              <span className="hiw-step-lbl">{step.title}</span>
-            </button>
-          );
-        })}
-      </div>
 
-      {/* Phone */}
-      <div
-        className={`hiw-phone-col${phase !== 'idle' ? ` hiw-phase-${phase}` : ''}`}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-      >
-        <div className="hiw-phone">
-          <div className="hiw-screen">
+        {/* ── Right: phone ────────────────────────────────────────────── */}
+        <div
+          className={`hiw-right${phase !== 'idle' ? ` hiw-phase-${phase}` : ''}`}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          <div className="hiw-phone">
+            <div className="hiw-screen">
+              <img
+                src={STEPS[display].image}
+                alt={`App screen for step ${display + 1}: ${STEPS[display].title}`}
+                className="hiw-screen-img"
+                draggable={false}
+              />
+            </div>
             <img
-              src={STEPS[display].image}
-              alt={`Step ${display + 1}: ${STEPS[display].title}`}
-              className="hiw-screen-img"
+              src="/Images/hero-phone-chrome.svg"
+              alt=""
+              className="hiw-chrome-svg"
+              aria-hidden="true"
               draggable={false}
             />
           </div>
-          <img
-            src="/Images/hero-phone-chrome.svg"
-            alt=""
-            className="hiw-chrome"
-            aria-hidden="true"
-            draggable={false}
-          />
         </div>
-      </div>
 
-      {/* Content */}
-      <div className={`hiw-content${phase !== 'idle' ? ` hiw-phase-${phase}` : ''}`}>
-        <p className="hiw-step-num">Step {STEPS[display].num}</p>
-        <h3 className="hiw-step-title">{STEPS[display].title}</h3>
-        <p className="hiw-step-desc">{STEPS[display].desc}</p>
       </div>
     </section>
   );

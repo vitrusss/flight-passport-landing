@@ -422,12 +422,18 @@ function MobileNav({ links }: { links: typeof NAV_LINKS }) {
                   style={{ transitionDelay: isOpen ? `${50 + i * 55}ms` : "0ms" }}
                   onClick={(e) => {
                     e.preventDefault();
-                    setIsOpen(false);
                     const target = document.querySelector(href);
                     if (!target) return;
-                    const top = target.getBoundingClientRect().top + window.scrollY - 48;
-                    history.replaceState(null, "", window.location.pathname);
-                    window.scrollTo({ top, behavior: "smooth" });
+                    // body is position:fixed while menu is open — window.scrollY = 0
+                    // read actual scroll from body.style.top set by the scroll lock
+                    const savedY = -parseInt(document.body.style.top || "0", 10);
+                    const targetTop = target.getBoundingClientRect().top + savedY - 48;
+                    setIsOpen(false);
+                    // wait one frame for body lock to be released, then scroll
+                    setTimeout(() => {
+                      history.replaceState(null, "", window.location.pathname);
+                      window.scrollTo({ top: targetTop, behavior: "smooth" });
+                    }, 16);
                   }}
                 >
                   {label}
@@ -622,7 +628,7 @@ function Nav() {
           <img
             alt="Flight Passport"
             src={imgNavLogo}
-            style={{ width: 28, height: 28, flexShrink: 0, display: "block" }}
+            style={{ width: 32, height: 32, flexShrink: 0, display: "block", borderRadius: 7, imageRendering: "-webkit-optimize-contrast" }}
           />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
             <span style={{ fontSize: 13, fontWeight: 600, color: "#1c1917", whiteSpace: "nowrap", lineHeight: 1.4 }}>
@@ -739,6 +745,25 @@ function FigmaHeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
   const [phoneVisible, setPhoneVisible] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
+
+  // Landing countdown — starts at 6h 25m, ticks down every 8s by 2 min, synced with plane
+  const [landingMins, setLandingMins] = useState(385);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setLandingMins(prev => (prev <= 10 ? 385 : prev - 2));
+    }, 8000);
+    return () => clearInterval(id);
+  }, []);
+  const formatLanding = (m: number) => {
+    const h = Math.floor(m / 60);
+    const rem = m % 60;
+    if (h === 0) return `${rem}m`;
+    if (rem === 0) return `${h}h`;
+    return `${h}h ${rem}m`;
+  };
+  // Plane position 0→235px as flight progresses (385 min remaining → 0)
+  const planeX = Math.round(((385 - landingMins) / 385) * 235);
+
   // Badge refs — line elements (clip-path animation) and pill elements (badge-pop animation)
   const lineConnRef     = useRef<HTMLDivElement>(null);
   const lineGateRef     = useRef<HTMLDivElement>(null);
@@ -837,10 +862,13 @@ function FigmaHeroSection() {
             0%, 100% { transform: translateY(0px); }
             50%       { transform: translateY(-10px); }
           }
-@keyframes plane-progress {
-            from { transform: translateX(0px); }
-            to   { transform: translateX(235px); }
+@keyframes countTick {
+            0%   { opacity: 1; transform: translateY(0px); }
+            30%  { opacity: 0; transform: translateY(-7px); }
+            60%  { opacity: 0; transform: translateY(7px); }
+            100% { opacity: 1; transform: translateY(0px); }
           }
+          .count-tick { animation: countTick 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
           @keyframes line-reveal {
             from { clip-path: inset(-2px 100% -2px -2px); }
             to   { clip-path: inset(-2px 0%   -2px -2px); }
@@ -1221,13 +1249,17 @@ function FigmaHeroSection() {
               <div className="absolute left-0 right-0 top-[226px] flex flex-col items-center pointer-events-none">
                 <div className="flex items-center justify-center gap-[3.5px]">
                   <p className="text-[13px] font-semibold text-white/70 leading-[1.4]">Landing in</p>
-                  <p className="text-[13px] font-semibold text-white leading-[1.4]">6h 25m</p>
+                  <p key={landingMins} className="count-tick text-[13px] font-semibold text-white leading-[1.4]">
+                    {formatLanding(landingMins)}
+                  </p>
                 </div>
               </div>
               <div className="absolute h-[30.848px] left-[15.36px] top-[187px] w-[74.331px]" data-node-id="7379:46773">
                 <div className="absolute bg-[#97d0ef] h-[6px] left-0 rounded-[929.555px] top-[15px] w-[309px]" />
-                <div className="absolute bg-gradient-to-l from-white h-[6px] left-0 rounded-[929.555px] to-[rgba(255,255,255,0.04)] top-[15px] w-[65px]" style={{animation:'plane-progress 90s linear infinite'}} />
-                <div className="absolute h-[30.848px] left-[45.88px] top-[2px] w-[27.806px]" data-name="Plane Model" data-node-id="7379:46775" style={{animation:'plane-progress 90s linear infinite'}}>
+                <div className="absolute bg-gradient-to-l from-white h-[6px] left-0 rounded-[929.555px] to-[rgba(255,255,255,0.04)] top-[15px] w-[65px]"
+                  style={{ transform: `translateX(${planeX}px)`, transition: 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }} />
+                <div className="absolute h-[30.848px] left-[45.88px] top-[2px] w-[27.806px]" data-name="Plane Model" data-node-id="7379:46775"
+                  style={{ transform: `translateX(${planeX}px)`, transition: 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}>
                   <div className="absolute flex items-center justify-center left-[1.18px] size-[25.412px] top-[2.97px]">
                     <div className="flex-none rotate-[2.91deg]">
                       <div className="relative size-[24.214px]">
@@ -1854,7 +1886,7 @@ function HowItWorks() {
                   width: "100%",
                 }}
               >
-                Add your flight
+                Search your flight
               </p>
 
               {/* Body */}
@@ -3736,7 +3768,7 @@ function FinalCTA() {
           .cta-section { padding: 64px 20px; }
           .cta-content { max-width: 100%; }
           .cta-title { font-size: 32px !important; letter-spacing: -0.64px !important; }
-          .cta-btn { width: 100% !important; }
+          .cta-btn { width: 100% !important; max-width: 400px !important; }
         }
       `}</style>
       <section id="cta" className="cta-section" data-name="Final CTA">
@@ -3790,7 +3822,8 @@ function FinalCTA() {
             className="cta-btn"
             style={{
               height: 52,
-              padding: "0 24px",
+              padding: "0 32px",
+              width: "auto",
               background: "#1c1917",
               borderRadius: 999,
               border: "none",

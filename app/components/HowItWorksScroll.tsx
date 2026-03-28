@@ -33,7 +33,7 @@ const STEPS = [
 ];
 
 // Comfortable reading time + transition overhead
-const AUTO_MS  = 5000;
+const AUTO_MS  = 10000;
 const FADE_OUT = 180; // ms to fade out before swap
 
 // Phone card dimensions (Figma, 238px display width)
@@ -108,9 +108,12 @@ export default function HowItWorksScroll() {
 
   return (
     <section
+      id="how-it-works"
       className="hiw"
       tabIndex={0}
       onKeyDown={onKeyDown}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
       aria-label="How FlightPassport works"
     >
       <style>{`
@@ -386,13 +389,14 @@ export default function HowItWorksScroll() {
 
       <div className="hiw-inner">
 
-        {/* ── Mobile header: label + heading above phone (hidden on desktop) ── */}
+        {/* ── Mobile header: label + heading + desc above phone (hidden on desktop) ── */}
         <div className={`hiw-mobile-header${visible ? '' : ' fade'}`}>
           <p className="hiw-label">Step {step.num}</p>
           <h2 className="hiw-heading">
             {step.regular}
             <em>{step.italic}</em>
           </h2>
+          <p className="hiw-desc">{step.desc}</p>
         </div>
 
         {/* ── Text ── */}
@@ -404,7 +408,7 @@ export default function HowItWorksScroll() {
             <em>{step.italic}</em>
           </h2>
 
-          <p className="hiw-desc">{step.desc}</p>
+          <p className="hiw-desc hiw-desktop-only">{step.desc}</p>
 
           {/* Prev / Dots / Next */}
           <div className="hiw-nav">
@@ -452,11 +456,7 @@ export default function HowItWorksScroll() {
         </div>
 
         {/* ── Phone ── */}
-        <div
-          className="hiw-phone-col"
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
-        >
+        <div className="hiw-phone-col">
           <div className={`hiw-card${visible ? '' : ' fade'}`}>
             <div className="hiw-screen">
               <img

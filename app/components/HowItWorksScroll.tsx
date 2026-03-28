@@ -32,11 +32,10 @@ const STEPS = [
   },
 ];
 
-// Comfortable reading time + transition overhead
 const AUTO_MS  = 10000;
-const FADE_OUT = 180; // ms to fade out before swap
+const FADE_OUT = 180;
 
-// Phone card dimensions (Figma, 238px display width)
+// Desktop phone card dimensions
 const CARD_W = 238;
 const CARD_H = 495;
 const SCR_L  = 6;
@@ -46,42 +45,91 @@ const SCR_T  = Math.round((CARD_H - SCR_H) / 2);
 const SCR_R  = 29;
 const CARD_R = 36;
 
+// Mobile phone card dimensions (proportionally scaled to 240px width)
+const M_CARD_W = 240;
+const M_CARD_H = Math.round(495 * (M_CARD_W / 238));
+const M_SCR_L  = Math.round(SCR_L  * (M_CARD_W / 238));
+const M_SCR_W  = M_CARD_W - M_SCR_L * 2;
+const M_SCR_H  = Math.round(SCR_H  * (M_CARD_W / 238));
+const M_SCR_T  = Math.round((M_CARD_H - M_SCR_H) / 2);
+const M_SCR_R  = Math.round(SCR_R  * (M_CARD_W / 238));
+const M_CARD_R = Math.round(CARD_R * (M_CARD_W / 238));
+
+// Mobile carousel: 32px side peek shows adjacent cards
+const PEEK = 32;
+const SLIDE_GAP = 12;
+
 export default function HowItWorksScroll() {
+  // ── Shared state ──────────────────────────────────────────────────────────
   const [active,  setActive]  = useState(0);
-  const [display, setDisplay] = useState(0);
-  const [visible, setVisible] = useState(true);  // drives opacity
+  const [display, setDisplay] = useState(0); // desktop: delayed swap; mobile: same as active
+  const [visible, setVisible] = useState(true);
   const [dotKey,  setDotKey]  = useState(0);
 
-  const activeRef  = useRef(0);
-  const visibleRef = useRef(true);
-  const swapTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const touchX     = useRef(0);
+  // ── Mobile-specific state ─────────────────────────────────────────────────
+  const [isMobile,   setIsMobile]   = useState(false);
+  const [paused,     setPaused]     = useState(false);
+  const [completed,  setCompleted]  = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [dragging,   setDragging]   = useState(false);
 
-  // ── Navigation (stable — empty deps, uses only refs) ─────────────────────────
+  // ── Refs (avoid stale closures in setInterval / navigate) ─────────────────
+  const activeRef    = useRef(0);
+  const visibleRef   = useRef(true);
+  const swapTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isMobileRef  = useRef(false);
+  const pausedRef    = useRef(false);
+  const completedRef = useRef(false);
+  const touchStartX  = useRef(0);
+
+  // ── isMobile detection ────────────────────────────────────────────────────
+  useEffect(() => {
+    const check = () => {
+      const m = window.innerWidth < 768;
+      isMobileRef.current = m;
+      setIsMobile(m);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // ── Navigate ──────────────────────────────────────────────────────────────
   const navigate = useCallback((next: number) => {
-    if (!visibleRef.current) return;      // already mid-transition
     if (next === activeRef.current) return;
 
-    // Dots snap immediately
     activeRef.current = next;
     setActive(next);
     setDotKey(k => k + 1);
 
-    // Fade out → swap content → fade in (CSS transition handles fade-in)
-    visibleRef.current = false;
-    setVisible(false);
-
-    swapTimer.current = setTimeout(() => {
+    if (isMobileRef.current) {
+      // Mobile: instant (CSS transform handles the animation)
       setDisplay(next);
-      visibleRef.current = true;
-      setVisible(true);
-    }, FADE_OUT + 10);
+    } else {
+      // Desktop: fade out → swap content → fade in
+      if (!visibleRef.current) return;
+      visibleRef.current = false;
+      setVisible(false);
+      swapTimer.current = setTimeout(() => {
+        setDisplay(next);
+        visibleRef.current = true;
+        setVisible(true);
+      }, FADE_OUT + 10);
+    }
   }, []);
 
-  // ── Auto-advance — starts on mount, always runs ───────────────────────────────
+  // ── Auto-advance ──────────────────────────────────────────────────────────
   useEffect(() => {
     const id = setInterval(() => {
-      navigate((activeRef.current + 1) % STEPS.length);
+      if (pausedRef.current || completedRef.current) return;
+      const next = activeRef.current + 1;
+      // Mobile: stop at end and show replay; desktop: loop
+      if (isMobileRef.current && next >= STEPS.length) {
+        completedRef.current = true;
+        setCompleted(true);
+        return;
+      }
+      navigate(next % STEPS.length);
     }, AUTO_MS);
     return () => {
       clearInterval(id);
@@ -89,14 +137,59 @@ export default function HowItWorksScroll() {
     };
   }, [navigate]);
 
-  // ── Swipe ────────────────────────────────────────────────────────────────────
-  const onTouchStart = (e: React.TouchEvent) => { touchX.current = e.touches[0].clientX; };
-  const onTouchEnd   = (e: React.TouchEvent) => {
-    const d = touchX.current - e.changedTouches[0].clientX;
-    if (Math.abs(d) > 48) navigate(d > 0 ? Math.min(3, activeRef.current + 1) : Math.max(0, activeRef.current - 1));
+  // ── Mobile: pause / replay ────────────────────────────────────────────────
+  const togglePause = () => {
+    pausedRef.current = !pausedRef.current;
+    setPaused(p => !p);
   };
 
-  // ── Keyboard ─────────────────────────────────────────────────────────────────
+  const replay = () => {
+    completedRef.current = false;
+    pausedRef.current    = false;
+    setCompleted(false);
+    setPaused(false);
+    activeRef.current = 0;
+    setActive(0);
+    setDisplay(0);
+    setDotKey(k => k + 1);
+  };
+
+  // ── Touch / drag ─────────────────────────────────────────────────────────
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    if (isMobileRef.current) setDragging(true);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!isMobileRef.current) return;
+    const raw = e.touches[0].clientX - touchStartX.current;
+    // Rubber-band at edges
+    const atStart = activeRef.current === 0;
+    const atEnd   = activeRef.current === STEPS.length - 1;
+    let offset = raw;
+    if (atStart && raw > 0) offset = raw * 0.25;
+    if (atEnd   && raw < 0) offset = raw * 0.25;
+    setDragOffset(offset);
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    setDragging(false);
+    setDragOffset(0);
+    const delta = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(delta) > 50) {
+      const next = delta > 0
+        ? Math.min(STEPS.length - 1, activeRef.current + 1)
+        : Math.max(0, activeRef.current - 1);
+      // Un-complete on manual back-swipe
+      if (completedRef.current && delta < 0) {
+        completedRef.current = false;
+        setCompleted(false);
+      }
+      navigate(next);
+    }
+  };
+
+  // ── Keyboard (desktop) ────────────────────────────────────────────────────
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); navigate(Math.min(3, activeRef.current + 1)); }
     if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); navigate(Math.max(0, activeRef.current - 1)); }
@@ -106,6 +199,10 @@ export default function HowItWorksScroll() {
 
   const step = STEPS[display];
 
+  // ── Mobile carousel transform ─────────────────────────────────────────────
+  // Each slide = 100vw - 2*PEEK wide. Step = slideWidth + gap = (100vw - 64px + 12px)
+  const trackTransform = `calc(-${active} * (100vw - ${PEEK * 2 - SLIDE_GAP}px) + ${dragOffset}px)`;
+
   return (
     <section
       id="how-it-works"
@@ -113,10 +210,12 @@ export default function HowItWorksScroll() {
       tabIndex={0}
       onKeyDown={onKeyDown}
       onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
       aria-label="How FlightPassport works"
     >
       <style>{`
+        /* ── Base ── */
         .hiw {
           min-height: 100svh;
           display: flex;
@@ -128,7 +227,10 @@ export default function HowItWorksScroll() {
           border-top: 1px solid #e7e5e4;
           border-bottom: 1px solid #e7e5e4;
           background: linear-gradient(261.64deg, #e6e6e6 6.85%, #ffffff 83.93%);
+          position: relative;
         }
+
+        /* ── Desktop layout ── */
         .hiw-inner {
           display: flex;
           align-items: center;
@@ -136,8 +238,6 @@ export default function HowItWorksScroll() {
           gap: 80px;
           width: 100%;
         }
-
-        /* ── Text column ── */
         .hiw-text {
           width: 384px;
           flex-shrink: 0;
@@ -146,10 +246,6 @@ export default function HowItWorksScroll() {
           align-items: center;
           gap: 16px;
           text-align: center;
-        }
-        /* ONLY opacity — no translateY so layout never shifts */
-        .hiw-text-content {
-          display: contents;
         }
         .hiw-label {
           font-size: 18px;
@@ -170,7 +266,6 @@ export default function HowItWorksScroll() {
           margin: 0;
           transition: opacity ${FADE_OUT}ms ease;
         }
-        /* Second line (italic) always on its own line */
         .hiw-heading em {
           display: block;
           font-style: italic;
@@ -184,17 +279,14 @@ export default function HowItWorksScroll() {
           color: #6c6760;
           margin: 0;
           max-width: 342px;
-          /* fixed 2 lines height — prevents layout shifts when text varies */
           min-height: calc(17px * 1.4 * 2);
           transition: opacity ${FADE_OUT}ms ease;
         }
-
-        /* Fade state — applies to all text children */
         .hiw-text.fade .hiw-label,
         .hiw-text.fade .hiw-heading,
         .hiw-text.fade .hiw-desc { opacity: 0; }
 
-        /* ── Prev / Next + Dots row ── */
+        /* ── Desktop nav ── */
         .hiw-nav {
           display: flex;
           align-items: center;
@@ -203,8 +295,6 @@ export default function HowItWorksScroll() {
           transition: opacity ${FADE_OUT}ms ease;
         }
         .hiw-text.fade .hiw-nav { opacity: 0; }
-
-        /* Arrow buttons — borderless, Apple-style */
         .hiw-arrow {
           background: none;
           border: none;
@@ -216,15 +306,10 @@ export default function HowItWorksScroll() {
           flex-shrink: 0;
           line-height: 0;
         }
-        .hiw-arrow:hover:not(:disabled) {
-          opacity: 1;
-        }
-        .hiw-arrow:disabled {
-          opacity: 0.18;
-          cursor: default;
-        }
+        .hiw-arrow:hover:not(:disabled) { opacity: 1; }
+        .hiw-arrow:disabled { opacity: 0.18; cursor: default; }
 
-        /* Dots */
+        /* ── Dots (shared) ── */
         .hiw-dots {
           display: flex;
           align-items: center;
@@ -260,11 +345,8 @@ export default function HowItWorksScroll() {
         }
         @keyframes hiw-fill { from { width: 0%; } to { width: 100%; } }
 
-        /* ── Phone card ── */
-        .hiw-phone-col {
-          flex-shrink: 0;
-          touch-action: pan-y;
-        }
+        /* ── Desktop phone card ── */
+        .hiw-phone-col { flex-shrink: 0; }
         .hiw-card {
           position: relative;
           width: ${CARD_W}px;
@@ -274,15 +356,9 @@ export default function HowItWorksScroll() {
           box-shadow:
             0px 4px 12px 0px rgba(0, 0, 0, 0.05),
             32px 32px 64px 0px rgba(23, 29, 46, 0.12);
-          /* Premium card transition: opacity + gentle scale */
-          transition:
-            opacity ${FADE_OUT}ms ease,
-            transform ${FADE_OUT}ms ease;
+          transition: opacity ${FADE_OUT}ms ease, transform ${FADE_OUT}ms ease;
         }
-        .hiw-card.fade {
-          opacity: 0;
-          transform: scale(0.96);
-        }
+        .hiw-card.fade { opacity: 0; transform: scale(0.96); }
         .hiw-screen {
           position: absolute;
           left: ${SCR_L}px;
@@ -319,59 +395,126 @@ export default function HowItWorksScroll() {
           .hiw-desc { font-size: 15px; max-width: 260px; }
         }
 
-        /* ── Mobile ── */
+        /* ── Mobile carousel ── */
         @media (max-width: 767px) {
-          .hiw { padding: 56px 24px 64px; min-height: unset; }
-          .hiw-inner { flex-direction: column; align-items: center; gap: 20px; }
+          .hiw {
+            padding: 48px 0 100px;
+            min-height: unset;
+            display: block;
+            overflow: hidden;
+          }
 
-          /* Mobile header: label + heading above phone */
-          .hiw-mobile-header {
+          /* Hide desktop layout on mobile */
+          .hiw-inner { display: none; }
+
+          /* Carousel track — all 4 slides side by side */
+          .hiw-carousel-track {
+            display: flex;
+            gap: ${SLIDE_GAP}px;
+            padding: 0 ${PEEK}px;
+            /* Transition driven by JS inline style */
+          }
+          .hiw-carousel-track.is-animating {
+            transition: transform 480ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          }
+
+          /* Each slide = full width minus the 2 peek zones */
+          .hiw-slide {
+            flex: 0 0 calc(100vw - ${PEEK * 2}px);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 20px;
+          }
+
+          /* Slide text block */
+          .hiw-slide-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
             text-align: center;
+            padding: 0 8px;
             width: 100%;
-            order: 1;
           }
-          .hiw-mobile-header .hiw-label { font-size: 12px; }
-          .hiw-mobile-header .hiw-heading { font-size: 34px; }
+          .hiw-slide-text .hiw-label  { font-size: 12px; }
+          .hiw-slide-text .hiw-heading { font-size: 32px; }
+          .hiw-slide-text .hiw-desc   { font-size: 15px; min-height: unset; max-width: 100%; }
 
-          /* Fade applies to mobile header too */
-          .hiw-mobile-header.fade .hiw-label,
-          .hiw-mobile-header.fade .hiw-heading { opacity: 0; }
-
-          /* Phone — slightly larger on mobile for max visual impact */
-          .hiw-phone-col { order: 2; }
-          .hiw-card {
-            width: 264px !important;
-            height: 549px !important;
-            border-radius: 40px !important;
+          /* Mobile phone card (proportionally scaled) */
+          .hiw-slide-phone {
+            position: relative;
+            width: ${M_CARD_W}px;
+            height: ${M_CARD_H}px;
+            background: #ffffff;
+            border-radius: ${M_CARD_R}px;
+            box-shadow:
+              0px 4px 12px 0px rgba(0, 0, 0, 0.05),
+              24px 24px 48px 0px rgba(23, 29, 46, 0.12);
+            flex-shrink: 0;
           }
-          .hiw-screen {
-            left: 7px !important;
-            top: 7px !important;
-            width: 250px !important;
-            height: 535px !important;
-            border-radius: 33px !important;
+          .hiw-slide-screen {
+            position: absolute;
+            left: ${M_SCR_L}px;
+            top: ${M_SCR_T}px;
+            width: ${M_SCR_W}px;
+            height: ${M_SCR_H}px;
+            border-radius: ${M_SCR_R}px;
+            overflow: hidden;
+            background: #f0f0f0;
+          }
+          .hiw-slide-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+          }
+          .hiw-slide-chrome {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            display: block;
           }
 
-          /* Text col on mobile: only desc + nav (label+heading hidden) */
-          .hiw-text { width: 264px; order: 3; gap: 12px; }
-          .hiw-desktop-only { display: none !important; }
-          .hiw-desc {
-            font-size: 15px;
-            min-height: calc(15px * 1.4 * 2);
-            text-align: center;
+          /* Apple-style pagination pill — sticky bottom overlay */
+          .hiw-pagination {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(20px) saturate(1.8);
+            -webkit-backdrop-filter: blur(20px) saturate(1.8);
+            border-radius: 999px;
+            padding: 8px 10px 8px 14px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
           }
-          .hiw-nav { margin-top: 4px; }
-          .hiw-label { font-size: 12px; }
-          .hiw-heading { font-size: 34px; }
-        }
+          .hiw-pagination .hiw-dots { gap: 5px; }
+          .hiw-pagination .hiw-dot-track { background: rgba(28,25,23,0.2); }
+          .hiw-pagination .hiw-dot-btn.active .hiw-dot-progress { background: #1c1917; }
 
-        /* Mobile header hidden on desktop/tablet */
-        @media (min-width: 768px) {
-          .hiw-mobile-header { display: none; }
+          /* Pause / replay button */
+          .hiw-ctrl-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(28, 25, 23, 0.08);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #1c1917;
+            flex-shrink: 0;
+            transition: background 180ms ease;
+          }
+          .hiw-ctrl-btn:hover { background: rgba(28, 25, 23, 0.14); }
         }
 
         /* ── Reduced motion ── */
@@ -379,75 +522,41 @@ export default function HowItWorksScroll() {
           .hiw-label, .hiw-heading, .hiw-desc, .hiw-nav, .hiw-card { transition: none !important; }
           .hiw-dot-progress { animation: none !important; }
           .hiw-dot-track { transition: none !important; }
+          .hiw-carousel-track { transition: none !important; }
         }
       `}</style>
 
-      {/* sr */}
+      {/* Screen-reader live region */}
       <div aria-live="polite" aria-atomic="true" style={{ position:'absolute', width:1, height:1, overflow:'hidden', clip:'rect(0,0,0,0)', whiteSpace:'nowrap' }}>
-        Step {display + 1} of {STEPS.length}: {step.regular} {step.italic}
+        Step {active + 1} of {STEPS.length}: {STEPS[active].regular} {STEPS[active].italic}
       </div>
 
+      {/* ── Desktop layout (hidden on mobile via CSS) ── */}
       <div className="hiw-inner">
-
-        {/* ── Mobile header: label + heading + desc above phone (hidden on desktop) ── */}
-        <div className={`hiw-mobile-header${visible ? '' : ' fade'}`}>
+        <div className={`hiw-text${visible ? '' : ' fade'}`}>
           <p className="hiw-label">Step {step.num}</p>
           <h2 className="hiw-heading">
             {step.regular}
             <em>{step.italic}</em>
           </h2>
           <p className="hiw-desc">{step.desc}</p>
-        </div>
 
-        {/* ── Text ── */}
-        <div className={`hiw-text${visible ? '' : ' fade'}`}>
-          <p className="hiw-label hiw-desktop-only">Step {step.num}</p>
-
-          <h2 className="hiw-heading hiw-desktop-only">
-            {step.regular}
-            <em>{step.italic}</em>
-          </h2>
-
-          <p className="hiw-desc hiw-desktop-only">{step.desc}</p>
-
-          {/* Prev / Dots / Next */}
           <div className="hiw-nav">
-            <button
-              className="hiw-arrow"
-              onClick={() => navigate(Math.max(0, active - 1))}
-              disabled={active === 0}
-              aria-label="Previous step"
-            >
+            <button className="hiw-arrow" onClick={() => navigate(Math.max(0, active - 1))} disabled={active === 0} aria-label="Previous step">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M8.5 2.5L4 7L8.5 11.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-
             <div className="hiw-dots" role="tablist" aria-label="Steps">
               {STEPS.map((s, i) => (
-                <button
-                  key={i}
-                  role="tab"
-                  aria-selected={i === active}
-                  aria-label={`Step ${i + 1}: ${s.regular} ${s.italic}`}
-                  className={`hiw-dot-btn${i === active ? ' active' : ''}`}
-                  onClick={() => navigate(i)}
-                >
+                <button key={i} role="tab" aria-selected={i === active} aria-label={`Step ${i + 1}: ${s.regular} ${s.italic}`} className={`hiw-dot-btn${i === active ? ' active' : ''}`} onClick={() => navigate(i)}>
                   <span className="hiw-dot-track">
-                    {i === active && (
-                      <span key={`${i}-${dotKey}`} className="hiw-dot-progress" />
-                    )}
+                    {i === active && <span key={`${i}-${dotKey}`} className="hiw-dot-progress" />}
                   </span>
                 </button>
               ))}
             </div>
-
-            <button
-              className="hiw-arrow"
-              onClick={() => navigate(Math.min(3, active + 1))}
-              disabled={active === 3}
-              aria-label="Next step"
-            >
+            <button className="hiw-arrow" onClick={() => navigate(Math.min(3, active + 1))} disabled={active === 3} aria-label="Next step">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M5.5 2.5L10 7L5.5 11.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -455,27 +564,87 @@ export default function HowItWorksScroll() {
           </div>
         </div>
 
-        {/* ── Phone ── */}
         <div className="hiw-phone-col">
           <div className={`hiw-card${visible ? '' : ' fade'}`}>
             <div className="hiw-screen">
-              <img
-                src={step.image}
-                alt={`Step ${display + 1}: ${step.regular} ${step.italic}`}
-                draggable={false}
-              />
+              <img src={step.image} alt={`Step ${display + 1}: ${step.regular} ${step.italic}`} draggable={false} />
             </div>
-            <img
-              src="/Images/hero-phone-chrome.svg"
-              className="hiw-chrome"
-              alt=""
-              aria-hidden="true"
-              draggable={false}
-            />
+            <img src="/Images/hero-phone-chrome.svg" className="hiw-chrome" alt="" aria-hidden="true" draggable={false} />
           </div>
         </div>
-
       </div>
+
+      {/* ── Mobile carousel (visible only on mobile via CSS) ── */}
+      {isMobile && (
+        <div style={{ position: 'relative' }}>
+          {/* Track — all 4 slides in DOM */}
+          <div
+            className={`hiw-carousel-track${dragging ? '' : ' is-animating'}`}
+            style={{ transform: `translateX(${trackTransform})` }}
+          >
+            {STEPS.map((s, i) => (
+              <div key={i} className="hiw-slide">
+                {/* Text: label + heading + desc */}
+                <div className="hiw-slide-text">
+                  <p className="hiw-label">Step {s.num}</p>
+                  <h2 className="hiw-heading">
+                    {s.regular}
+                    <em>{s.italic}</em>
+                  </h2>
+                  <p className="hiw-desc">{s.desc}</p>
+                </div>
+
+                {/* Phone card */}
+                <div className="hiw-slide-phone">
+                  <div className="hiw-slide-screen">
+                    <img src={s.image} alt={`Step ${i + 1}: ${s.regular} ${s.italic}`} draggable={false} />
+                  </div>
+                  <img src="/Images/hero-phone-chrome.svg" className="hiw-slide-chrome" alt="" aria-hidden="true" draggable={false} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Apple-style pagination overlay */}
+          <div className="hiw-pagination">
+            <div className="hiw-dots" role="tablist" aria-label="Steps">
+              {STEPS.map((s, i) => (
+                <button key={i} role="tab" aria-selected={i === active} aria-label={`Step ${i + 1}`} className={`hiw-dot-btn${i === active ? ' active' : ''}`} onClick={() => { if (completed) { completedRef.current = false; setCompleted(false); } navigate(i); }}>
+                  <span className="hiw-dot-track">
+                    {i === active && !completed && <span key={`m-${i}-${dotKey}`} className="hiw-dot-progress" />}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Pause / replay button */}
+            <button
+              className="hiw-ctrl-btn"
+              onClick={completed ? replay : togglePause}
+              aria-label={completed ? 'Replay' : paused ? 'Play' : 'Pause'}
+            >
+              {completed ? (
+                /* Replay icon */
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M2 7a5 5 0 1 0 1.2-3.2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  <path d="M2 3.5V7h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              ) : paused ? (
+                /* Play icon */
+                <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+                  <path d="M2 1.5L10.5 7L2 12.5V1.5Z" fill="currentColor"/>
+                </svg>
+              ) : (
+                /* Pause icon */
+                <svg width="10" height="13" viewBox="0 0 10 13" fill="none">
+                  <rect x="0.5" y="0.5" width="3" height="12" rx="1.5" fill="currentColor"/>
+                  <rect x="6.5" y="0.5" width="3" height="12" rx="1.5" fill="currentColor"/>
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

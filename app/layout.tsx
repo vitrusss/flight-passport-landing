@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   title: "Flight Passport — Flight intelligence for people who fly",
   description:
     "Flight Passport helps you understand your journey before, during, and after your flight — real-time tracking, predictive insights, and a personal travel history.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({

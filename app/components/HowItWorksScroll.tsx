@@ -67,15 +67,17 @@ export default function HowItWorksScroll() {
   const [dotKey,  setDotKey]  = useState(0);
 
   // ── Mobile-specific state ─────────────────────────────────────────────────
-  const [isMobile,   setIsMobile]   = useState(false);
-  const [paused,     setPaused]     = useState(false);
-  const [completed,  setCompleted]  = useState(false);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [dragging,   setDragging]   = useState(false);
+  const [isMobile,          setIsMobile]          = useState(false);
+  const [paused,            setPaused]            = useState(false);
+  const [completed,         setCompleted]         = useState(false);
+  const [dragOffset,        setDragOffset]        = useState(0);
+  const [dragging,          setDragging]          = useState(false);
+  const [paginationVisible, setPaginationVisible] = useState(false);
 
   // ── Refs (avoid stale closures in setInterval / navigate) ─────────────────
   const activeRef    = useRef(0);
   const visibleRef   = useRef(true);
+  const sectionRef   = useRef<HTMLElement>(null);
   const swapTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isMobileRef  = useRef(false);
   const pausedRef    = useRef(false);
@@ -92,6 +94,17 @@ export default function HowItWorksScroll() {
     check();
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // ── Pagination visibility: slide in when section enters viewport ──────────
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setPaginationVisible(entry.isIntersecting),
+      { threshold: 0.08 }
+    );
+    observer.observe(sectionRef.current);
+    return () => observer.disconnect();
   }, []);
 
   // ── Navigate ──────────────────────────────────────────────────────────────
@@ -205,6 +218,7 @@ export default function HowItWorksScroll() {
 
   return (
     <section
+      ref={sectionRef}
       id="how-it-works"
       className="hiw"
       tabIndex={0}
@@ -479,21 +493,32 @@ export default function HowItWorksScroll() {
             display: block;
           }
 
-          /* Apple-style pagination pill — sticky bottom overlay */
+          /* Apple-style pagination pill — fixed overlay, slides in from bottom */
           .hiw-pagination {
-            position: absolute;
-            bottom: 24px;
+            position: fixed;
+            bottom: 32px;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(80px);
+            opacity: 0;
+            pointer-events: none;
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(20px) saturate(1.8);
-            -webkit-backdrop-filter: blur(20px) saturate(1.8);
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(32px) saturate(2);
+            -webkit-backdrop-filter: blur(32px) saturate(2);
             border-radius: 999px;
             padding: 8px 10px 8px 14px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.12), inset 0 0.5px 0 rgba(255,255,255,0.9);
+            z-index: 200;
+            transition:
+              transform 480ms cubic-bezier(0.34, 1.4, 0.64, 1),
+              opacity 320ms ease;
+          }
+          .hiw-pagination.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
           }
           .hiw-pagination .hiw-dots { gap: 5px; }
           .hiw-pagination .hiw-dot-track { background: rgba(28,25,23,0.2); }
@@ -605,8 +630,8 @@ export default function HowItWorksScroll() {
             ))}
           </div>
 
-          {/* Apple-style pagination overlay */}
-          <div className="hiw-pagination">
+          {/* Apple-style pagination overlay — fixed, slides in when section in view */}
+          <div className={`hiw-pagination${paginationVisible ? ' visible' : ''}`}>
             <div className="hiw-dots" role="tablist" aria-label="Steps">
               {STEPS.map((s, i) => (
                 <button key={i} role="tab" aria-selected={i === active} aria-label={`Step ${i + 1}`} className={`hiw-dot-btn${i === active ? ' active' : ''}`} onClick={() => { if (completed) { completedRef.current = false; setCompleted(false); } navigate(i); }}>

@@ -13,21 +13,21 @@ const STEPS = [
     num:     '02',
     regular: 'Understand',
     italic:  'what to expect',
-    desc:    'See delay history, reliability, and flight\nconditions before your trip begins.',
+    desc:    'See delay history, reliability, and flight conditions before your trip begins.',
     image:   '/Images/hiw-step02.png',
   },
   {
     num:     '03',
     regular: 'Stay ahead',
     italic:  'of every change',
-    desc:    'Get live updates for every phase —\nboarding, delays, connections, and arrival.',
+    desc:    'Get live updates for every phase — boarding, delays, connections, and arrival.',
     image:   '/Images/hiw-step03.png',
   },
   {
     num:     '04',
     regular: 'Build your',
     italic:  'travel history',
-    desc:    'Every completed journey is saved automatically\n— flights, countries, and distance traveled.',
+    desc:    'Every completed journey is saved automatically — flights, countries, and distance traveled.',
     image:   '/Images/hiw-step04.png',
   },
 ];
@@ -181,7 +181,6 @@ export default function HowItWorksScroll() {
           color: #6c6760;
           margin: 0;
           max-width: 342px;
-          white-space: pre-line;
           /* fixed 2 lines height — prevents layout shifts when text varies */
           min-height: calc(17px * 1.4 * 2);
           transition: opacity ${FADE_OUT}ms ease;
@@ -202,28 +201,23 @@ export default function HowItWorksScroll() {
         }
         .hiw-text.fade .hiw-nav { opacity: 0; }
 
-        /* Arrow buttons */
+        /* Arrow buttons — borderless, Apple-style */
         .hiw-arrow {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          border: 1.5px solid #e7e5e4;
-          background: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          background: none;
+          border: none;
+          padding: 4px 6px;
           cursor: pointer;
           color: #1c1917;
-          transition: background 180ms ease, border-color 180ms ease, opacity 180ms ease;
+          opacity: 0.45;
+          transition: opacity 180ms ease;
           flex-shrink: 0;
-          padding: 0;
+          line-height: 0;
         }
         .hiw-arrow:hover:not(:disabled) {
-          background: #f5f5f4;
-          border-color: #d1d5db;
+          opacity: 1;
         }
         .hiw-arrow:disabled {
-          opacity: 0.28;
+          opacity: 0.18;
           cursor: default;
         }
 

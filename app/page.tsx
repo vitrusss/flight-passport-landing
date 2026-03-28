@@ -709,13 +709,18 @@ function FigmaHeroSection() {
   const rafRef     = useRef<number | null>(null);
 
   useEffect(() => {
-    const FADE = 0.06; // fade zone = 6% of cycle at each end
+    const FADE = 0.05; // fade zone = 5% of cycle at start and end
     function tick(now: number) {
       if (startRef.current === null) startRef.current = now;
       const progress = ((now - startRef.current) % CYCLE_MS) / CYCLE_MS;
       const x = progress * TRAVEL_PX;
-      // Fade out near end only — plane always starts at full opacity
-      const opacity = progress > 1 - FADE ? (1 - progress) / FADE : 1;
+      // Fade in at start, fade out at end — smooth loop, no visible jump
+      let opacity = 1;
+      if (progress < FADE) {
+        opacity = progress / FADE;
+      } else if (progress > 1 - FADE) {
+        opacity = (1 - progress) / FADE;
+      }
       if (planeElRef.current) {
         planeElRef.current.style.transform = `translateX(${x}px)`;
         planeElRef.current.style.opacity = String(opacity);
@@ -730,7 +735,7 @@ function FigmaHeroSection() {
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, []);
 
-  // Counter — synced every 4.5s, reads actual plane phase
+  // Counter — synced every 1s to stay in step with the plane position
   const [landingMins, setLandingMins] = useState(TOTAL_MINS);
   useEffect(() => {
     const id = setInterval(() => {
@@ -738,7 +743,7 @@ function FigmaHeroSection() {
         ? ((performance.now() - startRef.current) % CYCLE_MS) / CYCLE_MS
         : 0;
       setLandingMins(Math.round((1 - progress) * TOTAL_MINS));
-    }, 4500);
+    }, 5000);
     return () => clearInterval(id);
   }, []);
 
@@ -1862,22 +1867,21 @@ function LiveActivities() {
         .la-card {
           width: 100%;
           cursor: pointer;
-          will-change: transform;
         }
-        .la-card:nth-child(1) { animation: laFloatA 6.0s ease-in-out 0.0s infinite; }
-        .la-card:nth-child(2) { animation: laFloatB 7.2s ease-in-out 0.4s infinite; }
-        .la-card:nth-child(3) { animation: laFloatC 5.8s ease-in-out 1.1s infinite; }
-        .la-card:nth-child(4) { animation: laFloatB 6.6s ease-in-out 0.7s infinite; }
-        .la-card:nth-child(5) { animation: laFloatA 7.4s ease-in-out 1.4s infinite; }
-        .la-card:nth-child(6) { animation: laFloatC 6.2s ease-in-out 0.2s infinite; }
-        .la-card:hover {
-          animation-play-state: paused;
-        }
+        /* Float animation on .la-card-inner (has real content) — avoids Safari
+           painting a grey compositing rect on the empty transparent .la-card wrapper */
+        .la-card:nth-child(1) .la-card-inner { animation: laFloatA 6.0s ease-in-out 0.0s infinite; }
+        .la-card:nth-child(2) .la-card-inner { animation: laFloatB 7.2s ease-in-out 0.4s infinite; }
+        .la-card:nth-child(3) .la-card-inner { animation: laFloatC 5.8s ease-in-out 1.1s infinite; }
+        .la-card:nth-child(4) .la-card-inner { animation: laFloatB 6.6s ease-in-out 0.7s infinite; }
+        .la-card:nth-child(5) .la-card-inner { animation: laFloatA 7.4s ease-in-out 1.4s infinite; }
+        .la-card:nth-child(6) .la-card-inner { animation: laFloatC 6.2s ease-in-out 0.2s infinite; }
         .la-card-inner {
           width: 100%;
           transition: transform 0.4s cubic-bezier(0.34, 1.28, 0.64, 1);
         }
         .la-card:hover .la-card-inner {
+          animation-play-state: paused;
           transform: scale(1.04);
         }
         .la-card img {
@@ -1923,7 +1927,7 @@ function LiveActivities() {
           .la-desc { font-size: 15px !important; width: 100% !important; max-width: 100% !important; }
           .la-cards-grid { grid-template-columns: 1fr; gap: 20px; max-width: 370px !important; }
           /* Disable float animation on mobile — saves battery, avoids jitter */
-          .la-card { animation: none !important; }
+          .la-card .la-card-inner { animation: none !important; }
           /* Show only 3 cards on mobile: Boarding (1), Gate Arrival in air (3), Connection at risk (4) */
           .la-card:nth-child(2),
           .la-card:nth-child(5),

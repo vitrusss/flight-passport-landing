@@ -73,6 +73,7 @@ export default function HowItWorksScroll() {
   const [dragOffset,        setDragOffset]        = useState(0);
   const [dragging,          setDragging]          = useState(false);
   const [paginationVisible, setPaginationVisible] = useState(false);
+  const [pillBottom,        setPillBottom]        = useState(32);
 
   // ── Refs (avoid stale closures in setInterval / navigate) ─────────────────
   const activeRef    = useRef(0);
@@ -96,17 +97,30 @@ export default function HowItWorksScroll() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // ── Pagination visibility ─────────────────────────────────────────────────
-  // Show when section top has scrolled past 45% of viewport height
-  // (carousel is prominently visible, not just the heading peeking in).
-  // Hide when section is almost gone (bottom < 15% of viewport).
+  // ── Pagination pill visibility + Apple-style "follows section on exit" ───
+  // Appears when section top scrolls past ~40% of viewport (carousel well in view).
+  // While section bottom is below viewport: pill is fixed at bottom: 32px.
+  // When section bottom rises into viewport: pill bottom tracks section
+  //   so it moves up with the section seamlessly — no jump at transition point.
   useEffect(() => {
+    const NATURAL_B = 32; // desired bottom offset in px
     const check = () => {
       if (!sectionRef.current || !isMobileRef.current) return;
       const rect = sectionRef.current.getBoundingClientRect();
       const vh   = window.innerHeight;
-      const show = rect.top < vh * 0.45 && rect.bottom > vh * 0.15;
+
+      // Show pill when section has scrolled enough into view
+      const show = rect.top < vh * 0.4 && rect.bottom > 20;
       setPaginationVisible(show);
+
+      // Follow section bottom when it enters the viewport:
+      // naturalB=32 while section.bottom > vh (section extends below fold).
+      // As section.bottom drops below vh, increase bottom so pill stays
+      // 32px above section bottom — same visual position, no jump.
+      const b = rect.bottom >= vh
+        ? NATURAL_B
+        : Math.max(NATURAL_B, vh - rect.bottom + NATURAL_B);
+      setPillBottom(Math.min(b, vh - 80)); // cap so pill never leaves screen
     };
     window.addEventListener('scroll', check, { passive: true });
     check();
@@ -499,10 +513,10 @@ export default function HowItWorksScroll() {
             display: block;
           }
 
-          /* Apple-style pagination pill — fixed overlay, slides in from bottom */
+          /* Apple-style pagination pill — fixed, bottom set via JS (follows section on exit) */
           .hiw-pagination {
             position: fixed;
-            bottom: 32px;
+            /* bottom set via inline style — tracks section on exit, no CSS transition on it */
             left: 50%;
             transform: translateX(-50%) translateY(80px);
             opacity: 0;
@@ -517,6 +531,7 @@ export default function HowItWorksScroll() {
             padding: 8px 10px 8px 14px;
             box-shadow: 0 2px 20px rgba(0,0,0,0.12), inset 0 0.5px 0 rgba(255,255,255,0.9);
             z-index: 200;
+            /* Only animate the slide-in transform/opacity, never bottom */
             transition:
               transform 480ms cubic-bezier(0.34, 1.4, 0.64, 1),
               opacity 320ms ease;
@@ -636,8 +651,11 @@ export default function HowItWorksScroll() {
             ))}
           </div>
 
-          {/* Apple-style pagination overlay — fixed, slides in when section in view */}
-          <div className={`hiw-pagination${paginationVisible ? ' visible' : ''}`}>
+          {/* Apple-style pagination overlay — fixed, bottom tracks section on exit */}
+          <div
+            className={`hiw-pagination${paginationVisible ? ' visible' : ''}`}
+            style={{ bottom: `${pillBottom}px` }}
+          >
             <div className="hiw-dots" role="tablist" aria-label="Steps">
               {STEPS.map((s, i) => (
                 <button key={i} role="tab" aria-selected={i === active} aria-label={`Step ${i + 1}`} className={`hiw-dot-btn${i === active ? ' active' : ''}`} onClick={() => { if (completed) { completedRef.current = false; setCompleted(false); } navigate(i); }}>
@@ -655,10 +673,10 @@ export default function HowItWorksScroll() {
               aria-label={completed ? 'Replay' : paused ? 'Play' : 'Pause'}
             >
               {completed ? (
-                /* Replay icon */
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M2 7a5 5 0 1 0 1.2-3.2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  <path d="M2 3.5V7h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                /* Replay icon — Feather refresh-cw style */
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="1 4 1 10 7 10"/>
+                  <path d="M3.51 15a9 9 0 1 0 .49-6.56"/>
                 </svg>
               ) : paused ? (
                 /* Play icon */

@@ -1,153 +1,119 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// ── Step data ─────────────────────────────────────────────────────────────────
 const STEPS = [
   {
     num:     '01',
     regular: 'Find any flight',
     italic:  'in seconds',
-    desc:    'Search by flight number or route. We instantly retrieve real operational data — schedules, aircraft, and route details.',
+    desc:    'Search by flight number or route. We instantly retrieve real operational data.',
     image:   '/Images/hiw-step01.png',
   },
   {
     num:     '02',
     regular: 'Understand',
     italic:  'what to expect',
-    desc:    'See delay history, reliability, and flight conditions before your trip begins.',
+    desc:    'See delay history, reliability, and flight\nconditions before your trip begins.',
     image:   '/Images/hiw-step02.png',
   },
   {
     num:     '03',
     regular: 'Stay ahead',
     italic:  'of every change',
-    desc:    'Get live updates for every phase — boarding, delays, connections, and arrival.',
+    desc:    'Get live updates for every phase —\nboarding, delays, connections, and arrival.',
     image:   '/Images/hiw-step03.png',
   },
   {
     num:     '04',
     regular: 'Build your',
     italic:  'travel history',
-    desc:    'Every completed journey is saved automatically — flights, countries, and distance traveled.',
+    desc:    'Every completed journey is saved automatically\n— flights, countries, and distance traveled.',
     image:   '/Images/hiw-step04.png',
   },
 ];
 
-// Auto-advance interval — comfortable reading time
-const AUTO_MS = 5500;
+// Comfortable reading time + transition overhead
+const AUTO_MS  = 5000;
+const FADE_OUT = 180; // ms to fade out before swap
 
-// ── Phone dimensions (Figma scale: 238px card width) ─────────────────────────
+// Phone card dimensions (Figma, 238px display width)
 const CARD_W = 238;
 const CARD_H = 495;
 const SCR_L  = 6;
 const SCR_W  = 222;
 const SCR_H  = 481;
-const SCR_T  = Math.round((CARD_H - SCR_H) / 2); // 7
+const SCR_T  = Math.round((CARD_H - SCR_H) / 2);
 const SCR_R  = 29;
-// Chrome SVG outer radius at 238px: 55.09 × (238/364) ≈ 36px
 const CARD_R = 36;
-
-type Phase = 'idle' | 'exit' | 'enter';
 
 export default function HowItWorksScroll() {
   const [active,  setActive]  = useState(0);
   const [display, setDisplay] = useState(0);
-  const [phase,   setPhase]   = useState<Phase>('idle');
+  const [visible, setVisible] = useState(true);  // drives opacity
   const [dotKey,  setDotKey]  = useState(0);
 
-  const sectionRef = useRef<HTMLElement>(null);
   const activeRef  = useRef(0);
-  const phaseRef   = useRef<Phase>('idle');
-  const inViewRef  = useRef(false);
-  const autoTimer  = useRef<ReturnType<typeof setInterval> | null>(null);
-  const t1         = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const t2         = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const visibleRef = useRef(true);
+  const swapTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchX     = useRef(0);
 
-  // ── Navigation ───────────────────────────────────────────────────────────────
-  const goTo = useCallback((next: number) => {
-    if (phaseRef.current !== 'idle') return;
+  // ── Navigation (stable — empty deps, uses only refs) ─────────────────────────
+  const navigate = useCallback((next: number) => {
+    if (!visibleRef.current) return;      // already mid-transition
     if (next === activeRef.current) return;
 
-    // Dot indicator snaps immediately
+    // Dots snap immediately
     activeRef.current = next;
     setActive(next);
     setDotKey(k => k + 1);
 
-    // Exit phase (200ms)
-    phaseRef.current = 'exit';
-    setPhase('exit');
+    // Fade out → swap content → fade in (CSS transition handles fade-in)
+    visibleRef.current = false;
+    setVisible(false);
 
-    t1.current = setTimeout(() => {
-      // Swap content while invisible, then enter
+    swapTimer.current = setTimeout(() => {
       setDisplay(next);
-      phaseRef.current = 'enter';
-      setPhase('enter');
-
-      t2.current = setTimeout(() => {
-        phaseRef.current = 'idle';
-        setPhase('idle');
-      }, 420);
-    }, 210);
+      visibleRef.current = true;
+      setVisible(true);
+    }, FADE_OUT + 10);
   }, []);
 
-  const stopAuto = useCallback(() => {
-    if (autoTimer.current) { clearInterval(autoTimer.current); autoTimer.current = null; }
-  }, []);
-
-  const startAuto = useCallback(() => {
-    stopAuto();
-    autoTimer.current = setInterval(() => {
-      if (!inViewRef.current) return;
-      goTo((activeRef.current + 1) % STEPS.length);
-    }, AUTO_MS);
-  }, [stopAuto, goTo]);
-
+  // ── Auto-advance — starts on mount, always runs ───────────────────────────────
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        inViewRef.current = e.isIntersecting;
-        e.isIntersecting ? startAuto() : stopAuto();
-      },
-      { threshold: 0.25 }
-    );
-    if (sectionRef.current) obs.observe(sectionRef.current);
+    const id = setInterval(() => {
+      navigate((activeRef.current + 1) % STEPS.length);
+    }, AUTO_MS);
     return () => {
-      obs.disconnect();
-      stopAuto();
-      if (t1.current) clearTimeout(t1.current);
-      if (t2.current) clearTimeout(t2.current);
+      clearInterval(id);
+      if (swapTimer.current) clearTimeout(swapTimer.current);
     };
-  }, [startAuto, stopAuto]);
+  }, [navigate]);
 
+  // ── Swipe ────────────────────────────────────────────────────────────────────
   const onTouchStart = (e: React.TouchEvent) => { touchX.current = e.touches[0].clientX; };
   const onTouchEnd   = (e: React.TouchEvent) => {
     const d = touchX.current - e.changedTouches[0].clientX;
-    if (Math.abs(d) > 48) { stopAuto(); goTo(d > 0 ? Math.min(3, activeRef.current + 1) : Math.max(0, activeRef.current - 1)); }
+    if (Math.abs(d) > 48) navigate(d > 0 ? Math.min(3, activeRef.current + 1) : Math.max(0, activeRef.current - 1));
   };
 
+  // ── Keyboard ─────────────────────────────────────────────────────────────────
   const onKeyDown = (e: React.KeyboardEvent) => {
-    const k = e.key;
-    if (k === 'ArrowRight' || k === 'ArrowDown') { e.preventDefault(); stopAuto(); goTo(Math.min(3, activeRef.current + 1)); }
-    if (k === 'ArrowLeft'  || k === 'ArrowUp')   { e.preventDefault(); stopAuto(); goTo(Math.max(0, activeRef.current - 1)); }
-    if (k === 'Home') { e.preventDefault(); stopAuto(); goTo(0); }
-    if (k === 'End')  { e.preventDefault(); stopAuto(); goTo(3); }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); navigate(Math.min(3, activeRef.current + 1)); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); navigate(Math.max(0, activeRef.current - 1)); }
+    if (e.key === 'Home') { e.preventDefault(); navigate(0); }
+    if (e.key === 'End')  { e.preventDefault(); navigate(3); }
   };
 
   const step = STEPS[display];
-  const textCls  = phase === 'exit' ? ' hiw-exit' : phase === 'enter' ? ' hiw-enter' : '';
-  const phoneCls = phase === 'exit' ? ' hiw-exit' : phase === 'enter' ? ' hiw-enter' : '';
 
   return (
     <section
-      ref={sectionRef}
       className="hiw"
       tabIndex={0}
       onKeyDown={onKeyDown}
       aria-label="How FlightPassport works"
     >
       <style>{`
-        /* ── Section ────────────────────────────────────────────────── */
         .hiw {
           min-height: 100svh;
           display: flex;
@@ -160,8 +126,6 @@ export default function HowItWorksScroll() {
           border-bottom: 1px solid #e7e5e4;
           background: linear-gradient(261.64deg, #e6e6e6 6.85%, #ffffff 83.93%);
         }
-
-        /* ── Inner ──────────────────────────────────────────────────── */
         .hiw-inner {
           display: flex;
           align-items: center;
@@ -170,7 +134,7 @@ export default function HowItWorksScroll() {
           width: 100%;
         }
 
-        /* ── Text column ────────────────────────────────────────────── */
+        /* ── Text column ── */
         .hiw-text {
           width: 384px;
           flex-shrink: 0;
@@ -180,24 +144,10 @@ export default function HowItWorksScroll() {
           gap: 16px;
           text-align: center;
         }
-
-        /* EXIT: fade up */
-        .hiw-text.hiw-exit {
-          opacity: 0;
-          transform: translateY(-12px);
-          transition: opacity 200ms ease-in, transform 200ms ease-in;
+        /* ONLY opacity — no translateY so layout never shifts */
+        .hiw-text-content {
+          display: contents;
         }
-        /* ENTER: rise from below */
-        .hiw-text.hiw-enter {
-          animation: hiw-text-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-          animation-delay: 30ms;
-        }
-        @keyframes hiw-text-rise {
-          from { opacity: 0; transform: translateY(18px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── Typography ─────────────────────────────────────────────── */
         .hiw-label {
           font-size: 18px;
           font-weight: 600;
@@ -206,6 +156,7 @@ export default function HowItWorksScroll() {
           color: #a8a29e;
           margin: 0;
           line-height: 1.4;
+          transition: opacity ${FADE_OUT}ms ease;
         }
         .hiw-heading {
           font-size: 48px;
@@ -214,7 +165,9 @@ export default function HowItWorksScroll() {
           line-height: 1.1;
           color: #1c1917;
           margin: 0;
+          transition: opacity ${FADE_OUT}ms ease;
         }
+        /* Second line (italic) always on its own line */
         .hiw-heading em {
           display: block;
           font-style: italic;
@@ -228,14 +181,57 @@ export default function HowItWorksScroll() {
           color: #6c6760;
           margin: 0;
           max-width: 342px;
+          white-space: pre-line;
+          /* fixed 2 lines height — prevents layout shifts when text varies */
+          min-height: calc(17px * 1.4 * 2);
+          transition: opacity ${FADE_OUT}ms ease;
         }
 
-        /* ── Dot indicators — 8px ───────────────────────────────────── */
+        /* Fade state — applies to all text children */
+        .hiw-text.fade .hiw-label,
+        .hiw-text.fade .hiw-heading,
+        .hiw-text.fade .hiw-desc { opacity: 0; }
+
+        /* ── Prev / Next + Dots row ── */
+        .hiw-nav {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-top: 8px;
+          transition: opacity ${FADE_OUT}ms ease;
+        }
+        .hiw-text.fade .hiw-nav { opacity: 0; }
+
+        /* Arrow buttons */
+        .hiw-arrow {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: 1.5px solid #e7e5e4;
+          background: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #1c1917;
+          transition: background 180ms ease, border-color 180ms ease, opacity 180ms ease;
+          flex-shrink: 0;
+          padding: 0;
+        }
+        .hiw-arrow:hover:not(:disabled) {
+          background: #f5f5f4;
+          border-color: #d1d5db;
+        }
+        .hiw-arrow:disabled {
+          opacity: 0.28;
+          cursor: default;
+        }
+
+        /* Dots */
         .hiw-dots {
           display: flex;
           align-items: center;
           gap: 6px;
-          margin-top: 8px;
         }
         .hiw-dot-btn {
           padding: 4px 0;
@@ -254,9 +250,7 @@ export default function HowItWorksScroll() {
           width: 8px;
           transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .hiw-dot-btn.active .hiw-dot-track {
-          width: 28px;
-        }
+        .hiw-dot-btn.active .hiw-dot-track { width: 28px; }
         .hiw-dot-progress {
           position: absolute;
           inset: 0 auto 0 0;
@@ -265,20 +259,15 @@ export default function HowItWorksScroll() {
           background: #1c1917;
         }
         .hiw-dot-btn.active .hiw-dot-progress {
-          animation: hiw-dot-fill ${AUTO_MS}ms linear forwards;
+          animation: hiw-fill ${AUTO_MS}ms linear forwards;
         }
-        @keyframes hiw-dot-fill {
-          from { width: 0%; }
-          to   { width: 100%; }
-        }
+        @keyframes hiw-fill { from { width: 0%; } to { width: 100%; } }
 
-        /* ── Phone column ───────────────────────────────────────────── */
+        /* ── Phone card ── */
         .hiw-phone-col {
           flex-shrink: 0;
           touch-action: pan-y;
         }
-
-        /* White card — Figma shadow, no overflow:hidden to preserve chrome corners */
         .hiw-card {
           position: relative;
           width: ${CARD_W}px;
@@ -288,24 +277,15 @@ export default function HowItWorksScroll() {
           box-shadow:
             0px 4px 12px 0px rgba(0, 0, 0, 0.05),
             32px 32px 64px 0px rgba(23, 29, 46, 0.12);
+          /* Premium card transition: opacity + gentle scale */
+          transition:
+            opacity ${FADE_OUT}ms ease,
+            transform ${FADE_OUT}ms ease;
         }
-
-        /* EXIT: scale down + fade */
-        .hiw-card.hiw-exit {
+        .hiw-card.fade {
           opacity: 0;
-          transform: scale(0.93) translateY(-10px);
-          transition: opacity 210ms ease-in, transform 210ms ease-in;
+          transform: scale(0.96);
         }
-        /* ENTER: scale up from slightly below */
-        .hiw-card.hiw-enter {
-          animation: hiw-card-rise 440ms cubic-bezier(0.22, 1, 0.36, 1) both;
-        }
-        @keyframes hiw-card-rise {
-          from { opacity: 0; transform: scale(0.95) translateY(16px); }
-          to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        /* Screen area */
         .hiw-screen {
           position: absolute;
           left: ${SCR_L}px;
@@ -322,8 +302,6 @@ export default function HowItWorksScroll() {
           object-fit: cover;
           display: block;
         }
-
-        /* Chrome SVG on top */
         .hiw-chrome {
           position: absolute;
           inset: 0;
@@ -334,17 +312,17 @@ export default function HowItWorksScroll() {
           display: block;
         }
 
-        /* ── Tablet ─────────────────────────────────────────────────── */
+        /* ── Tablet ── */
         @media (min-width: 768px) and (max-width: 1099px) {
           .hiw { padding: 80px 24px; }
           .hiw-inner { gap: 48px; }
           .hiw-text { width: 300px; }
           .hiw-heading { font-size: 38px; }
           .hiw-label { font-size: 15px; }
-          .hiw-desc { font-size: 15px; max-width: 280px; }
+          .hiw-desc { font-size: 15px; max-width: 260px; }
         }
 
-        /* ── Mobile (<768px) ────────────────────────────────────────── */
+        /* ── Mobile ── */
         @media (max-width: 767px) {
           .hiw { padding: 64px 24px 72px; min-height: unset; }
           .hiw-inner { flex-direction: column; gap: 40px; }
@@ -355,11 +333,10 @@ export default function HowItWorksScroll() {
           .hiw-desc { font-size: 15px; }
         }
 
-        /* ── Reduced motion ─────────────────────────────────────────── */
+        /* ── Reduced motion ── */
         @media (prefers-reduced-motion: reduce) {
-          .hiw-text.hiw-exit, .hiw-card.hiw-exit { transition: none !important; }
-          .hiw-text.hiw-enter, .hiw-card.hiw-enter { animation: none !important; }
-          .hiw-dot-progress { animation: none !important; width: 100% !important; }
+          .hiw-label, .hiw-heading, .hiw-desc, .hiw-nav, .hiw-card { transition: none !important; }
+          .hiw-dot-progress { animation: none !important; }
           .hiw-dot-track { transition: none !important; }
         }
       `}</style>
@@ -371,11 +348,10 @@ export default function HowItWorksScroll() {
 
       <div className="hiw-inner">
 
-        {/* ── Text ────────────────────────────────────────────────────── */}
-        <div className={`hiw-text${textCls}`}>
+        {/* ── Text ── */}
+        <div className={`hiw-text${visible ? '' : ' fade'}`}>
           <p className="hiw-label">Step {step.num}</p>
 
-          {/* Two-line heading: line 1 black, line 2 blue italic */}
           <h2 className="hiw-heading">
             {step.regular}
             <em>{step.italic}</em>
@@ -383,34 +359,58 @@ export default function HowItWorksScroll() {
 
           <p className="hiw-desc">{step.desc}</p>
 
-          {/* Dot progress indicators */}
-          <div className="hiw-dots" role="tablist" aria-label="Steps">
-            {STEPS.map((s, i) => (
-              <button
-                key={i}
-                role="tab"
-                aria-selected={i === active}
-                aria-label={`Step ${i + 1}: ${s.regular} ${s.italic}`}
-                className={`hiw-dot-btn${i === active ? ' active' : ''}`}
-                onClick={() => { stopAuto(); goTo(i); }}
-              >
-                <span className="hiw-dot-track">
-                  {i === active && (
-                    <span key={`${i}-${dotKey}`} className="hiw-dot-progress" />
-                  )}
-                </span>
-              </button>
-            ))}
+          {/* Prev / Dots / Next */}
+          <div className="hiw-nav">
+            <button
+              className="hiw-arrow"
+              onClick={() => navigate(Math.max(0, active - 1))}
+              disabled={active === 0}
+              aria-label="Previous step"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M8.5 2.5L4 7L8.5 11.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
+            <div className="hiw-dots" role="tablist" aria-label="Steps">
+              {STEPS.map((s, i) => (
+                <button
+                  key={i}
+                  role="tab"
+                  aria-selected={i === active}
+                  aria-label={`Step ${i + 1}: ${s.regular} ${s.italic}`}
+                  className={`hiw-dot-btn${i === active ? ' active' : ''}`}
+                  onClick={() => navigate(i)}
+                >
+                  <span className="hiw-dot-track">
+                    {i === active && (
+                      <span key={`${i}-${dotKey}`} className="hiw-dot-progress" />
+                    )}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <button
+              className="hiw-arrow"
+              onClick={() => navigate(Math.min(3, active + 1))}
+              disabled={active === 3}
+              aria-label="Next step"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M5.5 2.5L10 7L5.5 11.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </div>
         </div>
 
-        {/* ── Phone ───────────────────────────────────────────────────── */}
+        {/* ── Phone ── */}
         <div
           className="hiw-phone-col"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
-          <div className={`hiw-card${phoneCls}`}>
+          <div className={`hiw-card${visible ? '' : ' fade'}`}>
             <div className="hiw-screen">
               <img
                 src={step.image}

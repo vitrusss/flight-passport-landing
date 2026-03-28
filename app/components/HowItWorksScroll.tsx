@@ -96,15 +96,21 @@ export default function HowItWorksScroll() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // ── Pagination visibility: slide in when section enters viewport ──────────
+  // ── Pagination visibility ─────────────────────────────────────────────────
+  // Show when section top has scrolled past 45% of viewport height
+  // (carousel is prominently visible, not just the heading peeking in).
+  // Hide when section is almost gone (bottom < 15% of viewport).
   useEffect(() => {
-    if (!sectionRef.current) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setPaginationVisible(entry.isIntersecting),
-      { threshold: 0.08 }
-    );
-    observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    const check = () => {
+      if (!sectionRef.current || !isMobileRef.current) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const vh   = window.innerHeight;
+      const show = rect.top < vh * 0.45 && rect.bottom > vh * 0.15;
+      setPaginationVisible(show);
+    };
+    window.addEventListener('scroll', check, { passive: true });
+    check();
+    return () => window.removeEventListener('scroll', check);
   }, []);
 
   // ── Navigate ──────────────────────────────────────────────────────────────

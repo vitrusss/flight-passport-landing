@@ -109,18 +109,17 @@ export default function HowItWorksScroll() {
       const rect = sectionRef.current.getBoundingClientRect();
       const vh   = window.innerHeight;
 
-      // Show pill when section has scrolled enough into view
-      const show = rect.top < vh * 0.4 && rect.bottom > 20;
+      // Show when section entered enough; hide only when section fully gone
+      const show = rect.top < vh * 0.4 && rect.bottom > 0;
       setPaginationVisible(show);
 
-      // Follow section bottom when it enters the viewport:
-      // naturalB=32 while section.bottom > vh (section extends below fold).
-      // As section.bottom drops below vh, increase bottom so pill stays
-      // 32px above section bottom — same visual position, no jump.
+      // Follow section bottom when it enters viewport — no jump, no cap.
+      // naturalB=32 while section extends below fold (section.bottom > vh).
+      // Once section bottom rises into viewport, pill stays 32px above it.
       const b = rect.bottom >= vh
         ? NATURAL_B
         : Math.max(NATURAL_B, vh - rect.bottom + NATURAL_B);
-      setPillBottom(Math.min(b, vh - 80)); // cap so pill never leaves screen
+      setPillBottom(b);
     };
     window.addEventListener('scroll', check, { passive: true });
     check();

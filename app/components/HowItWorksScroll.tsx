@@ -27,7 +27,7 @@ const STEPS = [
     num:     '04',
     regular: 'Build your',
     italic:  'travel history',
-    desc:    'Every completed journey is saved automatically — flights, countries, and distance traveled.',
+    desc:    'Every journey is logged automatically — flights, countries, and distance traveled.',
     image:   '/Images/hiw-step04.png',
   },
 ];
@@ -318,14 +318,56 @@ export default function HowItWorksScroll() {
 
         /* ── Mobile ── */
         @media (max-width: 767px) {
-          .hiw { padding: 64px 24px 72px; min-height: unset; }
-          .hiw-inner { flex-direction: column; gap: 40px; }
-          .hiw-text { width: 100%; max-width: 360px; order: 2; }
-          .hiw-phone-col { order: 1; }
+          .hiw { padding: 56px 24px 64px; min-height: unset; }
+          .hiw-inner { flex-direction: column; align-items: center; gap: 20px; }
+
+          /* Mobile header: label + heading above phone */
+          .hiw-mobile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            text-align: center;
+            width: 100%;
+            order: 1;
+          }
+          .hiw-mobile-header .hiw-label { font-size: 12px; }
+          .hiw-mobile-header .hiw-heading { font-size: 34px; }
+
+          /* Fade applies to mobile header too */
+          .hiw-mobile-header.fade .hiw-label,
+          .hiw-mobile-header.fade .hiw-heading { opacity: 0; }
+
+          /* Phone — slightly larger on mobile for max visual impact */
+          .hiw-phone-col { order: 2; }
+          .hiw-card {
+            width: 264px !important;
+            height: 549px !important;
+            border-radius: 40px !important;
+          }
+          .hiw-screen {
+            left: 7px !important;
+            top: 7px !important;
+            width: 250px !important;
+            height: 535px !important;
+            border-radius: 33px !important;
+          }
+
+          /* Text col on mobile: only desc + nav (label+heading hidden) */
+          .hiw-text { width: 264px; order: 3; gap: 12px; }
+          .hiw-desktop-only { display: none !important; }
+          .hiw-desc {
+            font-size: 15px;
+            min-height: calc(15px * 1.4 * 2);
+            text-align: center;
+          }
+          .hiw-nav { margin-top: 4px; }
+          .hiw-label { font-size: 12px; }
           .hiw-heading { font-size: 34px; }
-          .hiw-label { font-size: 14px; }
-          .hiw-desc { font-size: 15px; }
         }
+
+        /* Mobile header hidden on desktop/tablet */
+        .hiw-mobile-header { display: none; }
 
         /* ── Reduced motion ── */
         @media (prefers-reduced-motion: reduce) {
@@ -342,11 +384,20 @@ export default function HowItWorksScroll() {
 
       <div className="hiw-inner">
 
+        {/* ── Mobile header: label + heading above phone (hidden on desktop) ── */}
+        <div className={`hiw-mobile-header${visible ? '' : ' fade'}`}>
+          <p className="hiw-label">Step {step.num}</p>
+          <h2 className="hiw-heading">
+            {step.regular}
+            <em>{step.italic}</em>
+          </h2>
+        </div>
+
         {/* ── Text ── */}
         <div className={`hiw-text${visible ? '' : ' fade'}`}>
-          <p className="hiw-label">Step {step.num}</p>
+          <p className="hiw-label hiw-desktop-only">Step {step.num}</p>
 
-          <h2 className="hiw-heading">
+          <h2 className="hiw-heading hiw-desktop-only">
             {step.regular}
             <em>{step.italic}</em>
           </h2>

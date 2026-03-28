@@ -367,7 +367,9 @@ export default function HowItWorksScroll() {
         }
 
         /* Mobile header hidden on desktop/tablet */
-        .hiw-mobile-header { display: none; }
+        @media (min-width: 768px) {
+          .hiw-mobile-header { display: none; }
+        }
 
         /* ── Reduced motion ── */
         @media (prefers-reduced-motion: reduce) {

@@ -43,3 +43,8 @@ next-env.d.ts
 # local backups
 public/Images_BACKUP*/
 app/*.bak
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key

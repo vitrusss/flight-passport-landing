@@ -169,10 +169,13 @@ export default function HowItWorksScroll() {
     };
   }, [navigate]);
 
-  // ── Mobile: pause / replay ────────────────────────────────────────────────
+  // ── Pause / replay (shared desktop + mobile) ─────────────────────────────
   const togglePause = () => {
-    pausedRef.current = !pausedRef.current;
-    setPaused(p => !p);
+    const nowPaused = !pausedRef.current;
+    pausedRef.current = nowPaused;
+    setPaused(nowPaused);
+    // Restart progress bar from 0 when resuming
+    if (!nowPaused) setDotKey(k => k + 1);
   };
 
   const replay = () => {
@@ -341,6 +344,30 @@ export default function HowItWorksScroll() {
         }
         .hiw-arrow:hover:not(:disabled) { opacity: 1; }
         .hiw-arrow:disabled { opacity: 0.18; cursor: default; }
+
+        /* Desktop pause / play button */
+        .hiw-pause-btn {
+          background: none;
+          border: 1.5px solid rgba(28, 25, 23, 0.22);
+          border-radius: 999px;
+          width: 28px;
+          height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #1c1917;
+          opacity: 0.5;
+          transition: opacity 180ms ease, border-color 180ms ease;
+          flex-shrink: 0;
+          line-height: 0;
+        }
+        .hiw-pause-btn:hover { opacity: 1; border-color: rgba(28, 25, 23, 0.5); }
+
+        /* Pause dot animation when slider is paused */
+        .hiw-nav.is-paused .hiw-dot-btn.active .hiw-dot-progress {
+          animation-play-state: paused;
+        }
 
         /* ── Dots (shared) ── */
         .hiw-dots {
@@ -586,7 +613,7 @@ export default function HowItWorksScroll() {
           </h2>
           <p className="hiw-desc">{step.desc}</p>
 
-          <div className="hiw-nav">
+          <div className={`hiw-nav${paused && !isMobile ? ' is-paused' : ''}`}>
             <button className="hiw-arrow" onClick={() => navigate(Math.max(0, active - 1))} disabled={active === 0} aria-label="Previous step">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M8.5 2.5L4 7L8.5 11.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -605,6 +632,18 @@ export default function HowItWorksScroll() {
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M5.5 2.5L10 7L5.5 11.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
+            </button>
+            <button className="hiw-pause-btn" onClick={togglePause} aria-label={paused ? 'Play' : 'Pause'}>
+              {paused ? (
+                <svg width="10" height="12" viewBox="0 0 12 14" fill="none">
+                  <path d="M2 1.5L10.5 7L2 12.5V1.5Z" fill="currentColor"/>
+                </svg>
+              ) : (
+                <svg width="8" height="10" viewBox="0 0 10 13" fill="none">
+                  <rect x="0.5" y="0.5" width="3" height="12" rx="1.5" fill="currentColor"/>
+                  <rect x="6.5" y="0.5" width="3" height="12" rx="1.5" fill="currentColor"/>
+                </svg>
+              )}
             </button>
           </div>
         </div>

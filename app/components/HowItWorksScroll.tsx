@@ -38,21 +38,11 @@ const FADE_OUT = 180;
 // Desktop phone card dimensions
 const CARD_W = 238;
 const CARD_H = 495;
-const SCR_L  = 6;
-const SCR_W  = 222;
-const SCR_H  = 481;
-const SCR_T  = Math.round((CARD_H - SCR_H) / 2);
-const SCR_R  = 29;
 const CARD_R = 36;
 
 // Mobile phone card dimensions (proportionally scaled to 240px width)
 const M_CARD_W = 240;
 const M_CARD_H = Math.round(495 * (M_CARD_W / 238));
-const M_SCR_L  = Math.round(SCR_L  * (M_CARD_W / 238));
-const M_SCR_W  = M_CARD_W - M_SCR_L * 2;
-const M_SCR_H  = Math.round(SCR_H  * (M_CARD_W / 238));
-const M_SCR_T  = Math.round((M_CARD_H - M_SCR_H) / 2);
-const M_SCR_R  = Math.round(SCR_R  * (M_CARD_W / 238));
 const M_CARD_R = Math.round(CARD_R * (M_CARD_W / 238));
 
 // Mobile carousel: 32px side peek shows adjacent cards
@@ -408,40 +398,20 @@ export default function HowItWorksScroll() {
         /* ── Desktop phone card ── */
         .hiw-phone-col { flex-shrink: 0; }
         .hiw-card {
-          position: relative;
           width: ${CARD_W}px;
           height: ${CARD_H}px;
-          background: #ffffff;
           border-radius: ${CARD_R}px;
+          overflow: hidden;
           box-shadow:
             0px 4px 12px 0px rgba(0, 0, 0, 0.05),
             32px 32px 64px 0px rgba(23, 29, 46, 0.12);
           transition: opacity ${FADE_OUT}ms ease, transform ${FADE_OUT}ms ease;
         }
         .hiw-card.fade { opacity: 0; transform: scale(0.96); }
-        .hiw-screen {
-          position: absolute;
-          left: ${SCR_L}px;
-          top: ${SCR_T}px;
-          width: ${SCR_W}px;
-          height: ${SCR_H}px;
-          border-radius: ${SCR_R}px;
-          overflow: hidden;
-          background: #f0f0f0;
-        }
-        .hiw-screen img {
+        .hiw-mockup {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          display: block;
-        }
-        .hiw-chrome {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-          z-index: 1;
           display: block;
         }
 
@@ -503,39 +473,19 @@ export default function HowItWorksScroll() {
 
           /* Mobile phone card (proportionally scaled) */
           .hiw-slide-phone {
-            position: relative;
             width: ${M_CARD_W}px;
             height: ${M_CARD_H}px;
-            background: #ffffff;
             border-radius: ${M_CARD_R}px;
+            overflow: hidden;
             box-shadow:
               0px 4px 12px 0px rgba(0, 0, 0, 0.05),
               24px 24px 48px 0px rgba(23, 29, 46, 0.12);
             flex-shrink: 0;
           }
-          .hiw-slide-screen {
-            position: absolute;
-            left: ${M_SCR_L}px;
-            top: ${M_SCR_T}px;
-            width: ${M_SCR_W}px;
-            height: ${M_SCR_H}px;
-            border-radius: ${M_SCR_R}px;
-            overflow: hidden;
-            background: #f0f0f0;
-          }
-          .hiw-slide-screen img {
+          .hiw-slide-mockup {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
-          }
-          .hiw-slide-chrome {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
             display: block;
           }
 
@@ -650,10 +600,7 @@ export default function HowItWorksScroll() {
 
         <div className="hiw-phone-col">
           <div className={`hiw-card${visible ? '' : ' fade'}`}>
-            <div className="hiw-screen">
-              <img src={step.image} alt={`Step ${display + 1}: ${step.regular} ${step.italic}`} draggable={false} />
-            </div>
-            <img src="/Images/hero-phone-chrome.svg" className="hiw-chrome" alt="" aria-hidden="true" draggable={false} />
+            <img src={step.image} className="hiw-mockup" alt={`Step ${display + 1}: ${step.regular} ${step.italic}`} draggable={false} />
           </div>
         </div>
       </div>
@@ -680,10 +627,7 @@ export default function HowItWorksScroll() {
 
                 {/* Phone card */}
                 <div className="hiw-slide-phone">
-                  <div className="hiw-slide-screen">
-                    <img src={s.image} alt={`Step ${i + 1}: ${s.regular} ${s.italic}`} draggable={false} />
-                  </div>
-                  <img src="/Images/hero-phone-chrome.svg" className="hiw-slide-chrome" alt="" aria-hidden="true" draggable={false} />
+                  <img src={s.image} className="hiw-slide-mockup" alt={`Step ${i + 1}: ${s.regular} ${s.italic}`} draggable={false} />
                 </div>
               </div>
             ))}

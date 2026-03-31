@@ -82,7 +82,7 @@
   transition: transform 200ms ease;
 }
 
-/* ── Airline logo hover scale ────────────────────────────────────────────── */
+/* ── Airline logo hover scale + tooltip ──────────────────────────────────── */
 [data-name="Airline emblem"] {
   position: relative;
   transition: transform 300ms ease;
@@ -91,7 +91,9 @@
 [data-name="Airline emblem"]:hover {
   transform: scale(1.2);
   z-index: 10;
+  overflow: visible;
 }
+/* Airline tooltip styles are applied inline via HeroSection.tsx */
 
 /* ── CTA shimmer ─────────────────────────────────────────────────────────── */
 @keyframes shimmer {

@@ -182,7 +182,7 @@ export default function LiveActivities() {
           <div style={{
             position: 'absolute',
             left: '50%',
-            top: '-184px',
+            top: '-120px',
             transform: 'translateX(-50%)',
             width: '560px',
             height: '620px',

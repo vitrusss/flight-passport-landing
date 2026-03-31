@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { imgCloud1, imgCloud2, imgCloud4 } from '../../lib/constants/assets';
+import { AIRLINES } from '../../lib/constants/airlines';
 
 // ── Figma Hero asset URLs (node 7300:48506) ───────────────────────────────────
 const imgImage41 = "/Images/Connection%20Card_New.png";
@@ -70,8 +71,74 @@ const imgPaths10 = "/Images/asset-b6674836-1ac5-4c76-b33c-cb8de474dce8.svg";
 
 export default function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
   const [phoneVisible, setPhoneVisible] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
+
+  // Airline tooltip — event delegation on the marquee strip (desktop hover + mobile tap)
+  useEffect(() => {
+    const tooltip = tooltipRef.current;
+    if (!tooltip) return;
+    const strip = document.querySelector('.marquee-track') as HTMLElement | null;
+    if (!strip) return;
+
+    const showTooltip = (el: HTMLElement) => {
+      const rect = el.getBoundingClientRect();
+      tooltip.textContent = el.dataset.tooltip!;
+      tooltip.style.left = `${rect.left + rect.width / 2}px`;
+      tooltip.style.top = `${rect.top - 10}px`;
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.style.opacity = '1';
+    };
+    const hideTooltip = () => {
+      tooltip.style.opacity = '0';
+      tooltip.style.transform = 'translateY(4px)';
+    };
+
+    // ── Desktop: hover shows tooltip ──
+    const onEnter = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest('[data-tooltip]') as HTMLElement | null;
+      if (!target) return;
+      showTooltip(target);
+    };
+    const onLeave = (e: MouseEvent) => {
+      const related = e.relatedTarget as HTMLElement | null;
+      if (related?.closest?.('[data-tooltip]')) return;
+      hideTooltip();
+    };
+
+    // ── Mobile: tap pauses marquee + shows tooltip, tap outside dismisses ──
+    const onTap = (e: TouchEvent) => {
+      const target = (e.target as HTMLElement).closest('[data-tooltip]') as HTMLElement | null;
+      if (target) {
+        e.preventDefault();
+        showTooltip(target);
+        strip.style.animationPlayState = 'paused';
+      }
+    };
+    const dismissTooltip = (e: TouchEvent) => {
+      const target = (e.target as HTMLElement).closest('[data-tooltip]');
+      if (target && strip.contains(target)) return;
+      hideTooltip();
+      strip.style.animationPlayState = '';
+    };
+
+    strip.addEventListener('mouseenter', onEnter as EventListener, true);
+    strip.addEventListener('mouseover', onEnter as EventListener);
+    strip.addEventListener('mouseleave', onLeave as EventListener, true);
+    strip.addEventListener('mouseout', onLeave as EventListener);
+    strip.addEventListener('touchstart', onTap as EventListener, { passive: false });
+    document.addEventListener('touchstart', dismissTooltip as EventListener, { passive: true });
+
+    return () => {
+      strip.removeEventListener('mouseenter', onEnter as EventListener, true);
+      strip.removeEventListener('mouseover', onEnter as EventListener);
+      strip.removeEventListener('mouseleave', onLeave as EventListener, true);
+      strip.removeEventListener('mouseout', onLeave as EventListener);
+      strip.removeEventListener('touchstart', onTap as EventListener);
+      document.removeEventListener('touchstart', dismissTooltip as EventListener);
+    };
+  }, []);
 
   // Smooth plane movement via rAF — direct DOM, no React re-render per frame
   const CYCLE_MS   = 140_000; // full lap in 140s
@@ -210,6 +277,7 @@ export default function HeroSection() {
   }, []);
 
   return (
+    <>
     <section className="hero-section relative w-full bg-[#f9f8f6] [overflow-x:clip]" ref={heroRef}>
       {/* SKY GRADIENT — exactly 100vh, phone overlaps from below */}
       <div
@@ -710,259 +778,46 @@ export default function HeroSection() {
             Tracks flights across 1200+ airlines and airports worldwide
           </p>
           <div style={{overflow:'hidden', width:'100%', paddingTop:'10px', paddingBottom:'10px', maskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)', WebkitMaskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)'}}>
-              <div className="marquee-track" style={{gap:'32px'}}>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[21%_0_21.84%_0]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths} />
+              <div className="marquee-track" style={{gap:'32px', animationDuration: `${AIRLINES.length * 1.4}s`}}>
+              {/* First copy */}
+              {AIRLINES.map((airline) => (
+                <div key={airline.code} className="relative shrink-0 size-[40px]" data-name="Airline emblem" data-tooltip={airline.name}>
+                  <img alt={airline.name} className="size-full object-contain" src={`/Images/airlines/${airline.code}.svg`} draggable={false} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage} />
+              ))}
+              {/* Second copy — for seamless infinite loop */}
+              {AIRLINES.map((airline) => (
+                <div key={`dup-${airline.code}`} className="relative shrink-0 size-[40px]" data-name="Airline emblem" data-tooltip={airline.name} aria-hidden="true">
+                  <img alt="" className="size-full object-contain" src={`/Images/airlines/${airline.code}.svg`} draggable={false} />
                 </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage1} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[37%_0_36.1%_0]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths1} />
-                </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage2} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem1} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem2} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem3} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage3} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[8.57%_0_11.43%_0]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths2} />
-                </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage4} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem4} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage5} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[16.13%_1.86%_16.39%_1.25%]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths3} />
-                </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage6} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[7.67%_0_5.87%_0]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths4} />
-                </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage7} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[11.43%_0_12.86%_0]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths5} />
-                </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage8} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem5} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem6} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[5%_0_5.39%_0]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths6} />
-                </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage9} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[0_18.93%]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths7} />
-                </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage10} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem7} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage11} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[14%_0_14.81%_0]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths8} />
-                </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage12} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem8} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem9} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem10} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem11} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem12} />
-                <div className="-translate-x-1/2 absolute aspect-[400/400] bottom-0 left-1/2 top-0">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage13} />
-                </div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem13} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem14} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[6.06%_4.74%_6.56%_5.82%]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgVector} />
-                </div>
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem15} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem16} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem17} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem18} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem19} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[13.01%_0_11.99%_0]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths9} />
-                </div>
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem20} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
-                <div className="absolute inset-[12%_0]">
-                  <img alt="" className="absolute block max-w-none size-full" src={imgPaths10} />
-                </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage14} />
-                </div>
-              </div>
-              {/* Second copy — identical, for seamless loop */}
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[21%_0_21.84%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage1} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[37%_0_36.1%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths1} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage2} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem1} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem2} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem3} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage3} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[8.57%_0_11.43%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths2} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage4} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem4} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage5} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[16.13%_1.86%_16.39%_1.25%]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths3} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage6} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[7.67%_0_5.87%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths4} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage7} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[11.43%_0_12.86%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths5} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage8} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem5} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem6} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[5%_0_5.39%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths6} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage9} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[0_18.93%]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths7} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage10} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem7} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage11} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[14%_0_14.81%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths8} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage12} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem8} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem9} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem10} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem11} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem12} />
-                <div className="-translate-x-1/2 absolute aspect-[400/400] bottom-0 left-1/2 top-0"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage13} /></div>
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem13} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem14} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[6.06%_4.74%_6.56%_5.82%]"><img alt="" className="absolute block max-w-none size-full" src={imgVector} /></div>
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem15} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem16} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem17} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem18} />
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem19} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[13.01%_0_11.99%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths9} /></div>
-                <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem20} />
-              </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" aria-hidden="true">
-                <div className="absolute inset-[12%_0]"><img alt="" className="absolute block max-w-none size-full" src={imgPaths10} /></div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2"><img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage14} /></div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
         </div>
       </div>
     </section>
+    <div
+      ref={tooltipRef}
+      style={{
+        position: 'fixed',
+        padding: '6px 12px',
+        background: '#1c1917',
+        color: '#fff',
+        fontSize: 12,
+        fontWeight: 500,
+        lineHeight: 1.3,
+        whiteSpace: 'nowrap',
+        borderRadius: 8,
+        pointerEvents: 'none',
+        opacity: 0,
+        transform: 'translateY(4px)',
+        transition: 'opacity 180ms ease, transform 180ms ease',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        zIndex: 9999,
+      }}
+      className="airline-tooltip"
+    />
+    </>
   );
 }

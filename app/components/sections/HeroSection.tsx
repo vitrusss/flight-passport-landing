@@ -485,25 +485,12 @@ export default function HeroSection() {
                 </p>
               </div>
             </div>
-            {/* Buttons */}
-            <div className="hero-buttons-row flex gap-[16px] items-center justify-center" style={textReveal(360)}>
-              <div className="cta-btn relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] cursor-pointer">
-                <div aria-hidden="true" className="absolute bg-[#1c1917] inset-0 pointer-events-none rounded-[999px]" />
-                <div className="overflow-clip relative shrink-0 size-[20px]">
-                  <div className="absolute inset-[0_10.94%_4.17%_8.33%]">
-                    <img alt="" className="absolute block max-w-none size-full" src={imgIconColor} />
-                  </div>
-                </div>
-                <span className="font-semibold relative text-[15px] text-white text-center whitespace-nowrap leading-[20px]">Download</span>
-                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.15)]" />
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
       {/* MAIN CONTAINER — proportional: phone starts at 54.4% of sky height (matches Figma ratio 384/706) */}
-      <div className="hero-main-container relative w-full z-[10]" style={{ marginTop: 'calc(322px - 45.6vh)' }}>
+      <div className="hero-main-container relative w-full z-[10]" style={{ marginTop: 'calc(290px - 45.6vh)' }}>
         {/* Badge pills — absolutely positioned inside content container */}
         <div className="max-w-[1200px] mx-auto px-5">
         <div className="hero-content-container relative w-[1046px] h-[434px] mx-auto">

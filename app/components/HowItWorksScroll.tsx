@@ -318,7 +318,7 @@ export default function HowItWorksScroll() {
         @media (min-width: 1600px) {
           .hiw-card {
             flex: 0 0 min(1600px, calc(100vw - 240px));
-            aspect-ratio: 1600 / 680;
+            aspect-ratio: 1600 / 761;
           }
           .hiw-track {
             padding: 0 max(120px, calc((100vw - 1600px) / 2));

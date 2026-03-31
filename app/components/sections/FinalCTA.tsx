@@ -110,8 +110,7 @@ export default function FinalCTA() {
               }}
             >
               Travel{" "}
-              <em style={{ fontWeight: 400, fontStyle: "italic", color: "#0ea5e9" }}>with clarity</em>
-              {","}
+              <em style={{ fontWeight: 400, fontStyle: "italic", color: "#0ea5e9" }}>with clarity,</em>
               <br />
               from departure to destination
             </h2>

@@ -98,14 +98,15 @@ export default function HowItWorksScroll() {
   }, []);
 
   useEffect(() => {
-    const NATURAL_B = 32;
+    const VIEWPORT_B = 32;   // distance from viewport bottom during scroll
+    const SECTION_B  = 120;  // distance from section bottom edge
     const check = () => {
       if (!sectionRef.current) return;
       const rect = sectionRef.current.getBoundingClientRect();
       const vh   = window.innerHeight;
       setPaginationVisible(rect.top < vh * 0.5 && rect.bottom > 0);
       setPillBottom(
-        rect.bottom >= vh ? NATURAL_B : Math.max(NATURAL_B, vh - rect.bottom + NATURAL_B)
+        rect.bottom >= vh ? VIEWPORT_B : Math.max(VIEWPORT_B, vh - rect.bottom + SECTION_B)
       );
     };
     window.addEventListener('scroll', check, { passive: true });
@@ -257,7 +258,7 @@ export default function HowItWorksScroll() {
            Section
            ══════════════════════════════════════ */
         .hiw {
-          padding: 96px 0 200px;
+          padding: 96px 0 240px;
           box-sizing: border-box;
           border-top: 1px solid #e7e5e4;
           border-bottom: 1px solid #e7e5e4;

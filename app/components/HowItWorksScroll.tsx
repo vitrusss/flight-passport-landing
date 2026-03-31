@@ -257,7 +257,7 @@ export default function HowItWorksScroll() {
            Section
            ══════════════════════════════════════ */
         .hiw {
-          padding: 96px 0 160px;
+          padding: 96px 0 200px;
           box-sizing: border-box;
           border-top: 1px solid #e7e5e4;
           border-bottom: 1px solid #e7e5e4;

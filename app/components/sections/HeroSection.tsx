@@ -328,7 +328,19 @@ export default function HeroSection() {
             .badge-conn, .badge-gate     { top: 84px !important; }
             .badge-hist, .badge-delay    { top: 180px !important; }
           }
+          /* Hero mobile download button — hidden on desktop, shown on mobile */
+          .hero-mobile-btn { display: none; }
           @media (max-width: 767px) {
+            .hero-mobile-btn {
+              display: flex;
+              justify-content: center;
+              width: 100%;
+              max-width: 360px;
+              margin: 0 auto;
+              padding: 0 20px;
+              box-sizing: border-box;
+            }
+            .hero-mobile-btn .cta-btn { width: 100%; justify-content: center; }
             /* Sky fills the viewport on mobile */
             .hero-sky-section {
               height: 100svh !important;
@@ -483,6 +495,19 @@ export default function HeroSection() {
                 <p className="hero-subtitle font-normal leading-[1.4] relative text-[17px] text-white text-center" style={textReveal(240)}>
                   Real-time tracking, predictive delay signals, and a personal travel history
                 </p>
+              </div>
+            </div>
+            {/* Download button — mobile only (visible when burger menu is shown) */}
+            <div className="hero-mobile-btn" style={textReveal(360)}>
+              <div className="cta-btn relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] cursor-pointer">
+                <div aria-hidden="true" className="absolute bg-[#1c1917] inset-0 pointer-events-none rounded-[999px]" />
+                <div className="overflow-clip relative shrink-0 size-[20px]">
+                  <div className="absolute inset-[0_10.94%_4.17%_8.33%]">
+                    <img alt="" className="absolute block max-w-none size-full" src={imgIconColor} />
+                  </div>
+                </div>
+                <span className="font-semibold relative text-[15px] text-white text-center whitespace-nowrap leading-[20px]">Download</span>
+                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.15)]" />
               </div>
             </div>
           </div>

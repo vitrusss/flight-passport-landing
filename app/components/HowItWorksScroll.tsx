@@ -1,171 +1,202 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const STEPS = [
+/* ─────────────────────────────────────────────
+   Step config — label + responsive image paths
+   ───────────────────────────────────────────── */
+interface StepConfig {
+  label: string;
+  xs: string;  // ≤559px  — Mobile L
+  sm: string;  // 560–959px — Tablet
+  md: string;  // 960–1199px — Desktop
+  lg: string;  // 1200–1599px — Desktop L
+  xl: string;  // ≥1600px — Full HD
+}
+
+const STEPS: StepConfig[] = [
   {
-    num:     '01',
-    regular: 'Find any flight',
-    italic:  'in seconds',
-    desc:    'Search by flight number or route. We instantly retrieve real operational data.',
-    image:   '/Images/hiw-step01.png',
+    label: 'Find any flight in seconds',
+    xs: '/Images/hiw-c1-xs.png',
+    sm: '/Images/hiw-c1-sm.png',
+    md: '/Images/hiw-c1-md.png',
+    lg: '/Images/hiw-c1-lg.png',
+    xl: '/Images/hiw-c1-xl.png',
   },
   {
-    num:     '02',
-    regular: 'Understand',
-    italic:  'what to expect',
-    desc:    'See delay history, reliability, and flight conditions before your trip begins.',
-    image:   '/Images/hiw-step02.png',
+    label: 'Understand what to expect',
+    xs: '/Images/hiw-c2-xs.png',
+    sm: '/Images/hiw-c2-sm.png',
+    md: '/Images/hiw-c2-md.png',
+    lg: '/Images/hiw-c2-lg.png',
+    xl: '/Images/hiw-c2-xl.png',
   },
   {
-    num:     '03',
-    regular: 'Stay ahead',
-    italic:  'of every change',
-    desc:    'Get live updates for every phase — boarding, delays, connections, and arrival.',
-    image:   '/Images/hiw-step03.png',
+    label: 'Stay ahead of every change',
+    xs: '/Images/hiw-c3-xs.png',
+    sm: '/Images/hiw-c3-sm.png',
+    md: '/Images/hiw-c3-md.png',
+    lg: '/Images/hiw-c3-lg.png',
+    xl: '/Images/hiw-c3-xl.png',
   },
   {
-    num:     '04',
-    regular: 'Build your',
-    italic:  'travel history',
-    desc:    'Every journey is logged automatically — flights, countries, and distance traveled.',
-    image:   '/Images/hiw-step04.png',
+    label: 'Build your travel history',
+    xs: '/Images/hiw-c4-xs.png',
+    sm: '/Images/hiw-c4-sm.png',
+    md: '/Images/hiw-c4-md.png',
+    lg: '/Images/hiw-c4-lg.png',
+    xl: '/Images/hiw-c4-xl.png',
   },
 ];
 
 const AUTO_MS  = 10000;
-const FADE_OUT = 180;
+const CARD_GAP = 32;
+const M_GAP    = 24;
 
-// Desktop phone card dimensions
-const CARD_W = 238;
-const CARD_H = 495;
-const CARD_R = 36;
-
-// Mobile phone card dimensions (proportionally scaled to 240px width)
-const M_CARD_W = 240;
-const M_CARD_H = Math.round(495 * (M_CARD_W / 238));
-const M_CARD_R = Math.round(CARD_R * (M_CARD_W / 238));
-
-// Mobile carousel: 32px side peek shows adjacent cards
-const PEEK = 32;
-const SLIDE_GAP = 12;
-
+/* ─────────────────────────────────────────────
+   Main slider component
+   ───────────────────────────────────────────── */
 export default function HowItWorksScroll() {
-  // ── Shared state ──────────────────────────────────────────────────────────
-  const [active,  setActive]  = useState(0);
-  const [display, setDisplay] = useState(0); // desktop: delayed swap; mobile: same as active
-  const [visible, setVisible] = useState(true);
-  const [dotKey,  setDotKey]  = useState(0);
-
-  // ── Mobile-specific state ─────────────────────────────────────────────────
-  const [isMobile,          setIsMobile]          = useState(false);
+  const [active,            setActive]            = useState(0);
+  const [dotKey,            setDotKey]            = useState(0);
+  const [autoStarted,       setAutoStarted]       = useState(false);
   const [paused,            setPaused]            = useState(false);
   const [completed,         setCompleted]         = useState(false);
-  const [dragOffset,        setDragOffset]        = useState(0);
-  const [dragging,          setDragging]          = useState(false);
   const [paginationVisible, setPaginationVisible] = useState(false);
   const [pillBottom,        setPillBottom]        = useState(32);
+  const [stepPx,            setStepPx]            = useState(0);
+  const [dragOffset,        setDragOffset]        = useState(0);
+  const [dragging,          setDragging]          = useState(false);
 
-  // ── Refs (avoid stale closures in setInterval / navigate) ─────────────────
-  const activeRef    = useRef(0);
-  const visibleRef   = useRef(true);
-  const sectionRef   = useRef<HTMLElement>(null);
-  const swapTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isMobileRef  = useRef(false);
-  const pausedRef    = useRef(false);
-  const completedRef = useRef(false);
-  const touchStartX  = useRef(0);
+  const activeRef       = useRef(0);
+  const pausedRef       = useRef(false);
+  const completedRef    = useRef(false);
+  const inViewRef       = useRef(false);
+  const sectionRef      = useRef<HTMLElement>(null);
+  const firstCardRef    = useRef<HTMLDivElement>(null);
+  const touchStartX     = useRef(0);
+  const timerRef        = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const slideEnteredRef = useRef<number>(Date.now());
+  const remainingRef    = useRef<number>(AUTO_MS);
 
-  // ── isMobile detection ────────────────────────────────────────────────────
   useEffect(() => {
-    const check = () => {
-      const m = window.innerWidth < 768;
-      isMobileRef.current = m;
-      setIsMobile(m);
-    };
-    check();
+    const check = () => {};
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // ── Pagination pill visibility + Apple-style "follows section on exit" ───
-  // Appears when section top scrolls past ~40% of viewport (carousel well in view).
-  // While section bottom is below viewport: pill is fixed at bottom: 32px.
-  // When section bottom rises into viewport: pill bottom tracks section
-  //   so it moves up with the section seamlessly — no jump at transition point.
   useEffect(() => {
-    const NATURAL_B = 32; // desired bottom offset in px
+    const update = () => {
+      if (!firstCardRef.current) return;
+      const gap = window.innerWidth < 768 ? M_GAP : CARD_GAP;
+      setStepPx(firstCardRef.current.offsetWidth + gap);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    if (firstCardRef.current) ro.observe(firstCardRef.current);
+    window.addEventListener('resize', update);
+    return () => { ro.disconnect(); window.removeEventListener('resize', update); };
+  }, []);
+
+  useEffect(() => {
+    const NATURAL_B = 32;
     const check = () => {
-      if (!sectionRef.current || !isMobileRef.current) return;
+      if (!sectionRef.current) return;
       const rect = sectionRef.current.getBoundingClientRect();
       const vh   = window.innerHeight;
-
-      // Show when section entered enough; hide only when section fully gone
-      const show = rect.top < vh * 0.4 && rect.bottom > 0;
-      setPaginationVisible(show);
-
-      // Follow section bottom when it enters viewport — no jump, no cap.
-      // naturalB=32 while section extends below fold (section.bottom > vh).
-      // Once section bottom rises into viewport, pill stays 32px above it.
-      const b = rect.bottom >= vh
-        ? NATURAL_B
-        : Math.max(NATURAL_B, vh - rect.bottom + NATURAL_B);
-      setPillBottom(b);
+      setPaginationVisible(rect.top < vh * 0.5 && rect.bottom > 0);
+      setPillBottom(
+        rect.bottom >= vh ? NATURAL_B : Math.max(NATURAL_B, vh - rect.bottom + NATURAL_B)
+      );
     };
     window.addEventListener('scroll', check, { passive: true });
     check();
     return () => window.removeEventListener('scroll', check);
   }, []);
 
-  // ── Navigate ──────────────────────────────────────────────────────────────
-  const navigate = useCallback((next: number) => {
-    if (next === activeRef.current) return;
+  const clearTimer = () => {
+    if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
+  };
 
-    activeRef.current = next;
-    setActive(next);
-    setDotKey(k => k + 1);
-
-    if (isMobileRef.current) {
-      // Mobile: instant (CSS transform handles the animation)
-      setDisplay(next);
-    } else {
-      // Desktop: fade out → swap content → fade in
-      if (!visibleRef.current) return;
-      visibleRef.current = false;
-      setVisible(false);
-      swapTimer.current = setTimeout(() => {
-        setDisplay(next);
-        visibleRef.current = true;
-        setVisible(true);
-      }, FADE_OUT + 10);
-    }
-  }, []);
-
-  // ── Auto-advance ──────────────────────────────────────────────────────────
-  useEffect(() => {
-    const id = setInterval(() => {
+  const scheduleAdvance = useCallback((delay: number) => {
+    clearTimer();
+    slideEnteredRef.current = Date.now() - (AUTO_MS - delay);
+    timerRef.current = setTimeout(() => {
       if (pausedRef.current || completedRef.current) return;
       const next = activeRef.current + 1;
-      // Mobile: stop at end and show replay; desktop: loop
-      if (isMobileRef.current && next >= STEPS.length) {
+      if (next >= STEPS.length) {
         completedRef.current = true;
         setCompleted(true);
         return;
       }
-      navigate(next % STEPS.length);
-    }, AUTO_MS);
-    return () => {
-      clearInterval(id);
-      if (swapTimer.current) clearTimeout(swapTimer.current);
-    };
-  }, [navigate]);
+      activeRef.current = next;
+      setActive(next);
+      setDotKey(k => k + 1);
+      remainingRef.current = AUTO_MS;
+    }, delay);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // ── Pause / replay (shared desktop + mobile) ─────────────────────────────
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        const wasInView = inViewRef.current;
+        inViewRef.current = entry.isIntersecting;
+        if (entry.isIntersecting && !wasInView) {
+          if (!pausedRef.current && !completedRef.current) {
+            setAutoStarted(true);
+            setDotKey(k => k + 1);
+            scheduleAdvance(remainingRef.current);
+          }
+        } else if (!entry.isIntersecting && wasInView) {
+          const elapsed = Date.now() - slideEnteredRef.current;
+          remainingRef.current = Math.max(200, AUTO_MS - elapsed);
+          clearTimer();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    io.observe(sectionRef.current);
+    return () => io.disconnect();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scheduleAdvance]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => clearTimer, []);
+
+  useEffect(() => {
+    if (pausedRef.current || completedRef.current || !inViewRef.current) return;
+    scheduleAdvance(AUTO_MS);
+    remainingRef.current = AUTO_MS;
+  }, [active, scheduleAdvance]);
+
+  const navigate = useCallback((next: number) => {
+    if (next === activeRef.current) return;
+    clearTimer();
+    if (completedRef.current) { completedRef.current = false; setCompleted(false); }
+    activeRef.current = next;
+    setActive(next);
+    setDotKey(k => k + 1);
+    remainingRef.current = AUTO_MS;
+  }, []);
+
+  const handlePause = () => {
+    const elapsed = Date.now() - slideEnteredRef.current;
+    remainingRef.current = Math.max(200, AUTO_MS - elapsed);
+    clearTimer();
+    pausedRef.current = true;
+    setPaused(true);
+  };
+
+  const handleResume = () => {
+    pausedRef.current = false;
+    setPaused(false);
+    scheduleAdvance(remainingRef.current);
+  };
+
   const togglePause = () => {
-    const nowPaused = !pausedRef.current;
-    pausedRef.current = nowPaused;
-    setPaused(nowPaused);
-    // Restart progress bar from 0 when resuming
-    if (!nowPaused) setDotKey(k => k + 1);
+    if (pausedRef.current) handleResume();
+    else handlePause();
   };
 
   const replay = () => {
@@ -173,22 +204,23 @@ export default function HowItWorksScroll() {
     pausedRef.current    = false;
     setCompleted(false);
     setPaused(false);
-    activeRef.current = 0;
-    setActive(0);
-    setDisplay(0);
-    setDotKey(k => k + 1);
+    remainingRef.current = AUTO_MS;
+    if (activeRef.current === 0) {
+      setDotKey(k => k + 1);
+      scheduleAdvance(AUTO_MS);
+    } else {
+      activeRef.current = 0;
+      setActive(0);
+      setDotKey(k => k + 1);
+    }
   };
 
-  // ── Touch / drag ─────────────────────────────────────────────────────────
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
-    if (isMobileRef.current) setDragging(true);
+    setDragging(true);
   };
-
   const onTouchMove = (e: React.TouchEvent) => {
-    if (!isMobileRef.current) return;
-    const raw = e.touches[0].clientX - touchStartX.current;
-    // Rubber-band at edges
+    const raw    = e.touches[0].clientX - touchStartX.current;
     const atStart = activeRef.current === 0;
     const atEnd   = activeRef.current === STEPS.length - 1;
     let offset = raw;
@@ -196,7 +228,6 @@ export default function HowItWorksScroll() {
     if (atEnd   && raw < 0) offset = raw * 0.25;
     setDragOffset(offset);
   };
-
   const onTouchEnd = (e: React.TouchEvent) => {
     setDragging(false);
     setDragOffset(0);
@@ -205,168 +236,175 @@ export default function HowItWorksScroll() {
       const next = delta > 0
         ? Math.min(STEPS.length - 1, activeRef.current + 1)
         : Math.max(0, activeRef.current - 1);
-      // Un-complete on manual back-swipe
-      if (completedRef.current && delta < 0) {
-        completedRef.current = false;
-        setCompleted(false);
-      }
       navigate(next);
     }
   };
 
-  // ── Keyboard (desktop) ────────────────────────────────────────────────────
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); navigate(Math.min(3, activeRef.current + 1)); }
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); navigate(Math.max(0, activeRef.current - 1)); }
-    if (e.key === 'Home') { e.preventDefault(); navigate(0); }
-    if (e.key === 'End')  { e.preventDefault(); navigate(3); }
-  };
-
-  const step = STEPS[display];
-
-  // ── Mobile carousel transform ─────────────────────────────────────────────
-  // Each slide = 100vw - 2*PEEK wide. Step = slideWidth + gap = (100vw - 64px + 12px)
-  const trackTransform = `calc(-${active} * (100vw - ${PEEK * 2 - SLIDE_GAP}px) + ${dragOffset}px)`;
+  const trackX = stepPx > 0 ? `${-active * stepPx + dragOffset}px` : '0px';
 
   return (
     <section
       ref={sectionRef}
       id="how-it-works"
       className="hiw"
-      tabIndex={0}
-      onKeyDown={onKeyDown}
+      aria-label="How FlightPassport works"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
-      aria-label="How FlightPassport works"
     >
       <style>{`
-        /* ── Base ── */
+        /* ══════════════════════════════════════
+           Section
+           ══════════════════════════════════════ */
         .hiw {
-          min-height: 100svh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 120px 24px;
+          padding: 96px 0 160px;
           box-sizing: border-box;
-          outline: none;
           border-top: 1px solid #e7e5e4;
           border-bottom: 1px solid #e7e5e4;
-          background: linear-gradient(261.64deg, #e6e6e6 6.85%, #ffffff 83.93%);
+          background: linear-gradient(26deg, #e6e6e6 0%, #ffffff 100%);
           position: relative;
+          overflow: hidden;
         }
-
-        /* ── Desktop layout ── */
-        .hiw-inner {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 80px;
-          width: 100%;
-        }
-        .hiw-text {
-          width: 384px;
-          flex-shrink: 0;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 16px;
+        .hiw-header {
           text-align: center;
+          padding: 0 24px;
+          margin-bottom: 48px;
         }
-        .hiw-label {
-          font-size: 18px;
-          font-weight: 600;
-          letter-spacing: -0.01em;
-          text-transform: uppercase;
-          color: #a8a29e;
-          margin: 0;
-          line-height: 1.4;
-          transition: opacity ${FADE_OUT}ms ease;
-        }
-        .hiw-heading {
+        .hiw-title {
           font-size: 48px;
           font-weight: 700;
           letter-spacing: -0.02em;
           line-height: 1.1;
           color: #1c1917;
           margin: 0;
-          transition: opacity ${FADE_OUT}ms ease;
         }
-        .hiw-heading em {
+
+        /* ══════════════════════════════════════
+           Carousel mechanics
+           ══════════════════════════════════════ */
+        .hiw-carousel { overflow: visible; }
+        .hiw-track {
+          display: flex;
+          align-items: stretch;
+          gap: ${CARD_GAP}px;
+          padding: 0 max(120px, calc((100vw - 1200px) / 2));
+          will-change: transform;
+        }
+        .hiw-track.is-animating {
+          transition: transform 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* ── Card shell ── */
+        .hiw-card {
+          flex: 0 0 min(1200px, calc(100vw - 240px));
+          aspect-ratio: 1200 / 680;
+          border-radius: 40px;
+          overflow: hidden;
+          cursor: pointer;
+          flex-shrink: 0;
+          user-select: none;
+          position: relative;
+        }
+        .hiw-card.is-active { cursor: default; }
+
+        /* ── Card image ── */
+        .hiw-card-img {
           display: block;
-          font-style: italic;
-          font-weight: 400;
-          color: #0284c7;
-        }
-        .hiw-desc {
-          font-size: 17px;
-          font-weight: 400;
-          line-height: 1.4;
-          color: #6c6760;
-          margin: 0;
-          max-width: 342px;
-          min-height: calc(17px * 1.4 * 2);
-          transition: opacity ${FADE_OUT}ms ease;
-        }
-        .hiw-text.fade .hiw-label,
-        .hiw-text.fade .hiw-heading,
-        .hiw-text.fade .hiw-desc { opacity: 0; }
-
-        /* ── Desktop nav ── */
-        .hiw-nav {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          margin-top: 8px;
-          transition: opacity ${FADE_OUT}ms ease;
-        }
-        .hiw-text.fade .hiw-nav { opacity: 0; }
-        .hiw-arrow {
-          background: none;
-          border: none;
-          padding: 4px 6px;
-          cursor: pointer;
-          color: #1c1917;
-          opacity: 0.45;
-          transition: opacity 180ms ease;
-          flex-shrink: 0;
-          line-height: 0;
-        }
-        .hiw-arrow:hover:not(:disabled) { opacity: 1; }
-        .hiw-arrow:disabled { opacity: 0.18; cursor: default; }
-
-        /* Desktop pause / play button */
-        .hiw-pause-btn {
-          background: none;
-          border: 1.5px solid rgba(28, 25, 23, 0.22);
-          border-radius: 999px;
-          width: 28px;
-          height: 28px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          color: #1c1917;
-          opacity: 0.5;
-          transition: opacity 180ms ease, border-color 180ms ease;
-          flex-shrink: 0;
-          line-height: 0;
-        }
-        .hiw-pause-btn:hover { opacity: 1; border-color: rgba(28, 25, 23, 0.5); }
-
-        /* Pause dot animation when slider is paused */
-        .hiw-nav.is-paused .hiw-dot-btn.active .hiw-dot-progress {
-          animation-play-state: paused;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          pointer-events: none;
+          -webkit-user-drag: none;
         }
 
-        /* ── Dots (shared) ── */
+        /* ══════════════════════════════════════
+           XL (≥1600px)
+           ══════════════════════════════════════ */
+        @media (min-width: 1600px) {
+          .hiw-card {
+            flex: 0 0 min(1600px, calc(100vw - 240px));
+            aspect-ratio: 1600 / 680;
+          }
+          .hiw-track {
+            padding: 0 max(120px, calc((100vw - 1600px) / 2));
+          }
+        }
+
+        /* ══════════════════════════════════════
+           MD tablet (768–1199px) — shared shell
+           ══════════════════════════════════════ */
+        @media (min-width: 768px) and (max-width: 1199px) {
+          .hiw-card {
+            flex: 0 0 min(960px, calc(100vw - 80px));
+            aspect-ratio: 960 / 620;
+            border-radius: 32px;
+          }
+          .hiw-track {
+            gap: ${CARD_GAP}px;
+            padding: 0 max(40px, calc((100vw - 960px) / 2));
+          }
+        }
+        /* Narrow tablet override for taller cards */
+        @media (min-width: 768px) and (max-width: 959px) {
+          .hiw-card { aspect-ratio: 640 / 538; }
+        }
+
+        /* ══════════════════════════════════════
+           SM mobile (560–767px)
+           ══════════════════════════════════════ */
+        @media (min-width: 560px) and (max-width: 767px) {
+          .hiw { padding: 64px 0 104px; }
+          .hiw-title { font-size: 32px; }
+          .hiw-header { margin-bottom: 32px; }
+          .hiw-track {
+            align-items: flex-start;
+            gap: ${M_GAP}px;
+            padding: 0 max(32px, calc((100vw - 560px) / 2));
+          }
+          .hiw-card {
+            flex: 0 0 560px;
+            width: 560px;
+            min-width: 560px;
+            max-width: 560px;
+            height: 538px;
+            aspect-ratio: auto;
+            border-radius: 24px;
+          }
+        }
+
+        /* ══════════════════════════════════════
+           XS mobile (≤559px)
+           ══════════════════════════════════════ */
+        @media (max-width: 559px) {
+          .hiw { padding: 64px 0 104px; }
+          .hiw-title { font-size: 32px; }
+          .hiw-header { margin-bottom: 32px; }
+          .hiw-track {
+            align-items: flex-start;
+            gap: ${M_GAP}px;
+            padding: 0 max(24px, calc((100vw - 320px) / 2));
+          }
+          .hiw-card {
+            flex: 0 0 320px;
+            width: 320px;
+            min-width: 320px;
+            max-width: 320px;
+            height: 538px;
+            aspect-ratio: auto;
+            border-radius: 24px;
+          }
+        }
+
+        /* ══════════════════════════════════════
+           Dots / Pagination / Pill
+           ══════════════════════════════════════ */
         .hiw-dots {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 16px;
         }
         .hiw-dot-btn {
-          padding: 4px 0;
+          padding: 6px 0;
           background: none;
           border: none;
           cursor: pointer;
@@ -376,13 +414,13 @@ export default function HowItWorksScroll() {
           display: block;
           height: 8px;
           border-radius: 999px;
-          background: #d6d3d1;
+          background: rgba(28, 25, 23, 0.25);
           overflow: hidden;
           position: relative;
           width: 8px;
           transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .hiw-dot-btn.active .hiw-dot-track { width: 28px; }
+        .hiw-dot-btn.active .hiw-dot-track { width: 47px; }
         .hiw-dot-progress {
           position: absolute;
           inset: 0 auto 0 0;
@@ -395,287 +433,177 @@ export default function HowItWorksScroll() {
         }
         @keyframes hiw-fill { from { width: 0%; } to { width: 100%; } }
 
-        /* ── Desktop phone card ── */
-        .hiw-phone-col { flex-shrink: 0; }
-        .hiw-card {
-          width: ${CARD_W}px;
-          height: ${CARD_H}px;
-          border-radius: ${CARD_R}px;
-          overflow: hidden;
+        .hiw-pagination.is-paused .hiw-dot-btn.active .hiw-dot-progress {
+          animation-play-state: paused;
+        }
+
+        .hiw-pagination {
+          position: fixed;
+          left: 50%;
+          transform: translateX(-50%) translateY(80px);
+          opacity: 0;
+          pointer-events: none;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          z-index: 200;
+          transition:
+            transform 500ms cubic-bezier(0.34, 1.4, 0.64, 1),
+            opacity 320ms ease;
+        }
+        .hiw-pagination.visible {
+          transform: translateX(-50%) translateY(0);
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .hiw-dots-pill {
+          display: flex;
+          align-items: center;
+          height: 56px;
+          padding: 0 24px;
+          background: rgba(255, 255, 255, 0.75);
+          backdrop-filter: blur(24px) saturate(1.8);
+          -webkit-backdrop-filter: blur(24px) saturate(1.8);
+          border-radius: 999px;
           box-shadow:
-            0px 4px 12px 0px rgba(0, 0, 0, 0.05),
-            32px 32px 64px 0px rgba(23, 29, 46, 0.12);
-          transition: opacity ${FADE_OUT}ms ease, transform ${FADE_OUT}ms ease;
-        }
-        .hiw-card.fade { opacity: 0; transform: scale(0.96); }
-        .hiw-mockup {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
+            0 2px 24px rgba(0, 0, 0, 0.10),
+            inset 0 0.5px 0 rgba(255, 255, 255, 0.9);
         }
 
-        /* ── Tablet ── */
-        @media (min-width: 768px) and (max-width: 1099px) {
-          .hiw { padding: 80px 24px; }
-          .hiw-inner { gap: 48px; }
-          .hiw-text { width: 300px; }
-          .hiw-heading { font-size: 38px; }
-          .hiw-label { font-size: 15px; }
-          .hiw-desc { font-size: 15px; max-width: 260px; }
+        .hiw-action-btn {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.75);
+          backdrop-filter: blur(24px) saturate(1.8);
+          -webkit-backdrop-filter: blur(24px) saturate(1.8);
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #1c1917;
+          flex-shrink: 0;
+          line-height: 0;
+          box-shadow:
+            0 2px 24px rgba(0, 0, 0, 0.10),
+            inset 0 0.5px 0 rgba(255, 255, 255, 0.9);
+          transition: transform 150ms ease;
         }
-
-        /* ── Mobile carousel ── */
-        @media (max-width: 767px) {
-          .hiw {
-            padding: 48px 0 100px;
-            min-height: unset;
-            display: block;
-            overflow: hidden;
-          }
-
-          /* Hide desktop layout on mobile */
-          .hiw-inner { display: none; }
-
-          /* Carousel track — all 4 slides side by side */
-          .hiw-carousel-track {
-            display: flex;
-            gap: ${SLIDE_GAP}px;
-            padding: 0 ${PEEK}px;
-            /* Transition driven by JS inline style */
-          }
-          .hiw-carousel-track.is-animating {
-            transition: transform 480ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-          }
-
-          /* Each slide = full width minus the 2 peek zones */
-          .hiw-slide {
-            flex: 0 0 calc(100vw - ${PEEK * 2}px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-          }
-
-          /* Slide text block */
-          .hiw-slide-text {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            text-align: center;
-            padding: 0 8px;
-            width: 100%;
-          }
-          .hiw-slide-text .hiw-label  { font-size: 12px; }
-          .hiw-slide-text .hiw-heading { font-size: 32px; }
-          .hiw-slide-text .hiw-desc   { font-size: 15px; min-height: unset; max-width: 100%; }
-
-          /* Mobile phone card (proportionally scaled) */
-          .hiw-slide-phone {
-            width: ${M_CARD_W}px;
-            height: ${M_CARD_H}px;
-            border-radius: ${M_CARD_R}px;
-            overflow: hidden;
-            box-shadow:
-              0px 4px 12px 0px rgba(0, 0, 0, 0.05),
-              24px 24px 48px 0px rgba(23, 29, 46, 0.12);
-            flex-shrink: 0;
-          }
-          .hiw-slide-mockup {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-          }
-
-          /* Apple-style pagination pill — fixed, bottom set via JS (follows section on exit) */
-          .hiw-pagination {
-            position: fixed;
-            /* bottom set via inline style — tracks section on exit, no CSS transition on it */
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            opacity: 0;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.72);
-            backdrop-filter: blur(32px) saturate(2);
-            -webkit-backdrop-filter: blur(32px) saturate(2);
-            border-radius: 999px;
-            padding: 8px 10px 8px 14px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.12), inset 0 0.5px 0 rgba(255,255,255,0.9);
-            z-index: 200;
-            /* Only animate the slide-in transform/opacity, never bottom */
-            transition:
-              transform 480ms cubic-bezier(0.34, 1.4, 0.64, 1),
-              opacity 320ms ease;
-          }
-          .hiw-pagination.visible {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-          }
-          .hiw-pagination .hiw-dots { gap: 5px; }
-          .hiw-pagination .hiw-dot-track { background: rgba(28,25,23,0.2); }
-          .hiw-pagination .hiw-dot-btn.active .hiw-dot-progress { background: #1c1917; }
-
-          /* Pause / replay button */
-          .hiw-ctrl-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(28, 25, 23, 0.08);
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #1c1917;
-            flex-shrink: 0;
-            transition: background 180ms ease;
-          }
-          .hiw-ctrl-btn:hover { background: rgba(28, 25, 23, 0.14); }
-        }
+        .hiw-action-btn:hover { transform: scale(1.07); }
 
         /* ── Reduced motion ── */
         @media (prefers-reduced-motion: reduce) {
-          .hiw-label, .hiw-heading, .hiw-desc, .hiw-nav, .hiw-card { transition: none !important; }
+          .hiw-track        { transition: none !important; }
+          .hiw-card         { transition: none !important; }
           .hiw-dot-progress { animation: none !important; }
-          .hiw-dot-track { transition: none !important; }
-          .hiw-carousel-track { transition: none !important; }
+          .hiw-dot-track    { transition: none !important; }
+          .hiw-pagination   { transition: none !important; }
         }
       `}</style>
 
-      {/* Screen-reader live region */}
-      <div aria-live="polite" aria-atomic="true" style={{ position:'absolute', width:1, height:1, overflow:'hidden', clip:'rect(0,0,0,0)', whiteSpace:'nowrap' }}>
-        Step {active + 1} of {STEPS.length}: {STEPS[active].regular} {STEPS[active].italic}
+      {/* SR live region */}
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}
+      >
+        Slide {active + 1} of {STEPS.length}: {STEPS[active].label}
       </div>
 
-      {/* ── Desktop layout (hidden on mobile via CSS) ── */}
-      <div className="hiw-inner">
-        <div className={`hiw-text${visible ? '' : ' fade'}`}>
-          <p className="hiw-label">Step {step.num}</p>
-          <h2 className="hiw-heading">
-            {step.regular}
-            <em>{step.italic}</em>
-          </h2>
-          <p className="hiw-desc">{step.desc}</p>
+      {/* Title */}
+      <div className="hiw-header">
+        <h2 className="hiw-title">How it works</h2>
+      </div>
 
-          <div className={`hiw-nav${paused && !isMobile ? ' is-paused' : ''}`}>
-            <button className="hiw-arrow" onClick={() => navigate(Math.max(0, active - 1))} disabled={active === 0} aria-label="Previous step">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M8.5 2.5L4 7L8.5 11.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            <div className="hiw-dots" role="tablist" aria-label="Steps">
-              {STEPS.map((s, i) => (
-                <button key={i} role="tab" aria-selected={i === active} aria-label={`Step ${i + 1}: ${s.regular} ${s.italic}`} className={`hiw-dot-btn${i === active ? ' active' : ''}`} onClick={() => navigate(i)}>
-                  <span className="hiw-dot-track">
-                    {i === active && <span key={`${i}-${dotKey}`} className="hiw-dot-progress" />}
-                  </span>
-                </button>
-              ))}
+      {/* Carousel */}
+      <div className="hiw-carousel">
+        <div
+          className={`hiw-track${dragging ? '' : ' is-animating'}`}
+          style={{ transform: `translateX(${trackX})` }}
+        >
+          {STEPS.map((s, i) => (
+            <div
+              key={i}
+              ref={i === 0 ? firstCardRef : undefined}
+              className={`hiw-card${i === active ? ' is-active' : ''}`}
+              onClick={() => { if (i !== active) navigate(i); }}
+              role={i !== active ? 'button' : undefined}
+              aria-label={i !== active ? s.label : undefined}
+              tabIndex={i !== active ? 0 : undefined}
+              onKeyDown={i !== active
+                ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(i); } }
+                : undefined
+              }
+            >
+              <picture>
+                <source media="(max-width: 559px)"                          srcSet={s.xs} />
+                <source media="(min-width: 560px) and (max-width: 959px)"   srcSet={s.sm} />
+                <source media="(min-width: 960px) and (max-width: 1199px)"  srcSet={s.md} />
+                <source media="(min-width: 1200px) and (max-width: 1599px)" srcSet={s.lg} />
+                <source media="(min-width: 1600px)"                         srcSet={s.xl} />
+                <img
+                  src={s.lg}
+                  alt={s.label}
+                  className="hiw-card-img"
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  draggable={false}
+                />
+              </picture>
             </div>
-            <button className="hiw-arrow" onClick={() => navigate(Math.min(3, active + 1))} disabled={active === 3} aria-label="Next step">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M5.5 2.5L10 7L5.5 11.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            <button className="hiw-pause-btn" onClick={togglePause} aria-label={paused ? 'Play' : 'Pause'}>
-              {paused ? (
-                <svg width="10" height="12" viewBox="0 0 12 14" fill="none">
-                  <path d="M2 1.5L10.5 7L2 12.5V1.5Z" fill="currentColor"/>
-                </svg>
-              ) : (
-                <svg width="8" height="10" viewBox="0 0 10 13" fill="none">
-                  <rect x="0.5" y="0.5" width="3" height="12" rx="1.5" fill="currentColor"/>
-                  <rect x="6.5" y="0.5" width="3" height="12" rx="1.5" fill="currentColor"/>
-                </svg>
-              )}
-            </button>
-          </div>
-        </div>
-
-        <div className="hiw-phone-col">
-          <div className={`hiw-card${visible ? '' : ' fade'}`}>
-            <img src={step.image} className="hiw-mockup" alt={`Step ${display + 1}: ${step.regular} ${step.italic}`} draggable={false} />
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* ── Mobile carousel (visible only on mobile via CSS) ── */}
-      {isMobile && (
-        <div style={{ position: 'relative' }}>
-          {/* Track — all 4 slides in DOM */}
-          <div
-            className={`hiw-carousel-track${dragging ? '' : ' is-animating'}`}
-            style={{ transform: `translateX(${trackTransform})` }}
-          >
+      {/* Fixed Apple-style pagination pill */}
+      <div
+        className={`hiw-pagination${paginationVisible ? ' visible' : ''}${paused ? ' is-paused' : ''}`}
+        style={{ bottom: `${pillBottom}px` }}
+      >
+        <div className="hiw-dots-pill">
+          <div className="hiw-dots" role="tablist" aria-label="Slides">
             {STEPS.map((s, i) => (
-              <div key={i} className="hiw-slide">
-                {/* Text: label + heading + desc */}
-                <div className="hiw-slide-text">
-                  <p className="hiw-label">Step {s.num}</p>
-                  <h2 className="hiw-heading">
-                    {s.regular}
-                    <em>{s.italic}</em>
-                  </h2>
-                  <p className="hiw-desc">{s.desc}</p>
-                </div>
-
-                {/* Phone card */}
-                <div className="hiw-slide-phone">
-                  <img src={s.image} className="hiw-slide-mockup" alt={`Step ${i + 1}: ${s.regular} ${s.italic}`} draggable={false} />
-                </div>
-              </div>
+              <button
+                key={i}
+                role="tab"
+                aria-selected={i === active}
+                aria-label={`Slide ${i + 1}: ${s.label}`}
+                className={`hiw-dot-btn${i === active ? ' active' : ''}`}
+                onClick={() => navigate(i)}
+              >
+                <span className="hiw-dot-track">
+                  {i === active && !completed && autoStarted &&
+                    <span key={`${i}-${dotKey}`} className="hiw-dot-progress" />
+                  }
+                </span>
+              </button>
             ))}
           </div>
-
-          {/* Apple-style pagination overlay — fixed, bottom tracks section on exit */}
-          <div
-            className={`hiw-pagination${paginationVisible ? ' visible' : ''}`}
-            style={{ bottom: `${pillBottom}px` }}
-          >
-            <div className="hiw-dots" role="tablist" aria-label="Steps">
-              {STEPS.map((s, i) => (
-                <button key={i} role="tab" aria-selected={i === active} aria-label={`Step ${i + 1}`} className={`hiw-dot-btn${i === active ? ' active' : ''}`} onClick={() => { if (completed) { completedRef.current = false; setCompleted(false); } navigate(i); }}>
-                  <span className="hiw-dot-track">
-                    {i === active && !completed && <span key={`m-${i}-${dotKey}`} className="hiw-dot-progress" />}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {/* Pause / replay button */}
-            <button
-              className="hiw-ctrl-btn"
-              onClick={completed ? replay : togglePause}
-              aria-label={completed ? 'Replay' : paused ? 'Play' : 'Pause'}
-            >
-              {completed ? (
-                /* Replay icon — Feather refresh-cw style */
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="1 4 1 10 7 10"/>
-                  <path d="M3.51 15a9 9 0 1 0 .49-6.56"/>
-                </svg>
-              ) : paused ? (
-                /* Play icon */
-                <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-                  <path d="M2 1.5L10.5 7L2 12.5V1.5Z" fill="currentColor"/>
-                </svg>
-              ) : (
-                /* Pause icon */
-                <svg width="10" height="13" viewBox="0 0 10 13" fill="none">
-                  <rect x="0.5" y="0.5" width="3" height="12" rx="1.5" fill="currentColor"/>
-                  <rect x="6.5" y="0.5" width="3" height="12" rx="1.5" fill="currentColor"/>
-                </svg>
-              )}
-            </button>
-          </div>
         </div>
-      )}
+
+        <button
+          className="hiw-action-btn"
+          onClick={completed ? replay : togglePause}
+          aria-label={completed ? 'Restart' : paused ? 'Play' : 'Pause'}
+        >
+          {completed ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 1 0 .49-6.56"/>
+            </svg>
+          ) : paused ? (
+            <svg width="13" height="15" viewBox="0 0 13 15" fill="none">
+              <path d="M2 1.5L11.5 7.5L2 13.5V1.5Z" fill="currentColor"/>
+            </svg>
+          ) : (
+            <svg width="11" height="14" viewBox="0 0 11 14" fill="none">
+              <rect x="0.5" y="0.5" width="3.5" height="13" rx="1.75" fill="currentColor"/>
+              <rect x="7" y="0.5" width="3.5" height="13" rx="1.75" fill="currentColor"/>
+            </svg>
+          )}
+        </button>
+      </div>
     </section>
   );
 }

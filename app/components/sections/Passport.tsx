@@ -5,9 +5,6 @@ import { useCounter } from '../../lib/hooks/useCounter';
 import { imgCloud1, imgCloud2, imgCloud4 } from '../../lib/constants/assets';
 
 // ── Passport asset URLs ──────────────────────────────────────────────────────
-const imgPassportBg  = "/Images/asset-26946291-f6a0-4ff9-8a55-76558e481309.png";
-const imgPassportBg1 = "/Images/asset-d14c4d0c-e01a-4598-bc67-f72d46c26cb2.png";
-const imgPassportBg2 = "/Images/asset-b9e0cf1d-7066-4fc7-9f3a-ef9412beea85.png";
 const imgPassportIcon0 = "/Images/asset-f666c8bb-7021-4db4-950b-3c926692867b.svg";
 const imgPassportIcon1 = "/Images/asset-0253905e-4beb-46e3-ab04-b0081f10a5a7.svg";
 const imgPassportIcon2 = "/Images/asset-963ebc02-1135-4773-8241-9ae0b36fbbc8.svg";

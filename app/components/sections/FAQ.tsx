@@ -173,7 +173,7 @@ export default function FAQ() {
           .faq-question { font-size: 16px !important; }
         }
       `}</style>
-      <section id="faq" className="faq-section" data-name="FAQ">
+      <section id="faq" className="faq-section">
         <div className="faq-container">
 
           {/* Title */}

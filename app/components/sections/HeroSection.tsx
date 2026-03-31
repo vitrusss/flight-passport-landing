@@ -469,27 +469,27 @@ export default function HeroSection() {
           <div className="flex flex-col gap-[40px] items-center">
             <div className="flex flex-col gap-[16px] items-center">
               {/* Title + subtitle */}
-              <div className="flex flex-col gap-[16px] items-center relative" data-name="Description Container" data-node-id="7300:48515">
+              <div className="flex flex-col gap-[16px] items-center relative">
                 <div className="hero-description-bg absolute left-1/2 -translate-x-1/2 size-[625px] top-[-142px]">
                   <div className="absolute inset-[-22.4%]">
                     <img alt="" className="block max-w-none size-full" src={imgEllipse1889} />
                   </div>
                 </div>
-                <p className="hero-title font-bold relative text-[0px] text-white text-center tracking-[-1.68px] max-w-[610px] w-full" style={{ textShadow: '-4px 2px 12px rgba(16,32,64,0.08)', ...textReveal(130) }} data-node-id="7300:48517">
+                <p className="hero-title font-bold relative text-[0px] text-white text-center tracking-[-1.68px] max-w-[610px] w-full" style={{ textShadow: '-4px 2px 12px rgba(16,32,64,0.08)', ...textReveal(130) }}>
                   <span className="leading-[1.1] text-[56px]">Know your flight </span>
                   <span className="italic font-normal leading-[1.1] text-[#a7f3d0] text-[56px]">before</span>
                   <span className="leading-[1.1] text-[56px]"> the airport does.</span>
                 </p>
-                <p className="hero-subtitle font-normal leading-[1.4] relative text-[17px] text-white text-center" style={textReveal(240)} data-node-id="7300:48518">
+                <p className="hero-subtitle font-normal leading-[1.4] relative text-[17px] text-white text-center" style={textReveal(240)}>
                   Real-time tracking, predictive delay signals, and a personal travel history
                 </p>
               </div>
             </div>
             {/* Buttons */}
-            <div className="hero-buttons-row flex gap-[16px] items-center justify-center" data-name="Button Container" data-node-id="7300:48519" style={textReveal(360)}>
-              <div className="cta-btn relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] cursor-pointer" data-name="Primary Button" data-node-id="7300:48520">
+            <div className="hero-buttons-row flex gap-[16px] items-center justify-center" style={textReveal(360)}>
+              <div className="cta-btn relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] cursor-pointer">
                 <div aria-hidden="true" className="absolute bg-[#1c1917] inset-0 pointer-events-none rounded-[999px]" />
-                <div className="overflow-clip relative shrink-0 size-[20px]" data-name="Icons / Apple" data-node-id="I7300:48520;1870:924">
+                <div className="overflow-clip relative shrink-0 size-[20px]">
                   <div className="absolute inset-[0_10.94%_4.17%_8.33%]">
                     <img alt="" className="absolute block max-w-none size-full" src={imgIconColor} />
                   </div>
@@ -503,18 +503,18 @@ export default function HeroSection() {
       </div>
 
       {/* MAIN CONTAINER — proportional: phone starts at 54.4% of sky height (matches Figma ratio 384/706) */}
-      <div className="hero-main-container relative w-full z-[10]" style={{ marginTop: 'calc(322px - 45.6vh)' }} data-name="Main container">
+      <div className="hero-main-container relative w-full z-[10]" style={{ marginTop: 'calc(322px - 45.6vh)' }}>
         {/* Badge pills — absolutely positioned inside content container */}
         <div className="max-w-[1200px] mx-auto px-5">
-        <div className="hero-content-container relative w-[1046px] h-[434px] mx-auto" data-name="Content container" data-node-id="7300:48532">
+        <div className="hero-content-container relative w-[1046px] h-[434px] mx-auto">
           {/* Connection awareness pill */}
-          <div className="hero-badge badge-conn absolute flex gap-[14px] items-center left-[725px] top-[176px]" data-node-id="7300:48537">
+          <div className="hero-badge badge-conn absolute flex gap-[14px] items-center left-[725px] top-[176px]">
             <div ref={lineConnRef} className="h-0 relative shrink-0 w-[74px]" style={{ transform: 'scaleX(0)', transformOrigin: 'left center' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine207} />
               </div>
             </div>
-            <div ref={pillConnRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[239px]" data-name="Connection awareness" data-node-id="7300:48539" style={{ opacity: 0 }}>
+            <div ref={pillConnRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[239px]" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
               </div>
@@ -522,8 +522,8 @@ export default function HeroSection() {
             </div>
           </div>
           {/* Gate & terminal changes pill */}
-          <div className="hero-badge badge-gate absolute flex gap-[8px] items-center left-[-2px] top-[176px]" data-node-id="7300:48542">
-            <div ref={pillGateRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" data-name="Gate & terminal changes" data-node-id="7300:48543" style={{ opacity: 0 }}>
+          <div className="hero-badge badge-gate absolute flex gap-[8px] items-center left-[-2px] top-[176px]">
+            <div ref={pillGateRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[251px]" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse3} />
               </div>
@@ -540,13 +540,13 @@ export default function HeroSection() {
             </div>
           </div>
           {/* Aircraft insights pill */}
-          <div className="hero-badge badge-aircraft absolute flex gap-[8px] items-center left-[725px] top-[56px]" data-node-id="7300:48547">
+          <div className="hero-badge badge-aircraft absolute flex gap-[8px] items-center left-[725px] top-[56px]">
             <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[40px]" style={{ transform: 'scaleX(0)', transformOrigin: 'left center' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
               </div>
             </div>
-            <div ref={pillAircraftRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[182px]" data-name="Aircraft insights" data-node-id="7300:48549" style={{ opacity: 0 }}>
+            <div ref={pillAircraftRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[182px]" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse4} />
               </div>
@@ -554,8 +554,8 @@ export default function HeroSection() {
             </div>
           </div>
           {/* Real-time flight tracking pill */}
-          <div className="hero-badge badge-real absolute flex gap-[8px] items-center left-[41px] top-[56px]" data-node-id="7300:48552">
-            <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[248px]" data-name="Real-time flight tracking" data-node-id="7300:48553" style={{ opacity: 0 }}>
+          <div className="hero-badge badge-real absolute flex gap-[8px] items-center left-[41px] top-[56px]">
+            <div ref={pillRealRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[248px]" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse2} />
               </div>
@@ -572,13 +572,13 @@ export default function HeroSection() {
             </div>
           </div>
           {/* Personal flight history pill */}
-          <div className="hero-badge badge-hist absolute flex gap-[8px] items-center left-[725px] top-[296px]" data-node-id="7300:48557">
+          <div className="hero-badge badge-hist absolute flex gap-[8px] items-center left-[725px] top-[296px]">
             <div ref={lineHistRef} className="h-0 relative shrink-0 w-[40px]" style={{ transform: 'scaleX(0)', transformOrigin: 'left center' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
               </div>
             </div>
-            <div ref={pillHistRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[230px]" data-name="Personal flight history" data-node-id="7300:48559" style={{ opacity: 0 }}>
+            <div ref={pillHistRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-[230px]" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse5} />
               </div>
@@ -586,8 +586,8 @@ export default function HeroSection() {
             </div>
           </div>
           {/* Delay predictions pill */}
-          <div className="hero-badge badge-delay absolute flex gap-[8px] items-center left-[97px] top-[296px]" data-node-id="7300:48562">
-            <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-fit" data-name="Delay predictions" data-node-id="7300:48562" style={{ opacity: 0 }}>
+          <div className="hero-badge badge-delay absolute flex gap-[8px] items-center left-[97px] top-[296px]">
+            <div ref={pillDelayRef} className="bg-gradient-to-b border border-[#e7e5e4] border-solid flex from-[38.542%] from-white gap-[12px] h-[48px] items-center justify-center px-[16px] py-[12px] relative rounded-[24px] shrink-0 to-[#f5f5f4] w-fit" style={{ opacity: 0 }}>
               <div className="relative shrink-0 size-[8px]">
                 <img alt="" className="absolute block max-w-none size-full" src={imgEllipse6} />
               </div>
@@ -633,9 +633,9 @@ export default function HeroSection() {
           </div>
 
           {/* Phone mockup */}
-          <div className="hero-phone-mockup h-[764px] overflow-clip relative shrink-0 w-[364px]" data-name="iphone 18" data-node-id="7379:46770">
-            <div className="absolute h-[747px] left-[12px] top-[10px] w-[340px]" data-node-id="7379:46771">
-              <div className="absolute h-[755px] left-[0.36px] top-[-4px] w-[341px]" data-name="image 44" data-node-id="7379:46772">
+          <div className="hero-phone-mockup h-[764px] overflow-clip relative shrink-0 w-[364px]">
+            <div className="absolute h-[747px] left-[12px] top-[10px] w-[340px]">
+              <div className="absolute h-[755px] left-[0.36px] top-[-4px] w-[341px]">
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgPhoneApp} />
               </div>
               <div className="absolute left-0 right-0 top-[132px] flex flex-col items-center gap-[3.5px] pointer-events-none">
@@ -650,12 +650,12 @@ export default function HeroSection() {
                   </p>
                 </div>
               </div>
-              <div className="absolute h-[30.848px] left-[15.36px] top-[187px] w-[74.331px]" data-node-id="7379:46773">
+              <div className="absolute h-[30.848px] left-[15.36px] top-[187px] w-[74.331px]">
                 <div className="absolute bg-[#97d0ef] h-[6px] left-0 rounded-[929.555px] top-[15px] w-[309px]" />
                 <div ref={fillElRef} className="absolute bg-gradient-to-l from-white h-[6px] left-0 rounded-[929.555px] to-[rgba(255,255,255,0.04)] top-[15px] overflow-hidden" style={{width: 0}}>
                   <div className="track-shimmer" />
                 </div>
-                <div ref={planeElRef} className="absolute h-[30.848px] left-[0px] top-[2px] w-[27.806px]" data-name="Plane Model" data-node-id="7379:46775">
+                <div ref={planeElRef} className="absolute h-[30.848px] left-[0px] top-[2px] w-[27.806px]">
                   <div className="plane-ring" />
                   <div className="absolute flex items-center justify-center left-[1.18px] size-[25.412px] top-[2.97px]">
                     <div className="flex-none rotate-[2.91deg]">
@@ -669,10 +669,10 @@ export default function HeroSection() {
                 </div>
               </div>
             </div>
-            <div className="absolute h-[756.789px] left-0 top-0 w-[364px]" data-name="Flattened" data-node-id="7379:46808">
+            <div className="absolute h-[756.789px] left-0 top-0 w-[364px]">
               <img alt="" className="absolute block max-w-none size-full" src="/Images/hero-phone-chrome.svg" />
             </div>
-            <div className="absolute h-[32.182px] left-[127.64px] top-[21.44px] w-[108.724px]" data-node-id="7379:46809">
+            <div className="absolute h-[32.182px] left-[127.64px] top-[21.44px] w-[108.724px]">
               <div className="absolute inset-0 bg-black rounded-[20px]" />
             </div>
           </div>
@@ -693,159 +693,159 @@ export default function HeroSection() {
         </div>
         {/* AIRLINES STRIP */}
         <div className="airlines-strip-wrapper w-full bg-[#f9f8f6] mt-[64px]">
-        <div className="flex flex-col gap-[40px] items-center overflow-hidden py-[40px]" data-name="airlines-strip" data-node-id="7300:48567">
-          <p className="hero-airlines-text font-normal leading-[1.4] text-[18px] text-[#a8a29e] text-center tracking-[-0.18px] whitespace-nowrap" data-node-id="7300:48569">
+        <div className="flex flex-col gap-[40px] items-center overflow-hidden py-[40px]">
+          <p className="hero-airlines-text font-normal leading-[1.4] text-[18px] text-[#a8a29e] text-center tracking-[-0.18px] whitespace-nowrap">
             Tracks flights across 1200+ airlines and airports worldwide
           </p>
           <div style={{overflow:'hidden', width:'100%', paddingTop:'10px', paddingBottom:'10px', maskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)', WebkitMaskImage:'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)'}}>
-              <div className="marquee-track" data-name="Airline logos" data-node-id="7300:48570" style={{gap:'32px'}}>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48571">
-                <div className="absolute inset-[21%_0_21.84%_0]" data-name="Paths" data-node-id="I7300:48571;1:6332">
+              <div className="marquee-track" style={{gap:'32px'}}>
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[21%_0_21.84%_0]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48571;1:6338">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48572">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48572;1:6886">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage1} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48573">
-                <div className="absolute inset-[37%_0_36.1%_0]" data-name="Paths" data-node-id="I7300:48573;1:6929">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[37%_0_36.1%_0]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths1} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48573;1:6933">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage2} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48574">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem1} />
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem2} />
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48575">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem3} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48575;1:6077">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage3} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48576">
-                <div className="absolute inset-[8.57%_0_11.43%_0]" data-name="Paths" data-node-id="I7300:48576;1:6114">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[8.57%_0_11.43%_0]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths2} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48576;1:6118">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage4} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48577">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem4} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48577;1:7019">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage5} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48578">
-                <div className="absolute inset-[16.13%_1.86%_16.39%_1.25%]" data-name="Paths" data-node-id="I7300:48578;1:6395">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[16.13%_1.86%_16.39%_1.25%]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths3} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48578;1:6399">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage6} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48579">
-                <div className="absolute inset-[7.67%_0_5.87%_0]" data-name="Paths" data-node-id="I7300:48579;1:5922">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[7.67%_0_5.87%_0]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths4} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48579;1:5940">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage7} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48580">
-                <div className="absolute inset-[11.43%_0_12.86%_0]" data-name="Paths" data-node-id="I7300:48580;1:6096">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[11.43%_0_12.86%_0]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths5} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48580;1:6100">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage8} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48581">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem5} />
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem6} />
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48582">
-                <div className="absolute inset-[5%_0_5.39%_0]" data-name="Paths" data-node-id="I7300:48582;1:6593">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[5%_0_5.39%_0]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths6} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48582;1:6597">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage9} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48583">
-                <div className="absolute inset-[0_18.93%]" data-name="Paths" data-node-id="I7300:48583;1:6288">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[0_18.93%]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths7} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48583;1:6291">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage10} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48584">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem7} />
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48584;1:6321">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage11} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48585">
-                <div className="absolute inset-[14%_0_14.81%_0]" data-name="Paths" data-node-id="I7300:48585;1:6057">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[14%_0_14.81%_0]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths8} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48585;1:6065">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage12} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48586">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem8} />
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem9} />
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48587">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem10} />
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem11} />
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48588">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem12} />
-                <div className="-translate-x-1/2 absolute aspect-[400/400] bottom-0 left-1/2 top-0" data-name="Image" data-node-id="I7300:48588;300:506">
+                <div className="-translate-x-1/2 absolute aspect-[400/400] bottom-0 left-1/2 top-0">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage13} />
                 </div>
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48589">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem13} />
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem14} />
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48590">
-                <div className="absolute inset-[6.06%_4.74%_6.56%_5.82%]" data-name="Vector" data-node-id="I7300:48590;162:1922">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[6.06%_4.74%_6.56%_5.82%]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgVector} />
                 </div>
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem15} />
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48591">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem16} />
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem17} />
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48592">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
                 <img alt="" className="absolute block max-w-none size-full" src={imgAirlineEmblem18} />
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem19} />
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48593">
-                <div className="absolute inset-[13.01%_0_11.99%_0]" data-name="Paths" data-node-id="I7300:48593;213:2474">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[13.01%_0_11.99%_0]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths9} />
                 </div>
                 <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgAirlineEmblem20} />
               </div>
-              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem" data-node-id="7300:48594">
-                <div className="absolute inset-[12%_0]" data-name="Paths" data-node-id="I7300:48594;1:6052">
+              <div className="overflow-clip relative rounded-[999px] shrink-0 size-[40px]" data-name="Airline emblem">
+                <div className="absolute inset-[12%_0]">
                   <img alt="" className="absolute block max-w-none size-full" src={imgPaths10} />
                 </div>
-                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2" data-name="Image" data-node-id="I7300:48594;1:6055">
+                <div className="-translate-y-1/2 absolute aspect-[100/100] left-0 right-0 top-1/2">
                   <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage14} />
                 </div>
               </div>

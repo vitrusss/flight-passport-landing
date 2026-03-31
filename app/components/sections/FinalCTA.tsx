@@ -88,7 +88,7 @@ export default function FinalCTA() {
           .cta-btn { width: 100% !important; max-width: 400px !important; }
         }
       `}</style>
-      <section id="cta" className="cta-section" data-name="Final CTA">
+      <section id="cta" className="cta-section">
         <div className="cta-inner">
 
           {/* Text block */}

@@ -79,12 +79,6 @@ export default function HowItWorksScroll() {
   const remainingRef    = useRef<number>(AUTO_MS);
 
   useEffect(() => {
-    const check = () => {};
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
-
-  useEffect(() => {
     const update = () => {
       if (!firstCardRef.current) return;
       const gap = window.innerWidth < 768 ? M_GAP : CARD_GAP;

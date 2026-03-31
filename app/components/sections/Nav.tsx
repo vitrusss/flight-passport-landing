@@ -420,8 +420,6 @@ export default function Nav() {
 
       {/* Figma node 7300-48867 — header */}
       <div
-        data-name="header"
-        data-node-id="7300:48867"
         className="nav-header"
         style={{
           position: "fixed",

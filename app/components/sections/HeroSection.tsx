@@ -87,12 +87,22 @@ export default function HeroSection() {
       tooltip.textContent = el.dataset.tooltip!;
       tooltip.style.left = `${rect.left + rect.width / 2}px`;
       tooltip.style.top = `${rect.top - 10}px`;
-      tooltip.style.transform = 'translate(-50%, -100%)';
+      // Snap to start position instantly, then animate in
+      tooltip.style.transition = 'none';
+      tooltip.style.transform = 'translate(-50%, -100%) translateY(6px) scale(0.92)';
+      tooltip.style.opacity = '0';
+      // Force reflow so the instant snap takes effect before transition starts
+      tooltip.offsetHeight;
+      // Animate: float up with slight spring overshoot + fade in
+      tooltip.style.transition = 'opacity 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1)';
+      tooltip.style.transform = 'translate(-50%, -100%) translateY(0) scale(1)';
       tooltip.style.opacity = '1';
     };
     const hideTooltip = () => {
+      // Smooth fade down + shrink
+      tooltip.style.transition = 'opacity 160ms ease-in, transform 200ms ease-in';
+      tooltip.style.transform = 'translate(-50%, -100%) translateY(5px) scale(0.94)';
       tooltip.style.opacity = '0';
-      tooltip.style.transform = 'translateY(4px)';
     };
 
     // ── Desktop: hover shows tooltip ──
@@ -811,8 +821,8 @@ export default function HeroSection() {
         borderRadius: 8,
         pointerEvents: 'none',
         opacity: 0,
-        transform: 'translateY(4px)',
-        transition: 'opacity 180ms ease, transform 180ms ease',
+        transform: 'translate(-50%, -100%) translateY(6px) scale(0.92)',
+        transition: 'opacity 160ms ease-in, transform 200ms ease-in',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
         zIndex: 9999,
       }}

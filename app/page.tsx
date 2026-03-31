@@ -1879,6 +1879,9 @@ function LiveActivities() {
         .la-card-inner {
           width: 100%;
           transition: transform 0.4s cubic-bezier(0.34, 1.28, 0.64, 1);
+          -webkit-transition: transform 0.4s cubic-bezier(0.34, 1.28, 0.64, 1);
+          /* Isolate compositing layer to prevent Safari painting artefacts on children */
+          isolation: isolate;
         }
         .la-card:hover .la-card-inner {
           animation-play-state: paused;
@@ -1890,8 +1893,10 @@ function LiveActivities() {
           aspect-ratio: 752 / 352;
           display: block;
           object-fit: cover;
-          filter: drop-shadow(0 8px 24px rgba(0,0,0,0.28));
+          /* Always 2 drop-shadows — Safari glitches when count changes on transition */
+          filter: drop-shadow(0 8px 24px rgba(0,0,0,0.28)) drop-shadow(0 0 0 transparent);
           transition: filter 0.4s ease;
+          -webkit-transition: filter 0.4s ease;
         }
         .la-card:hover img {
           filter: drop-shadow(0 20px 44px rgba(0,0,0,0.36)) drop-shadow(0 4px 12px rgba(0,0,0,0.18));
@@ -1904,7 +1909,9 @@ function LiveActivities() {
           position: absolute;
           inset: 1px;
           border-radius: 44px;
-          border: 1px solid rgba(255,255,255,0.55);
+          /* No border by default — Safari renders it as visible artefact
+             inside animated compositing layers even at opacity:0 */
+          border: 0 solid transparent;
           pointer-events: none;
           opacity: 0;
           z-index: 1;
@@ -1918,6 +1925,7 @@ function LiveActivities() {
           transition: transform 90ms ease-out;
         }
         .la-card.la-card-active .la-pulse-ring {
+          border: 1px solid rgba(255,255,255,0.55);
           animation: laPulseRing 380ms ease-out forwards;
         }
         @media (max-width: 767px) {

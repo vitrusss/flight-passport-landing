@@ -1,6 +1,6 @@
 <svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 40 30.2857" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Paths">
-<path id="Vector" fill-rule="evenodd" clip-rule="evenodd" d="M0 30.2857H32.6507L40 0H23.9265L0 30.2857ZM27.6548 5.82761V12.3529H34.0751V17.9373H27.6445V24.4626H22.1428V17.9373H15.7205V12.3529H22.1428V5.82761H27.6548Z" fill="var(--fill-0, #E60005)"/>
-<path id="Vector_2" fill-rule="evenodd" clip-rule="evenodd" d="M27.6548 5.82757V12.3528H34.0751V17.9372H27.6445V24.4625H22.1428V17.9372H15.7205V12.3528H22.1428V5.82757H27.6548Z" fill="var(--fill-0, white)"/>
+<path id="Vector" fill-rule="evenodd" clip-rule="evenodd" d="M0 30.2857H32.6507L40 0H23.9265L0 30.2857ZM27.6548 5.82761V12.3529H34.0751V17.9373H27.6445V24.4626H22.1428V17.9373H15.7205V12.3529H22.1428V5.82761H27.6548Z" fill="#E60005"/>
+<path id="Vector_2" fill-rule="evenodd" clip-rule="evenodd" d="M27.6548 5.82757V12.3528H34.0751V17.9372H27.6445V24.4625H22.1428V17.9372H15.7205V12.3528H22.1428V5.82757H27.6548Z" fill="white"/>
 </g>
 </svg>

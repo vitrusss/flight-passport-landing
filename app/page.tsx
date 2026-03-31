@@ -1756,12 +1756,6 @@ function LiveActivities() {
   function handlePointerUp(e: React.PointerEvent<HTMLDivElement>) {
     e.currentTarget.classList.remove('la-card-pressing');
   }
-  function handleCardClick(e: React.MouseEvent<HTMLDivElement>) {
-    const card = e.currentTarget;
-    if (card.classList.contains('la-card-active')) return;
-    card.classList.add('la-card-active');
-    setTimeout(() => card.classList.remove('la-card-active'), 380);
-  }
 
   useEffect(() => {
     // Header — blur + slide + fade
@@ -1880,8 +1874,6 @@ function LiveActivities() {
           width: 100%;
           transition: transform 0.4s cubic-bezier(0.34, 1.28, 0.64, 1);
           -webkit-transition: transform 0.4s cubic-bezier(0.34, 1.28, 0.64, 1);
-          /* Isolate compositing layer to prevent Safari painting artefacts on children */
-          isolation: isolate;
         }
         .la-card:hover .la-card-inner {
           animation-play-state: paused;
@@ -1893,40 +1885,18 @@ function LiveActivities() {
           aspect-ratio: 752 / 352;
           display: block;
           object-fit: cover;
-          /* Always 2 drop-shadows — Safari glitches when count changes on transition */
-          filter: drop-shadow(0 8px 24px rgba(0,0,0,0.28)) drop-shadow(0 0 0 transparent);
-          transition: filter 0.4s ease;
-          -webkit-transition: filter 0.4s ease;
+          border-radius: 44px;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+          transition: box-shadow 0.4s ease, transform 0.4s ease;
+          -webkit-transition: box-shadow 0.4s ease, transform 0.4s ease;
         }
         .la-card:hover img {
-          filter: drop-shadow(0 20px 44px rgba(0,0,0,0.36)) drop-shadow(0 4px 12px rgba(0,0,0,0.18));
+          box-shadow: 0 20px 44px rgba(0,0,0,0.36), 0 4px 12px rgba(0,0,0,0.18);
         }
         /* ── Press reaction ── */
-        .la-card-inner {
-          position: relative;
-        }
-        .la-pulse-ring {
-          position: absolute;
-          inset: 1px;
-          border-radius: 44px;
-          /* No border by default — Safari renders it as visible artefact
-             inside animated compositing layers even at opacity:0 */
-          border: 0 solid transparent;
-          pointer-events: none;
-          opacity: 0;
-          z-index: 1;
-        }
-        @keyframes laPulseRing {
-          0%   { opacity: 0.55; }
-          100% { opacity: 0; }
-        }
         .la-card.la-card-pressing .la-card-inner {
           transform: scale(0.972);
           transition: transform 90ms ease-out;
-        }
-        .la-card.la-card-active .la-pulse-ring {
-          border: 1px solid rgba(255,255,255,0.55);
-          animation: laPulseRing 380ms ease-out forwards;
         }
         @media (max-width: 767px) {
           .la-section { padding: 64px 20px !important; }
@@ -1987,14 +1957,12 @@ function LiveActivities() {
                 key={i}
                 ref={el => { cardRefs.current[i] = el; }}
                 className="la-card"
-                onClick={handleCardClick}
                 onPointerDown={handlePointerDown}
                 onPointerUp={handlePointerUp}
                 onPointerLeave={handlePointerUp}
               >
                 <div className="la-card-inner">
                   <img src={card.src} alt={card.alt} />
-                  <div className="la-pulse-ring" />
                 </div>
               </div>
             ))}

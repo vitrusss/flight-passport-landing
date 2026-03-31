@@ -804,7 +804,10 @@ function FigmaHeroSection() {
     function runBadges() {
       badges.forEach(([lineRef, pillRef, lineDelay, pillDelay, isLeft]) => {
         setTimeout(() => {
-          if (lineRef.current) lineRef.current.style.animation = `${isLeft ? 'line-reveal-rtl' : 'line-reveal'} 0.45s ease-out forwards`;
+          if (lineRef.current) {
+            lineRef.current.style.transformOrigin = isLeft ? 'right center' : 'left center';
+            lineRef.current.style.animation = `${isLeft ? 'line-reveal-rtl' : 'line-reveal'} 0.45s ease-out forwards`;
+          }
         }, lineDelay);
         setTimeout(() => {
           if (pillRef.current) pillRef.current.style.animation = 'badge-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
@@ -861,12 +864,12 @@ function FigmaHeroSection() {
           }
           .count-tick { animation: countTick 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
           @keyframes line-reveal {
-            from { clip-path: inset(-2px 100% -2px -2px); }
-            to   { clip-path: inset(-2px 0%   -2px -2px); }
+            from { transform: scaleX(0); }
+            to   { transform: scaleX(1); }
           }
           @keyframes line-reveal-rtl {
-            from { clip-path: inset(-2px -2px -2px 100%); }
-            to   { clip-path: inset(-2px -2px -2px 0%);   }
+            from { transform: scaleX(0); }
+            to   { transform: scaleX(1); }
           }
           @keyframes badge-pop {
             0%   { opacity: 0; transform: scale(0.78); filter: blur(5px); }
@@ -1136,7 +1139,7 @@ function FigmaHeroSection() {
         <div className="hero-content-container relative w-[1046px] h-[434px] mx-auto" data-name="Content container" data-node-id="7300:48532">
           {/* Connection awareness pill */}
           <div className="hero-badge badge-conn absolute flex gap-[14px] items-center left-[725px] top-[176px]" data-node-id="7300:48537">
-            <div ref={lineConnRef} className="h-0 relative shrink-0 w-[74px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+            <div ref={lineConnRef} className="h-0 relative shrink-0 w-[74px]" style={{ transform: 'scaleX(0)', transformOrigin: 'left center' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine207} />
               </div>
@@ -1158,7 +1161,7 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineGateRef} className="h-0 relative w-[80px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+                <div ref={lineGateRef} className="h-0 relative w-[80px]" style={{ transform: 'scaleX(0)', transformOrigin: 'left center' }}>
                   <div className="absolute inset-[-1px_0_0_0]">
                     <img alt="" className="block max-w-none size-full" src={imgLine210} />
                   </div>
@@ -1168,7 +1171,7 @@ function FigmaHeroSection() {
           </div>
           {/* Aircraft insights pill */}
           <div className="hero-badge badge-aircraft absolute flex gap-[8px] items-center left-[725px] top-[56px]" data-node-id="7300:48547">
-            <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+            <div ref={lineAircraftRef} className="h-0 relative shrink-0 w-[40px]" style={{ transform: 'scaleX(0)', transformOrigin: 'left center' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
               </div>
@@ -1190,7 +1193,7 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineRealRef} className="h-0 relative w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+                <div ref={lineRealRef} className="h-0 relative w-[40px]" style={{ transform: 'scaleX(0)', transformOrigin: 'left center' }}>
                   <div className="absolute inset-[-1px_0_0_0]">
                     <img alt="" className="block max-w-none size-full" src={imgLine211} />
                   </div>
@@ -1200,7 +1203,7 @@ function FigmaHeroSection() {
           </div>
           {/* Personal flight history pill */}
           <div className="hero-badge badge-hist absolute flex gap-[8px] items-center left-[725px] top-[296px]" data-node-id="7300:48557">
-            <div ref={lineHistRef} className="h-0 relative shrink-0 w-[40px]" style={{ clipPath: 'inset(-2px 100% -2px -2px)' }}>
+            <div ref={lineHistRef} className="h-0 relative shrink-0 w-[40px]" style={{ transform: 'scaleX(0)', transformOrigin: 'left center' }}>
               <div className="absolute inset-[-1px_0_0_0]">
                 <img alt="" className="block max-w-none size-full" src={imgLine208} />
               </div>
@@ -1222,7 +1225,7 @@ function FigmaHeroSection() {
             </div>
             <div className="flex items-center justify-center relative shrink-0">
               <div className="flex-none rotate-180">
-                <div ref={lineDelayRef} className="h-0 relative w-[52px]" style={{ clipPath: 'inset(-2px -2px -2px 100%)' }}>
+                <div ref={lineDelayRef} className="h-0 relative w-[52px]" style={{ transform: 'scaleX(0)', transformOrigin: 'left center' }}>
                   <svg width="52" height="1" viewBox="0 0 52 1" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', overflow: 'visible', position: 'absolute', top: '0px' }}><line y1="0.5" x2="52" y2="0.5" stroke="#A8A29E" strokeDasharray="5 5"/></svg>
                 </div>
               </div>

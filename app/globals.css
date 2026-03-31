@@ -53,6 +53,12 @@
   --color-orange-700: #C2410C;
 }
 
+/* ── Cloud flight (right → left, shared by Hero + Passport) ──────────────── */
+@keyframes cloudFlight {
+  from { translate: 1700px 0px; }
+  to   { translate: -900px 0px; }
+}
+
 /* ── Cloud flight animations (applied via inline style per cloud) ─────────── */
 @keyframes cloudDriftFast {
   from { transform: translateX(0px); }

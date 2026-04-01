@@ -378,6 +378,51 @@ export default function Nav() {
           .nav-logo-btn { width: auto !important; }
         }
 
+        /* ── Large monitors: scale up the entire nav ── */
+        @media (min-width: 1600px) {
+          .nav-header {
+            height: calc(60px + env(safe-area-inset-top, 0px)) !important;
+          }
+          .nav-logo-btn img:first-child {
+            width: 38px !important;
+            height: 38px !important;
+            border-radius: 9px !important;
+          }
+          .nav-logo-btn .nav-wordmark-name {
+            font-size: 15px !important;
+          }
+          .nav-logo-btn .nav-wordmark-sub {
+            font-size: 9px !important;
+          }
+          .nav-logo-btn .nav-wordmark-flag {
+            width: 12px !important;
+            height: 8px !important;
+          }
+          .nav-links-container {
+            gap: 28px !important;
+            height: 48px !important;
+          }
+          .nav-label {
+            font-size: 13px !important;
+            letter-spacing: 0.12px !important;
+          }
+          .nav-indicator {
+            bottom: 10px !important;
+            height: 2.5px !important;
+          }
+          .nav-download-btn .cta-btn {
+            height: 38px !important;
+            padding: 0 20px !important;
+          }
+          .nav-download-btn .cta-btn span {
+            font-size: 14px !important;
+          }
+          .nav-download-btn .cta-btn .nav-apple-icon {
+            width: 18px !important;
+            height: 18px !important;
+          }
+        }
+
         /* Reserve bold width so layout never shifts on weight change */
         .nav-label {
           display: inline-grid;
@@ -455,15 +500,16 @@ export default function Nav() {
             style={{ width: 32, height: 32, flexShrink: 0, display: "block", borderRadius: 7, imageRendering: "-webkit-optimize-contrast" }}
           />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#1c1917", whiteSpace: "nowrap", lineHeight: 1.4 }}>
+            <span className="nav-wordmark-name" style={{ fontSize: 13, fontWeight: 600, color: "#1c1917", whiteSpace: "nowrap", lineHeight: 1.4 }}>
               FlightPassport
             </span>
             <div style={{ display: "flex", gap: 2, alignItems: "center", justifyContent: "center" }}>
-              <span style={{ fontSize: 8, fontWeight: 500, color: "#a8a29e", letterSpacing: "0.16px", lineHeight: "14px", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+              <span className="nav-wordmark-sub" style={{ fontSize: 8, fontWeight: 500, color: "#a8a29e", letterSpacing: "0.16px", lineHeight: "14px", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                 BORN IN FINLAND
               </span>
               <img
                 alt="Finnish flag"
+                className="nav-wordmark-flag"
                 src={imgNavFi}
                 style={{ width: 10, height: 7, flexShrink: 0, display: "block" }}
               />
@@ -488,7 +534,7 @@ export default function Nav() {
               flexShrink: 0,
             }}
           >
-            <div style={{ position: "relative", width: 16, height: 16, flexShrink: 0, overflow: "hidden" }}>
+            <div className="nav-apple-icon" style={{ position: "relative", width: 16, height: 16, flexShrink: 0, overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, right: "10.94%", bottom: "4.17%", left: "8.33%" }}>
                 <img
                   alt=""

@@ -480,14 +480,13 @@ export default function HeroSection() {
           @media (max-width: 390px) {
             .hero-title span { font-size: 32px !important; letter-spacing: -0.5px !important; }
           }
-          /* Cloud entrance — slow ethereal fade like morning sky clearing */
+          /* Cloud entrance — pure gentle fade, nothing else */
           @keyframes cloudReveal {
-            0%   { opacity: 0; filter: blur(6px); transform: scale(0.96); }
-            40%  { opacity: 0.4; filter: blur(2px); }
-            100% { opacity: 1; filter: blur(0px); transform: scale(1); }
+            from { opacity: 0; }
+            to   { opacity: 1; }
           }
           .cloud-reveal {
-            animation: cloudReveal 3.5s ease-out both;
+            animation: cloudReveal 4s ease both;
           }
           /* Mobile-only clouds — hidden on desktop */
           .mobile-cloud { display: none; }

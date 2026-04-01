@@ -572,11 +572,6 @@ export default function HeroSection() {
             <div className="flex flex-col gap-[16px] items-center">
               {/* Title + subtitle */}
               <div className="flex flex-col gap-[16px] items-center relative">
-                <div className="hero-description-bg absolute left-1/2 -translate-x-1/2 size-[625px] top-[-142px]">
-                  <div className="absolute inset-[-22.4%]">
-                    <img alt="" className="block max-w-none size-full" src={imgEllipse1889} />
-                  </div>
-                </div>
                 <p className="hero-title font-bold relative text-[0px] text-white text-center tracking-[-1.68px] max-w-[610px] w-full" style={{ textShadow: '-4px 2px 12px rgba(16,32,64,0.08)', ...textReveal(130) }}>
                   <span className="leading-[1.1] text-[56px]">Know your flight </span>
                   <span className="italic font-normal leading-[1.1] text-[#a7f3d0] text-[56px]">before</span>

@@ -480,14 +480,14 @@ export default function HeroSection() {
           @media (max-width: 390px) {
             .hero-title span { font-size: 32px !important; letter-spacing: -0.5px !important; }
           }
-          /* Cloud entrance — soft fade + gentle drift up + scale bloom */
+          /* Cloud entrance — slow ethereal fade like morning sky clearing */
           @keyframes cloudReveal {
-            0%   { opacity: 0; transform: scale(0.82) translateY(30px); filter: blur(12px); }
-            60%  { filter: blur(2px); }
-            100% { opacity: 1; transform: scale(1) translateY(0px); filter: blur(0px); }
+            0%   { opacity: 0; filter: blur(6px); transform: scale(0.96); }
+            40%  { opacity: 0.4; filter: blur(2px); }
+            100% { opacity: 1; filter: blur(0px); transform: scale(1); }
           }
           .cloud-reveal {
-            animation: cloudReveal 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+            animation: cloudReveal 3.5s ease-out both;
           }
           /* Mobile-only clouds — hidden on desktop */
           .mobile-cloud { display: none; }
@@ -502,62 +502,62 @@ export default function HeroSection() {
 
         {/* ── Upper sky: distant, faded, slow — z-10 so they fly over the text layer ── */}
         <div className="absolute z-[10] left-0 top-[-50px] w-[280px] h-[140px] opacity-[0.13] pointer-events-none" style={{ animation: "cloudFlight 250s linear -90s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "100ms" }} src={imgCloud1} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "200ms" }} src={imgCloud1} />
         </div>
         <div className="absolute z-[10] left-0 top-[20px] w-[340px] h-[150px] opacity-[0.15] pointer-events-none" style={{ animation: "cloudFlight 270s linear -145s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "250ms" }} src={imgCloud2} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "500ms" }} src={imgCloud2} />
         </div>
         <div className="absolute z-[10] left-0 top-[70px] w-[220px] h-[110px] opacity-[0.12] pointer-events-none" style={{ animation: "cloudFlight 260s linear -82s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "180ms" }} src={imgCloud4} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "350ms" }} src={imgCloud4} />
         </div>
         <div className="absolute left-0 top-[110px] w-[190px] h-[95px] opacity-[0.14] pointer-events-none" style={{ animation: "cloudFlight 240s linear -200s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "320ms" }} src={imgCloud1} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "700ms" }} src={imgCloud1} />
         </div>
 
         {/* ── Mid sky: medium depth, medium speed ── */}
         <div className="absolute left-0 top-[180px] w-[393px] h-[252px] rotate-[173.23deg] opacity-[0.30] pointer-events-none" style={{ animation: "cloudFlight 185s linear -60s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "400ms" }} src={imgCloud4} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "900ms" }} src={imgCloud4} />
         </div>
         <div className="absolute left-0 top-[250px] w-[387px] h-[310px] opacity-[0.36] pointer-events-none" style={{ animation: "cloudFlight 175s linear -88s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "300ms" }} src={imgCloud1} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "700ms" }} src={imgCloud1} />
         </div>
         <div className="absolute left-0 top-[340px] w-[399px] h-[224px] opacity-[0.28] pointer-events-none" style={{ animation: "cloudFlight 190s linear -52s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "500ms" }} src={imgCloud2} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "1100ms" }} src={imgCloud2} />
         </div>
 
         {/* ── Lower sky: foreground, denser, faster ── */}
         <div className="absolute left-0 top-[450px] w-[445px] h-[224px] opacity-[0.50] pointer-events-none" style={{ animation: "cloudFlight 120s linear -35s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "550ms" }} src={imgCloud4} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "1200ms" }} src={imgCloud4} />
         </div>
         <div className="absolute left-0 top-[490px] w-[257px] h-[183px] opacity-[0.22] pointer-events-none" style={{ animation: "cloudFlight 125s linear -50s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "700ms" }} src={imgCloud1} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "1600ms" }} src={imgCloud1} />
         </div>
         <div className="absolute left-0 top-[520px] w-[478px] h-[433px] rotate-[-173.07deg] opacity-[0.38] pointer-events-none" style={{ animation: "cloudFlight 135s linear -55s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "600ms" }} src={imgCloud1} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "1400ms" }} src={imgCloud1} />
         </div>
         <div className="absolute left-0 top-[600px] w-[379px] h-[248px] -scale-y-100 rotate-180 opacity-[0.20] pointer-events-none" style={{ animation: "cloudFlight 128s linear -42s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "800ms" }} src={imgCloud1} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "1900ms" }} src={imgCloud1} />
         </div>
         <div className="absolute left-0 top-[645px] w-[434px] h-[182px] -scale-y-100 rotate-180 opacity-[0.55] pointer-events-none" style={{ animation: "cloudFlight 115s linear -68s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "650ms" }} src={imgCloud2} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "1500ms" }} src={imgCloud2} />
         </div>
         <div className="absolute left-0 top-[580px] w-[234px] h-[188px] opacity-[0.38] pointer-events-none" style={{ animation: "cloudFlight 118s linear -20s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "750ms" }} src={imgCloud1} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "1800ms" }} src={imgCloud1} />
         </div>
 
 
         {/* ── Mobile-only clouds — pre-positioned in viewport at load ── */}
         {/* top-[80px]: target x≈100px → delay=(1700-100)*160/2600≈98s */}
         <div className="mobile-cloud absolute left-0 top-[80px] w-[300px] h-[150px] opacity-[0.20] pointer-events-none" style={{ animation: "cloudFlight 160s linear -99s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "200ms" }} src={imgCloud4} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "300ms" }} src={imgCloud4} />
         </div>
         {/* top-[280px]: target x≈180px → delay=(1700-180)*130/2600≈76s */}
         <div className="mobile-cloud absolute left-0 top-[280px] w-[340px] h-[190px] opacity-[0.32] pointer-events-none" style={{ animation: "cloudFlight 130s linear -76s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "450ms" }} src={imgCloud2} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "800ms" }} src={imgCloud2} />
         </div>
         {/* top-[480px]: target x≈120px → delay=(1700-120)*100/2600≈61s */}
         <div className="mobile-cloud absolute left-0 top-[480px] w-[280px] h-[140px] opacity-[0.45] pointer-events-none" style={{ animation: "cloudFlight 100s linear -61s infinite", willChange: "translate" }}>
-          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "600ms" }} src={imgCloud1} />
+          <img alt="" className="block max-w-none w-full h-full cloud-reveal" style={{ animationDelay: "1300ms" }} src={imgCloud1} />
         </div>
 
         {/* Sky-to-white fade — eliminates sharp horizon where sky meets page background */}

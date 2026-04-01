@@ -142,7 +142,6 @@ export default function LiveActivities() {
         }
         .la-card:hover .la-card-inner {
           animation-play-state: paused;
-          transform: scale(1.04);
         }
         .la-card img {
           width: 100%;
@@ -152,16 +151,19 @@ export default function LiveActivities() {
           object-fit: cover;
           border-radius: 44px;
           box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-          transition: box-shadow 0.4s ease, transform 0.4s ease;
-          -webkit-transition: box-shadow 0.4s ease, transform 0.4s ease;
+          transition: box-shadow 0.4s ease, transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
+          -webkit-transition: box-shadow 0.4s ease, transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
         }
         .la-card:hover img {
+          transform: scale(1.04);
           box-shadow: 0 20px 44px rgba(0,0,0,0.36), 0 4px 12px rgba(0,0,0,0.18);
         }
-        /* ── Press reaction ── */
-        .la-card.la-card-pressing .la-card-inner {
-          transform: scale(0.972);
-          transition: transform 90ms ease-out;
+        /* ── Press reaction (on img to avoid animation conflict) ── */
+        .la-card.la-card-pressing img {
+          transform: scale(0.96);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.22);
+          transition: transform 120ms cubic-bezier(0.2, 0, 0.4, 1), box-shadow 120ms ease;
+          -webkit-transition: transform 120ms cubic-bezier(0.2, 0, 0.4, 1), box-shadow 120ms ease;
         }
         @media (max-width: 767px) {
           .la-section { padding: 64px 20px !important; }

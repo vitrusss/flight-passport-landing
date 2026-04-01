@@ -48,7 +48,7 @@ const STEPS: StepConfig[] = [
   },
 ];
 
-const AUTO_MS  = 10000;
+const AUTO_MS  = 7500;
 const CARD_GAP = 32;
 const M_GAP    = 24;
 
@@ -542,7 +542,7 @@ export default function HowItWorksScroll() {
                   src={s.lg}
                   alt={s.label}
                   className="hiw-card-img"
-                  loading={i === 0 ? 'eager' : 'lazy'}
+                  loading="eager"
                   draggable={false}
                 />
               </picture>

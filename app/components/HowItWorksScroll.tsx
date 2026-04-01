@@ -61,8 +61,7 @@ export default function HowItWorksScroll() {
   const [autoStarted,       setAutoStarted]       = useState(false);
   const [paused,            setPaused]            = useState(false);
   const [completed,         setCompleted]         = useState(false);
-  const [paginationVisible, setPaginationVisible] = useState(false);
-  const [pillBottom,        setPillBottom]        = useState(32);
+  /* pagination position is managed via direct DOM to avoid React render lag */
   const [stepPx,            setStepPx]            = useState(0);
   const [dragOffset,        setDragOffset]        = useState(0);
   const [dragging,          setDragging]          = useState(false);
@@ -72,6 +71,7 @@ export default function HowItWorksScroll() {
   const completedRef    = useRef(false);
   const inViewRef       = useRef(false);
   const sectionRef      = useRef<HTMLElement>(null);
+  const pillRef         = useRef<HTMLDivElement>(null);
   const firstCardRef    = useRef<HTMLDivElement>(null);
   const touchStartX     = useRef(0);
   const timerRef        = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -91,17 +91,27 @@ export default function HowItWorksScroll() {
     return () => { ro.disconnect(); window.removeEventListener('resize', update); };
   }, []);
 
+  /* Direct DOM positioning — runs synchronously in the same frame as scroll,
+     eliminating the 1-frame React render lag that caused the parallax jitter */
   useEffect(() => {
     const VIEWPORT_B = 32;   // distance from viewport bottom during scroll
     const SECTION_B  = 120;  // distance from section bottom edge
     const check = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
+      const section = sectionRef.current;
+      const pill    = pillRef.current;
+      if (!section || !pill) return;
+      const rect = section.getBoundingClientRect();
       const vh   = window.innerHeight;
-      setPaginationVisible(rect.top < vh * 0.5 && rect.bottom > 0);
-      setPillBottom(
-        rect.bottom >= vh ? VIEWPORT_B : Math.max(VIEWPORT_B, vh - rect.bottom + SECTION_B)
-      );
+
+      /* Visibility — toggle CSS class directly */
+      const visible = rect.top < vh * 0.5 && rect.bottom > 0;
+      pill.classList.toggle('visible', visible);
+
+      /* Bottom position — instant, no transition, no React re-render */
+      const bottom = rect.bottom >= vh
+        ? VIEWPORT_B
+        : Math.max(VIEWPORT_B, vh - rect.bottom + SECTION_B);
+      pill.style.bottom = `${bottom}px`;
     };
     window.addEventListener('scroll', check, { passive: true });
     check();
@@ -553,8 +563,9 @@ export default function HowItWorksScroll() {
 
       {/* Fixed Apple-style pagination pill */}
       <div
-        className={`hiw-pagination${paginationVisible ? ' visible' : ''}${paused ? ' is-paused' : ''}`}
-        style={{ bottom: `${pillBottom}px` }}
+        ref={pillRef}
+        className={`hiw-pagination${paused ? ' is-paused' : ''}`}
+        style={{ bottom: '32px' }}
       >
         <div className="hiw-dots-pill">
           <div className="hiw-dots" role="tablist" aria-label="Slides">

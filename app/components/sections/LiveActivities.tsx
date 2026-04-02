@@ -3,12 +3,12 @@
 import React, { useRef, useEffect } from 'react';
 
 const LA_CARDS = [
-  { src: "/Images/Live%20Activity%20Cards/BOARDING.png",            alt: "Boarding now"       },
-  { src: "/Images/Live%20Activity%20Cards/GATE_CHANGED.png",        alt: "Gate changed"       },
-  { src: "/Images/Live%20Activity%20Cards/IN_AIR.png",              alt: "In air"             },
-  { src: "/Images/Live%20Activity%20Cards/CONNECTION_AT_RISK.png",  alt: "Connection at risk" },
-  { src: "/Images/Live%20Activity%20Cards/ARRIVED_FINAL.png",       alt: "Arrived"            },
-  { src: "/Images/Live%20Activity%20Cards/CANCELLED.png",           alt: "Cancelled"          },
+  { src: "/Images/Live%20Activity%20Cards/CONNECTION_GATE_CLOSING.png", alt: "Gate closing"        },
+  { src: "/Images/Live%20Activity%20Cards/MISSED_CONNECTION.png",       alt: "Missed connection"   },
+  { src: "/Images/Live%20Activity%20Cards/GATE_CHANGED.png",            alt: "Gate changed"        },
+  { src: "/Images/Live%20Activity%20Cards/RETURNING_TO_GATE.png",       alt: "Returning to gate"   },
+  { src: "/Images/Live%20Activity%20Cards/CONNECTION_AT_RISK.png",      alt: "Connection at risk"  },
+  { src: "/Images/Live%20Activity%20Cards/CANCELLED.png",               alt: "Flight cancelled"    },
 ];
 
 export default function LiveActivities() {
@@ -173,9 +173,9 @@ export default function LiveActivities() {
           .la-cards-grid { grid-template-columns: 1fr; gap: 20px; max-width: 370px !important; }
           /* Disable float animation on mobile — saves battery, avoids jitter */
           .la-card .la-card-inner { animation: none !important; }
-          /* Show only 3 cards on mobile: Boarding (1), Gate Arrival in air (3), Connection at risk (4) */
+          /* Show only 3 cards on mobile: Gate changed (3), Returning to gate (4), Connection at risk (5) */
+          .la-card:nth-child(1),
           .la-card:nth-child(2),
-          .la-card:nth-child(5),
           .la-card:nth-child(6) { display: none !important; }
         }
       `}</style>

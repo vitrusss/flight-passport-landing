@@ -94,12 +94,15 @@ export default function HowItWorksScroll() {
   /* Direct DOM positioning — runs synchronously in the same frame as scroll,
      eliminating the 1-frame React render lag that caused the parallax jitter */
   useEffect(() => {
-    const VIEWPORT_B = 32;   // distance from viewport bottom during scroll
-    const SECTION_B  = 120;  // distance from section bottom edge
     const check = () => {
       const section = sectionRef.current;
       const pill    = pillRef.current;
       if (!section || !pill) return;
+
+      const isMobile   = window.innerWidth < 560;
+      const VIEWPORT_B = isMobile ? 16 : 32;   // distance from viewport bottom during scroll
+      const SECTION_B  = isMobile ? 70 : 96;   // distance from section bottom edge
+
       const rect = section.getBoundingClientRect();
       const vh   = window.innerHeight;
 
@@ -114,8 +117,12 @@ export default function HowItWorksScroll() {
       pill.style.bottom = `${bottom}px`;
     };
     window.addEventListener('scroll', check, { passive: true });
+    window.addEventListener('resize', check, { passive: true });
     check();
-    return () => window.removeEventListener('scroll', check);
+    return () => {
+      window.removeEventListener('scroll', check);
+      window.removeEventListener('resize', check);
+    };
   }, []);
 
   const clearTimer = () => {
@@ -262,7 +269,7 @@ export default function HowItWorksScroll() {
            Section
            ══════════════════════════════════════ */
         .hiw {
-          padding: 96px 0 240px;
+          padding: 96px 0 200px;
           box-sizing: border-box;
           border-top: 1px solid #e7e5e4;
           border-bottom: 1px solid #e7e5e4;
@@ -381,7 +388,7 @@ export default function HowItWorksScroll() {
            XS mobile (≤559px)
            ══════════════════════════════════════ */
         @media (max-width: 559px) {
-          .hiw { padding: 64px 0 104px; }
+          .hiw { padding: 64px 0 160px; }
           .hiw-title { font-size: 32px; }
           .hiw-header { margin-bottom: 32px; }
           .hiw-track {
@@ -398,6 +405,12 @@ export default function HowItWorksScroll() {
             aspect-ratio: auto;
             border-radius: 24px;
           }
+        }
+
+        /* ── Mobile: scale down pagination ── */
+        @media (max-width: 559px) {
+          .hiw-pagination { transform: translateX(-50%) scale(0.8); }
+          .hiw-pagination.visible { transform: translateX(-50%) translateY(0) scale(0.8); }
         }
 
         /* ══════════════════════════════════════
@@ -497,6 +510,7 @@ export default function HowItWorksScroll() {
           transition: transform 150ms ease;
         }
         .hiw-action-btn:hover { transform: scale(1.07); }
+
 
         /* ── Reduced motion ── */
         @media (prefers-reduced-motion: reduce) {

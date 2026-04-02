@@ -443,7 +443,7 @@ export default function Nav() {
         /* Active label styling */
         .nav-label-active {
           color: #1c1917 !important;
-          font-weight: 500;
+          font-weight: 500 !important;
         }
         /* Sliding indicator bar */
         .nav-indicator {
@@ -457,9 +457,12 @@ export default function Nav() {
                       width 320ms cubic-bezier(0.4, 0, 0.2, 1),
                       opacity 200ms ease;
         }
-        /* Hover */
+        /* Default + Hover */
+        .nav-label:not(.nav-label-active) {
+          color: #57534e !important;
+        }
         .nav-link:hover .nav-label:not(.nav-label-active) {
-          color: #1c1917;
+          color: #1c1917 !important;
         }
       `}</style>
 
@@ -590,8 +593,7 @@ export default function Nav() {
                   data-label={label}
                   style={{
                     position: "relative",
-                    color: isActive ? "#1c1917" : "#6c6760",
-                    fontWeight: isActive ? 500 : 300,
+                    fontWeight: isActive ? 500 : 400,
                   }}
                 >
                   {label}

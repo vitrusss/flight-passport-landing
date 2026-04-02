@@ -244,7 +244,6 @@ export const AIRLINES: Airline[] = [
   { code: "sn", name: "Brussels Airlines" },
   { code: "sq", name: "Singapore Airlines" },
   { code: "ss", name: "Corsair" },
-  { code: "su", name: "Aeroflot" },
   { code: "sv", name: "Saudia" },
   { code: "sy", name: "Sun Country Airlines" },
   { code: "sz", name: "Somon Air" },

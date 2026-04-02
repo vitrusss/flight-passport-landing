@@ -86,22 +86,22 @@ export default function HeroSection() {
       const rect = el.getBoundingClientRect();
       tooltip.textContent = el.dataset.tooltip!;
       tooltip.style.left = `${rect.left + rect.width / 2}px`;
-      tooltip.style.top = `${rect.top - 10}px`;
+      tooltip.style.top = `${rect.bottom + 10}px`;
       // Snap to start position instantly, then animate in
       tooltip.style.transition = 'none';
-      tooltip.style.transform = 'translate(-50%, -100%) translateY(6px) scale(0.92)';
+      tooltip.style.transform = 'translate(-50%, 0) translateY(-6px) scale(0.92)';
       tooltip.style.opacity = '0';
       // Force reflow so the instant snap takes effect before transition starts
       tooltip.offsetHeight;
-      // Animate: float up with slight spring overshoot + fade in
+      // Animate: float down with slight spring overshoot + fade in
       tooltip.style.transition = 'opacity 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1)';
-      tooltip.style.transform = 'translate(-50%, -100%) translateY(0) scale(1)';
+      tooltip.style.transform = 'translate(-50%, 0) translateY(0) scale(1)';
       tooltip.style.opacity = '1';
     };
     const hideTooltip = () => {
-      // Smooth fade down + shrink
+      // Smooth fade up + shrink
       tooltip.style.transition = 'opacity 160ms ease-in, transform 200ms ease-in';
-      tooltip.style.transform = 'translate(-50%, -100%) translateY(5px) scale(0.94)';
+      tooltip.style.transform = 'translate(-50%, 0) translateY(-5px) scale(0.94)';
       tooltip.style.opacity = '0';
     };
 
@@ -406,9 +406,12 @@ export default function HeroSection() {
             .badge-conn, .badge-gate     { top: 84px !important; }
             .badge-hist, .badge-delay    { top: 180px !important; }
           }
+          /* App Store CTA under phone — hidden on mobile */
+          .hero-appstore-desktop { display: flex; }
           /* Hero mobile download button — hidden on desktop, shown on mobile */
           .hero-mobile-btn { display: none; }
           @media (max-width: 767px) {
+            .hero-appstore-desktop { display: none !important; }
             .hero-mobile-btn {
               display: flex;
               justify-content: center;
@@ -418,7 +421,7 @@ export default function HeroSection() {
               padding: 0 20px;
               box-sizing: border-box;
             }
-            .hero-mobile-btn .cta-btn { width: 100%; justify-content: center; }
+            .hero-mobile-btn .cta-btn { width: auto !important; }
             /* Sky fills the viewport on mobile */
             .hero-sky-section {
               height: 100svh !important;
@@ -594,18 +597,24 @@ export default function HeroSection() {
                 </p>
               </div>
             </div>
-            {/* Download button — mobile only (visible when burger menu is shown) */}
+            {/* Download button — mobile only */}
             <div className="hero-mobile-btn" style={textReveal(360)}>
-              <div className="cta-btn relative flex gap-[8px] h-[44px] items-center justify-center px-[20px] rounded-[999px] cursor-pointer">
-                <div aria-hidden="true" className="absolute bg-[#1c1917] inset-0 pointer-events-none rounded-[999px]" />
-                <div className="overflow-clip relative shrink-0 size-[20px]">
-                  <div className="absolute inset-[0_10.94%_4.17%_8.33%]">
-                    <img alt="" className="absolute block max-w-none size-full" src={imgIconColor} />
-                  </div>
-                </div>
-                <span className="font-semibold relative text-[15px] text-white text-center whitespace-nowrap leading-[20px]">Download</span>
-                <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.15)]" />
-              </div>
+              <a
+                href="https://apps.apple.com/app/flight-passport/id6670439567"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'inline-block', lineHeight: 0, transition: 'transform 200ms ease', cursor: 'pointer' }}
+                onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.96)')}
+                onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+              >
+                <img
+                  alt="Download on the App Store"
+                  src="/Images/AppStore_logo.svg"
+                  style={{ width: 180, height: 52, display: 'block' }}
+                  draggable={false}
+                />
+              </a>
             </div>
           </div>
         </div>
@@ -800,8 +809,26 @@ export default function HeroSection() {
             </div>
           </div>
         </div>
+        {/* App Store CTA — desktop only */}
+        <div className="hero-appstore-desktop flex justify-center mt-[64px]">
+          <a
+            href="https://apps.apple.com/app/flight-passport/id6670439567"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cta-btn no-shimmer"
+            style={{ display: 'inline-block', borderRadius: 12, overflow: 'hidden', lineHeight: 0 }}
+          >
+            <img
+              alt="Download on the App Store"
+              src="/Images/AppStore_logo.svg"
+              style={{ width: 180, height: 52, display: 'block' }}
+              draggable={false}
+            />
+          </a>
+        </div>
+
         {/* AIRLINES STRIP */}
-        <div className="airlines-strip-wrapper w-full bg-[#f9f8f6] mt-[64px]">
+        <div className="airlines-strip-wrapper w-full bg-[#f9f8f6] mt-[40px]">
         <div className="flex flex-col gap-[40px] items-center overflow-hidden py-[40px]">
           <p className="hero-airlines-text font-normal leading-[1.4] text-[18px] text-[#a8a29e] text-center tracking-[-0.18px] whitespace-nowrap">
             Tracks flights across 1200+ airlines and airports worldwide
@@ -840,7 +867,7 @@ export default function HeroSection() {
         borderRadius: 8,
         pointerEvents: 'none',
         opacity: 0,
-        transform: 'translate(-50%, -100%) translateY(6px) scale(0.92)',
+        transform: 'translate(-50%, 0) translateY(-6px) scale(0.92)',
         transition: 'opacity 160ms ease-in, transform 200ms ease-in',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
         zIndex: 9999,
